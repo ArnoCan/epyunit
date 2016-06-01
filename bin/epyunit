@@ -1,0 +1,614 @@
+#!/usr/bin/env python
+"""'epyunit' - Command line interface
+
+The epyunit commandline interface provides a call wrapper
+for unit and regression tests of arbitrary executables.
+The wrapper internally relies on the standard packages 'PyUnit'
+and integrates into Eclipse by 'PyDev'. Thus unit tests could
+be applied in particular for shell scripts and intermixed 
+application processes implemented in multiple programming 
+languages.
+
+The call is simply a prefix to the actual testee including 
+it's options. The wrapper itself provides various criteria 
+for the indication of the success and/or failure of the test 
+case. It therefore provides the indication by stdout, stderr, 
+and exit values. 
+
+
+SYNOPSIS:
+
+  epyunit [OPTIONS] [--] <testee> [<testee-options>]
+
+OPTIONS:
+
+  --appname=<arbitrary-name-of-app>
+    An arbitrary application name to be inserted into record 
+    headers.
+    
+  --csv
+    Prints complete test result CSV format including header.
+
+  -d --debug
+     Debug entries, does NOT work with 'python -O ...'.
+     Developer output, aimed for filtering.
+
+  --default-nok
+    When multiple options match, prioritize a 
+    matching NOK option as success.
+
+  --default-ok
+    When multiple options match, prioritize a 
+    matching OK option as success.
+
+  --environment
+    Include platform info into header.
+
+  --exit=<exit-value>
+    Indicates success when exit value is equal to the provided 
+    value.
+
+  --exit-ignore
+    Ignore exit value, as default '0' is
+    required for success. 
+
+  --exit-nok
+    Exit value '!=0' indicates success.
+
+  --exit-ok
+    Exit value '0' indicates success.
+
+  -h --help
+     This help.
+
+  --nok-stderr=<nok-string>
+    Error string on stderr indicates success.
+
+  --nok-stdout=<nok-string>
+    Error string on stdout indicates success.
+
+  --ok-stderr=<ok-string>
+    OK string on stderr indicates success.
+
+  --ok-stdout=<ok-string>
+    OK string on stdout indicates success.
+
+  --pass-through
+    Pass through the testee results on STDOUT and STDERR.
+    The exit value is intepreted by rules.
+    
+  --pass-through-all
+    Pass through the testee result on STDOUT and STDERR,
+    also passes transparently the received exit value.
+
+  --prio-nok
+    In case of present failure and success conditions,
+    the success condition dominates.
+
+  --prio-ok
+    In case of present failure and success conditions,
+    the failure condition dominates.
+
+  --repr
+    Prints complete test result by Python call of 'repr()'.
+
+  -selftest --selftest
+
+     Performs a basic functional selftest by executing the 
+     basic examples based on 'myscript.sh'.
+
+  --test-id=<arbitrary-identifier-for-record-header>
+    Prints the test-id with the formats 'csv', and 'xml'.
+    Too be applied in case of multiple test case calls.
+
+  --timestamp
+    Includes date and time into record header.
+
+  -Version --Version
+     Current version - detailed.
+
+  -v --verbose
+     Verbose, some relevant states for basic analysis.
+     When '--selftest' is set, repetition raises the display 
+     level.
+
+  -version --version
+     Current version - terse.
+
+  --xml
+    Prints complete test result XML format.
+
+
+ARGUMENTS:
+
+  [--] 
+     The ambigous options and arguments exist, the first match
+     terminates the evaluatoin of the wrapper options.
+
+  <testee> 
+     The wrapped testee.
+
+  [<testee-options>]
+     Options of the testee.
+
+
+ENVIRONMENT:
+
+  * PYTHON OPTIONS:
+    -O, -OO: Eliminates '__debug__' code.
+ 
+
+EXAMPLES:
+
+  Basic call examples are provided:
+
+  * `CLI: command line interface <epyunit_example_cli.html>`_ 
+
+  * `Eclipse: PyDev integration <epyunit_example_eclipse.html>`_ 
+
+  For detailed examples refer to the subdirectories of the 
+  source package for:
+
+  * Unit tests 
+
+  * UseCases
+  
+COPYRIGHT:
+  Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
+  Copyright (C)2015-2016 Arno-Can Uestuensoez
+
+"""
+from __future__ import absolute_import
+#from __future__ import print_function
+
+__author__ = 'Arno-Can Uestuensoez'
+__license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
+__copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
+__version__ = '0.0.1'
+__uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
+
+__docformat__ = "restructuredtext en"
+
+#
+#--- fetch options
+#
+import getopt, os, sys
+
+try:
+    from epyunit.SystemCalls import SystemCalls
+except Exception as e:
+    print "\n#\n#*** Set 'PYTHONPATH' ("+str(e)+")\n#\n"
+    #import sys
+    sys.exit(1)
+
+# name of application, used for several filenames as default
+_APPNAME = "epyunit"
+
+
+def usage():
+    if __name__ == '__main__':
+        import pydoc
+        #FIXME: literally displayed '__main__'
+        print pydoc.help(__name__)
+    else:
+        help(str(os.path.basename(sys.argv[0]).split('.')[0]))
+
+_kargs={}
+try:
+    _longopts = [
+        "help","debug","verbose","version","Version","selftest",
+        "default-nok", "default-ok","exit=","exit-ignore","exit-nok",
+        "exit-ok","nok-stderr","nok-stdout","ok-stderr","ok-stdout",
+        "prio-nok", "prio-ok",
+        "repr", "xml", "csv", "pass-through", "pass-through-all",
+        "test-id=", "timestamp", "environment",
+    ]
+    _opts, _args = getopt.getopt(sys.argv[1:], "a:hdv", _longopts)
+except getopt.GetoptError, err:
+    print str(err)
+    usage()
+    sys.exit(2)
+
+
+#
+# defaults
+#
+
+# name of tested application
+_appname = None
+
+# test id, to be printed with result data records
+_testid = 0
+
+# perform hard-coded basic selftest
+_selftest = False
+
+# verbose output
+_verbose = 0
+
+# debug output
+_debug = 0
+
+#
+_default = 'OK'
+
+# when OK and NOK conditions met the "NOK" defines the result
+_prio = "NOK"
+
+# exit value defined as success, or ignored: OK(0) | NOK(!=0) | IGNORE
+_exit = "OK"
+
+
+# activate check of exit code: OK(0) else NOK(>0)
+_chk_exit = True
+
+# a strings to be checked in stderr stream
+_chk_stderr = False
+_CHK_STDERR_OK = [] # list of provided strings: OK condition
+_CHK_STDERR_NOK = [] # list of provided strings: NOK condition
+
+# a strings to be checked in stdout stream
+_chk_stdout = False
+_CHK_STDOUT_OK = [] # list of provided strings: OK condition
+_CHK_STDOUT_NOK = [] # list of provided strings: NOK condition
+
+
+# counter values for occured matches
+_result = 0 # overall
+_result_ok = 0 # number of matched success criteria 
+_result_nok = 0 # number of matched failure criteria
+
+# full result value display
+_out = None
+_timestamp = False
+_environment = False
+
+for _o,_a in _opts:
+    
+    if _o in ("--default-ok"):
+        _default = 'OK'
+    elif _o in ("--default-nok"):
+        _default = 'NOK'
+    
+    elif _o in ("--exit"):
+        _chk_exit = True
+        _exit_val = _a
+        _exit = "VAL"        
+    elif _o in ("--exit-ignore"):
+        _chk_exit = False
+        _exit = "IGN"
+    elif _o in ("--exit-nok"):
+        _chk_exit = True
+        _exit = "NOK"
+    elif _o in ("--exit-ok"):
+        _chk_exit = True
+        _exit = "OK"
+        
+    elif _o in ("--nok-stderr"):
+        _chk_stderr = True
+        _CHK_STDERR_NOK.append(_a)
+    elif _o in ("--nok-stdout"):
+        _chk_stdout = True
+        _CHK_STDOUT_NOK.append(_a)
+    elif _o in ("--ok-stderr"):
+        _chk_stderr = True
+        _CHK_STDERR_OK.append(_a)
+    elif _o in ("--ok-stdout"):
+        _chk_stdout = True
+        _CHK_STDOUT_OK.append(_a)
+
+    elif _o in ("--prio-nok"):
+        _prio = "NOK"
+    elif _o in ("--prio-ok"):
+        _prio = "OK"
+
+
+    elif _o in ("--pass-through"):
+        _out = "pass"
+    elif _o in ("--repr"):
+        _out = "repr"
+    elif _o in ("--xml"):
+        _out = "xml"
+    elif _o in ("--csv"):
+        _out = "csv"
+
+    elif _o in ("-a","--appname"):
+        _appname = _a
+    elif _o in ("--test-id"):
+        _testid = _a
+    elif _o in ("--timestamp"):
+        _timestamp = True
+    elif _o in ("--environment"):
+        _environment = True
+
+    elif _o == "--selftest":
+        _selftest = True
+    elif _o in ("-d","--debug"):
+        _kargs['debug'] = True
+        _debug += 1
+    elif _o in ("-v","--verbose"):
+        _verbose += 1
+        
+    elif _o in ("-h","--help"):
+        usage()
+        sys.exit()
+
+    elif _o in ("--version"):
+        print str(__version__)
+        sys.exit()
+    elif _o in ("--Version"):
+        print "app:      "+str(_APPNAME)
+        print "version:  "+str(__version__)
+        print "author:   "+str(__author__)
+        print "copyright:"+str(__copyright__)
+        print "license:  "+str(__license__)
+        print "file:     "+str(os.path.basename(__file__))
+        sys.exit()
+
+    else:
+        assert False, "unhandled option"
+
+if _selftest:
+    _appname = "selftest"
+    if _verbose>0:
+        _kargs['_verbose'] = _verbose 
+    if _kargs.get('debug') > 0:
+        _kargs['_trace'] = _verbose 
+
+    sx = SystemCalls(**_kargs)
+    import epyunit #for path to mymodule.sh
+    cx = epyunit.__path__[0]+os.sep+"myscript.sh"
+    
+    ret = sx.callit(cx+' '.join(_args))
+    if ret[0] == 126:
+        print >>sys.stderr ,"check exec permissions of 'myscript.sh'"
+    assert ret == [123,["arbitrary output"],[]]
+
+    ret = sx.callit(cx+' OK '+' '.join(_args))
+    assert ret == [0,["arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+
+    ret = sx.callit(cx+' NOK '+' '.join(_args))
+    assert ret == [0,["arbitrary output","arbitrary output"],["arbitrary signalling ERROR string"]]
+
+    ret = sx.callit(cx+' PRIO '+' '.join(_args))
+    assert ret == [0,["arbitrary output","arbitrary signalling OK string","arbitrary output"],["arbitrary signalling ERROR string"]]
+
+    ret = sx.callit(cx+' EXITOK '+' '.join(_args))
+    assert ret == [0,["arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+
+    ret = sx.callit(cx+' EXITNOK '+' '.join(_args))
+    assert ret == [1,["arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+
+    ret = sx.callit(cx+' EXIT7 '+' '.join(_args))
+    assert ret == [7,["arbitrary output","arbitrary signalling NOK string","arbitrary output"],[]]
+
+    ret = sx.callit(cx+' '+' '.join(_args))
+    assert ret == [123,["arbitrary output"],[]]
+    
+else:
+
+    if _verbose>0:
+        _kargs['_verbose'] = _verbose 
+    if _debug > 0:
+        _kargs['_trace'] = _verbose 
+
+    if _out == "pass":
+        _kargs['raw'] = True
+
+    sx = SystemCalls(**_kargs)
+    ret = sx.callit(' '.join(_args))
+    if ret[0] == 126:
+        print >>sys.stderr ,"check exec permissions of 'myscript.sh'"
+
+
+    #
+    # check string patterns on STDERR 
+    #
+    if _chk_stderr: # patterns for STDERR are provided
+        if ret[2] in _CHK_STDERR_NOK:
+            _result_nok += 1
+        if ret[2] in _CHK_STDERR_OK:
+            _result_ok += 1
+
+
+    #
+    # check string patterns on STDOUT
+    #
+    if _chk_stdout: # patterns for STDOUT are provided
+        if ret[1] in _CHK_STDOUT_NOK:
+            _result_nok += 1
+        if ret[1] in _CHK_STDOUT_OK:
+            _result_ok += 1
+
+
+    #
+    # check exit value
+    #
+    _exit_cond = True
+    if _chk_exit:
+        if _exit == "OK":
+            if ret[0] == 0:
+                _exit_cond = True
+            else:
+                _exit_cond = False
+
+        elif _exit == "NOK":
+            if ret[0] > 0:
+                _exit_cond = True
+            else:
+                _exit_cond = False
+
+        elif _exit == "VAL":
+            if _exit_val == ret[0]:
+                _exit_cond = True
+            else:
+                _exit_cond = False
+
+        # _exit == "IGN": # may not occur
+
+
+    
+    #
+    # interpret partial _results into overall resulting test status
+    #
+
+    # ignore NOK, when OK defined at all
+    if _prio == "OK":
+        
+        # matched stream
+        if _result_ok > 0:
+            _result = 0
+        elif _result_nok > 0:
+            _result = _result_nok
+        else:
+            if _default == 'OK':
+                _result = 0
+            else:
+                _result = 1
+
+        # exit code - defined as independent criteria
+        if _chk_exit:
+            if not _exit_cond: # check whether exit is not as expected
+                _result = 1
+
+    elif _prio == "NOK":
+
+        # matched stream
+        if _result_ok > 0:
+            _result = 0
+        elif _result_nok > 0:
+            _result = _result_nok
+        else:
+            if _default == 'OK':
+                _result = 0
+            else:
+                _result = 1
+
+        # exit code - defined as independent criteria
+        if _chk_exit:
+            if not _exit_cond: # check whether exit is not as expected
+                _result = 1
+
+    import platform
+    import datetime
+    # runtime environment 
+    _host = platform.node()
+    _user = "testuser"
+    _osu = platform.os.uname()
+    _os = _osu[0]
+    _osver = _osu[2]
+    _arch = _osu[-1]
+    _dist, _distver,_x = platform.dist()
+
+
+    if _out == "pass": # pass through STDOUT and STDERR from subprocess
+        if ret[1]:
+            sys.stdout.write(ret[1])
+        if ret[2]:
+            sys.stdout.write(ret[2])
+
+    elif _out == "repr": # Python 'repr()'
+        print repr(ret)
+    
+    elif _out == "xml": # XML
+        print """<?xml version="1.0" encoding="UTF-8"?>"""
+
+        # take timestamp        
+        _dn = datetime.datetime.now()
+        _date=str(_dn.year)+'-'+str(_dn.month)+'-'+str(_dn.day)
+        _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
+        _head="<test-result id="+str(_testid)
+        if _appname:
+            _head +=  " appname='"+str(_appname)+"'"
+        if _timestamp:
+            _head +=  " date='"+str(_date)+"'"
+            _head +=  " time='"+str(_time)+"'"
+        if _environment:
+            _head +=  " host='"+str(_host)+"'"
+            _head +=  " user='"+str(_user)+"'"
+            _head +=  " os='"+str(_os)+"'"
+            _head +=  " osver='"+str(_osver)+"'"
+            _head +=  " dist='"+str(_dist)+"'"
+            _head +=  " distver='"+str(_distver)+"'"
+        _head += ">"
+
+        print str(_head)
+
+        # exit code
+        print   "    <exit-code>"+str(ret[0])+"</exit-code>"
+        
+        # STDOUT
+        print   "    <stdout>"
+        lx = 0
+        for l in ret[1]:
+            print   "        <line cnt="+str(lx)+">"+str(l)+"</line>"
+            lx += 1
+        print   "    </stdout>"
+        
+        # STDERR
+        print   "    <stderr>"
+        lx = 0
+        for l in ret[2]:
+            print   "        <line cnt="+str(lx)+">"+str(l)+"</line>"
+            lx += 1
+        print   "    </stderr>"
+
+        print """</test-result>"""
+
+    elif _out == "csv": # CSV with sparse records
+
+        _head = "testid"
+        if _appname:
+            _head +=  ";appname"
+        if _timestamp:
+            _head += ";date;time"
+        if _environment:
+            _head += ";host;user;os;osver;dist;distver"
+        _head += ";exitcode;stdout-line;stdout;stderr-line;stderr"
+
+        print str(_head)
+        
+        # take timestamp        
+        _dn = datetime.datetime.now()
+        _date=str(_dn.year)+'-'+str(_dn.month)+'-'+str(_dn.day)
+        _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
+
+        _lxtot=0
+        
+        # STDOUT
+        lx = 0
+        for l in ret[1]:    
+            _rec = str(_testid)
+            if _appname:
+                _rec +=  ";"+str(_appname)
+            if _timestamp:
+                _rec += ";"+str(_date)+";"+str(_time)
+            if _environment:
+                _rec += ";"+str(_host)+";"+str(_user)+";"+str(_os)+";"+str(_osver)+";"+str(_dist)+";"+str(_distver)
+            _rec += ";"+str(ret[0])+";"+str(_lxtot)+";"+str(lx)+";"+str(l)+";;"
+            
+            print str(_rec)
+            lx += 1
+            _lxtot +=1
+        
+        # STDERR
+        lx = 0
+        for l in ret[2]:
+            _rec = str(_testid)
+            if _appname:
+                _rec +=  ";"+str(_appname)
+            if _timestamp:
+                _rec += ";"+str(_date)+";"+str(_time)
+            if _environment:
+                _rec += ";"+str(_host)+";"+str(_user)+";"+str(_os)+";"+str(_osver)+";"+str(_dist)+";"+str(_distver)
+            _rec += ";"+str(ret[0])+";"+str(_lxtot)+";;;"+str(lx)+";"+str(l)
+            
+            print str(_rec)
+            lx += 1
+            _lxtot +=1
+        
+    if _out == "pass":
+        exit(ret[0])
+    
+    exit(_result)
+    

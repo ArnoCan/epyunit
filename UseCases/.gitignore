@@ -1,0 +1,179 @@
+#
+# for application in top directory containing the '.git' directory
+#
+
+#
+#volatile workspace storage
+#
+/**/*~
+/**/*(Kopie)*
+/**/*(copy)*
+/**/2sort/
+/**/2check/
+/**/backup/
+/**/tmp/
+
+# by default these are copies only, the source are in components 
+# and/or src if required set individually
+/**/repos/
+/**/raw/
+
+
+#
+# *** Dynamic data of specific tools/apps: ***
+#
+
+#
+# AUTOTOOLS:
+# REMARK: Do not put here Makefile.in, in some cases it is the source! 
+#Makefile.in
+/autom4te.cache/
+/aclocal.m4
+/autoscan.log
+/compile
+/configure
+/depcomp
+/install-sh
+/missing
+/config.status
+/config.sub
+/config.guess
+/config.log
+/config.h
+/configure
+
+#
+# common suffixes
+.build
+.made
+.settings
+*.elc
+
+# Object files
+*.slo
+*.lo
+*.o
+
+# Libraries
+*.lib
+*.lai
+*.la
+*.a
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
+*.exe
+*.out
+*.app
+
+# libtool
+*.l[ao]
+
+# lex/yacc
+y.tab.[cho]
+
+# python
+*.py[cod]
+
+# java
+*.class
+*.jar
+*.war
+*.ear
+
+
+# Python - Packages
+*.egg
+*.egg-info
+dist
+build
+eggs
+parts
+bin
+var
+sdist
+develop-eggs
+.installed.cfg
+lib
+lib64
+__pycache__
+
+# Python - Installer logs
+pip-log.txt
+
+# Python - Unit test / coverage reports
+.coverage
+.tox
+nosetests.xml
+
+# Python - Translations
+*.mo
+
+# Python - Mr Developer
+.mr.developer.cfg
+.project
+.pydevproject
+
+
+#
+# misc dirs
+/**/po/
+
+
+# ECLIPSE: context-menue templates
+
+#
+# eclipse ide - manage settings
+#   -workspace
+#   -projects
+#
+
+# -> ignore dynamic eclipse data
+/**/RemoteSystemsTempFiles/
+
+#allow context specific eclipse framework settings
+ide
+!ide/
+ide/*
+!ide/eclipse/
+ide/eclipse/*
+!ide/eclipse/.metadata/
+ide/eclipse/.metadata/*
+!ide/eclipse/.metadata/.plugins/
+ide/eclipse/.metadata/.plugins/*
+
+# workbench
+!ide/eclipse/.metadata/.plugins/org.eclipse.e4.workbench/
+ide/eclipse/.metadata/.plugins/org.eclipse.e4.workbench/*
+!ide/eclipse/.metadata/.plugins/org.eclipse.e4.workbench/workbench.xmi
+
+# runtime
+!ide/eclipse/.metadata/.plugins/org.eclipse.core.runtime/
+ide/eclipse/.metadata/.plugins/org.eclipse.core.runtime/*
+!ide/eclipse/.metadata/.plugins/org.eclipse.core.runtime/.settings/
+!ide/eclipse/.metadata/.plugins/org.eclipse.core.runtime/.settings/*
+!ide/eclipse/.metadata/.plugins/org.eclipse.core.runtime/.settings/*.prefs
+
+#allow generic projects
+!/**/.project
+
+#allow generic CDT projects
+!/**/.cproject
+
+#allow pydev projects
+!/**/.pydevproject
+
+
+#
+# git:
+#allow .gitignore
+!.gitignore
+
+
+# generated only
+/**/data
