@@ -5,7 +5,7 @@ from __future__ import absolute_import
 import unittest
 import os
 
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath
 
 
 #

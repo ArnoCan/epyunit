@@ -88,8 +88,6 @@ The provided feature modules comprise the following list for the automation
 of unit tests by arbitrary processes, for code examples 
 refer to 'epyunit.UseCases.examples'.
 
-* `FileSysObjectsMin <fileobjects.html>`_ : Manage branches of filesystem structures with support of basic file inheritance - *epyunit.FileSysObjectsMin*.
-
 * `SystemCalls <systemcalls.html>`_ : Wraps system calls, particularly subprocess calls - *epyunit.SystemCalls*.
 
 In addition the following main utilities are provided:

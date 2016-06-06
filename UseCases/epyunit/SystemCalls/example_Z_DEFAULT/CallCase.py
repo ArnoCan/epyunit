@@ -26,7 +26,7 @@ import os,sys
 
 #
 # set search for the call of 'myscript.sh'
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath
 setUpperTreeSearchPath(None,'UseCases')
 
 
@@ -46,7 +46,7 @@ class CallUnits(unittest.TestCase):
         """Call first selftest part.
         """
         
-        sx = SystemCalls(**{"proceed":"trace"})
+        sx = SystemCalls()
         # use PATH for search of 'myscript.sh'
         _env = os.environ.copy()
         _env['PATH'] = os.pathsep.join(sys.path)

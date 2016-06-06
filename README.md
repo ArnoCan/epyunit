@@ -151,18 +151,22 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.00.001 - Pre-Alpha:**
+**Current Release: 00.00.010 - Pre-Alpha:**
 
 Major Changes:
 
-* Introduce initial version.
+* Splitted by shift of FileSzsObjects into it's own project.
+
+* Test enhancements.
+
+* Documentation restructured.
 
 
 Current test status:
 
 * UnitTests: >9
 
-* Use-Cases as UnitTests: >70
+* Use-Cases as UnitTests: >84
 
-**Total**: >79
+**Total**: >93
 

@@ -5,7 +5,7 @@ from __future__ import absolute_import
 import unittest
 import os
 
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath
 
 
 #
@@ -27,14 +27,14 @@ class CallUnits(unittest.TestCase):
         C = 'a/b/c/C.txt'     #@UnusedVariable
         D = 'a/b/c/d/D.txt'   #@UnusedVariable
 
-        top = os.path.abspath(os.path.dirname(__file__))+os.sep  #@UnusedVariable
-        start = top+A
+        top = os.path.abspath(os.path.dirname(__file__))  #@UnusedVariable
+        start = top+os.sep+A
 
         res = []
         ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
         
         resx = [
-            os.path.dirname(top+A)+os.sep,
+            os.path.dirname(top+os.sep+A),
             top,
         ]
 
@@ -48,17 +48,17 @@ class CallUnits(unittest.TestCase):
         C = 'a/b/c/C.txt'     #@UnusedVariable
         D = 'a/b/c/d/D.txt'   #@UnusedVariable
 
-        top = os.path.abspath(os.path.dirname(__file__))+os.sep
-        start = top+B
+        top = os.path.abspath(os.path.dirname(__file__))
+        start = top+os.sep+B
 
         res = []
         ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
         
         resx = [
-            os.path.dirname(top+B)+os.sep,
+            os.path.dirname(top+os.sep+B),
             top,
         ]
-        resx.insert(1,os.path.dirname(resx[0][:-1])+os.sep)
+        resx.insert(1,os.path.dirname(resx[0][:-1]))
 
         assert resx == res
         pass
@@ -70,18 +70,18 @@ class CallUnits(unittest.TestCase):
         C = 'a/b/c/C.txt'     #@UnusedVariable
         D = 'a/b/c/d/D.txt'   #@UnusedVariable
 
-        top = os.path.abspath(os.path.dirname(__file__))+os.sep
-        start = top+C
+        top = os.path.abspath(os.path.dirname(__file__))
+        start = top+os.sep+C
 
         res = []
         ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
         
         resx = [
-            os.path.dirname(top+C)+os.sep,
+            os.path.dirname(top+os.sep+C),
             top,
         ]
-        resx.insert(1,os.path.dirname(resx[0][:-1])+os.sep)
-        resx.insert(2,os.path.dirname(resx[1][:-1])+os.sep)
+        resx.insert(1,os.path.dirname(resx[0][:-1]))
+        resx.insert(2,os.path.dirname(resx[1][:-1]))
 
         assert resx == res
         pass
@@ -93,19 +93,19 @@ class CallUnits(unittest.TestCase):
         C = 'a/b/c/C.txt'     #@UnusedVariable
         D = 'a/b/c/d/D.txt'   #@UnusedVariable
 
-        top = os.path.abspath(os.path.dirname(__file__))+os.sep
-        start = top+D
+        top = os.path.abspath(os.path.dirname(__file__))
+        start = top+os.sep+D
 
         res = []
         ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
         
         resx = [
-            os.path.dirname(top+D)+os.sep,
+            os.path.dirname(top+os.sep+D),
             top,
         ]
-        resx.insert(1,os.path.dirname(resx[0][:-1])+os.sep)
-        resx.insert(2,os.path.dirname(resx[1][:-1])+os.sep)
-        resx.insert(3,os.path.dirname(resx[2][:-1])+os.sep)
+        resx.insert(1,os.path.dirname(resx[0][:-1]))
+        resx.insert(2,os.path.dirname(resx[1][:-1]))
+        resx.insert(3,os.path.dirname(resx[2][:-1]))
 
         assert resx == res
         pass

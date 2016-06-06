@@ -6,7 +6,7 @@ import unittest
 import os
 import sys
 
-import epyunit.FileSysObjectsMin
+import filesysobjects.FileSysObjects
 
 #
 #######################
@@ -20,7 +20,7 @@ class CallUnits(unittest.TestCase):
     def testCase000(self):
         """Selftest.
         """
-        p = epyunit.FileSysObjectsMin.getCallerModulePythonPath()
+        p = filesysobjects.PySourceInfo.getCallerModulePythonPath()
 
         call = 'export PYTHONPATH=$PYTHONPATH:'+str(p)+';python '+str(p)+os.sep+'bin'+os.sep+'epyunit --selftest'
         print call

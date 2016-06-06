@@ -1,5 +1,5 @@
 'epyunit.SystemCalls' - Module
-*******************************
+******************************
 
 .. automodule:: epyunit.SystemCalls
 

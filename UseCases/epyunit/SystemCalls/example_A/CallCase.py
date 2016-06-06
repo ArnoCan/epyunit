@@ -25,13 +25,13 @@ __docformat__ = "restructuredtext en"
 import unittest
 import os,sys
 
+from epyunit.SystemCalls import SystemCalls
+
 #
 # set search for the call of 'myscript.sh'
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath
 setUpperTreeSearchPath(None,'UseCases')
 
-
-from epyunit.SystemCalls import SystemCalls
 
 #
 #######################
@@ -46,7 +46,7 @@ class CallUnits(unittest.TestCase):
     def testCase000(self):
         """Failure - Default.
         """
-        sx = SystemCalls(**{"proceed":"trace"})
+        sx = SystemCalls()
         # use PATH for search of 'myscript.sh'
         _env = os.environ.copy()
         _env['PATH'] = os.pathsep.join(sys.path)
@@ -65,7 +65,7 @@ class CallUnits(unittest.TestCase):
         """Success - OK.
         """
         
-        sx = SystemCalls(**{"proceed":"trace"})
+        sx = SystemCalls()
         # use PATH for search of 'myscript.sh'
         _env = os.environ.copy()
         _env['PATH'] = os.pathsep.join(sys.path)

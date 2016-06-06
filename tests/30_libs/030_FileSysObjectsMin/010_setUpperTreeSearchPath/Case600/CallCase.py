@@ -5,7 +5,7 @@ from __future__ import absolute_import
 import unittest
 import os
 
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath,FileSysObjectsMinException
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath,FileSysObjectsException
 
 
 #
@@ -33,7 +33,7 @@ class CallUnits(unittest.TestCase):
         res = []
         try:
             ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
-        except FileSysObjectsMinException:
+        except FileSysObjectsException:
             pass
         else:
             raise
@@ -52,7 +52,7 @@ class CallUnits(unittest.TestCase):
         res = []
         try:
             ret = setUpperTreeSearchPath(start,top,res) #@UnusedVariable
-        except FileSysObjectsMinException:
+        except FileSysObjectsException:
             pass
         else:
             raise

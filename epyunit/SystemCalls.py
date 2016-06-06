@@ -8,7 +8,7 @@ with PyUnit, either within Eclipse and PyDev, or from the command line.
 
 A quick example call is::
 
-  python -c 'from epyunit.SystemCalls import SystemCalls;x=SystemCalls(**{"proceed":"trace"});x.callit("myscript.sh xOK")'
+  python -c 'from epyunit.SystemCalls import SystemCalls;x=SystemCalls();x.callit("myscript.sh xOK")'
 
 **REMARK**: Current version supports for subprocesses the ShellMode only.
 For test environments in R&D this - hopefully - is perfectly OK,
@@ -249,6 +249,8 @@ class SystemCalls(object):
                     Suppress the split of lines for
                     stdout and stderr.
 
+                'env': Passed through.
+
         Returns:
             Result of call, the format is:
             
@@ -279,11 +281,11 @@ class SystemCalls(object):
                
         ret=[1,]
         if proceed=="print":
-            print callstr
+            print str(callstr)
             return [0,[],[]]
 
         elif proceed=="trace":
-            print >>sys.stderr, "TRACE:"+callstr
+            print >>sys.stderr, "TRACE:"+str(callstr)
             ret=self.myexe(callstr,**kargs)
 
         elif proceed=="doit":

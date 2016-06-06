@@ -5,8 +5,8 @@ from __future__ import absolute_import
 import unittest
 import os
 
-from epyunit.FileSysObjectsMin import getPythonPathModuleRel
-from epyunit.FileSysObjectsMin import setUpperTreeSearchPath
+from filesysobjects.PySourceInfo import getPythonPathRel
+from filesysobjects.FileSysObjects import setUpperTreeSearchPath
 
 
 #
@@ -35,14 +35,14 @@ class CallUnits(unittest.TestCase):
         
         res = []
         for i in range(len(_res)):
-            res.append(getPythonPathModuleRel(_res[i])) 
+            res.append(getPythonPathRel(_res[i])) 
         resx = [
-            '30_libs/030_FileSysObjectsMin/010_setUpperTreeSearchPath/Case019/',
-            '30_libs/030_FileSysObjectsMin/010_setUpperTreeSearchPath/',
-            '30_libs/030_FileSysObjectsMin/', 
-            '30_libs/', 
-            '',
-        ]
+            '30_libs/030_FileSysObjectsMin/010_setUpperTreeSearchPath/Case019', 
+            '30_libs/030_FileSysObjectsMin/010_setUpperTreeSearchPath', 
+            '30_libs/030_FileSysObjectsMin', 
+            '30_libs', 
+            ''
+        ]                
 
         assert resx == res
         pass

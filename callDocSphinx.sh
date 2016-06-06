@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.0.1"
-RELEASE="0.0.1"
+VERSION="0.0.10"
+RELEASE="0.0.10"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -35,7 +35,7 @@ STATIC="${OUTDIR}/apidoc/sphinx/_static"
 
 # source entities
 FILEDIRS=""
-FILEDIRS="${INDIR}epydoc"
+FILEDIRS="${INDIR}epyunit"
 FILEDIRS="$FILEDIRS ${INDIR}bin"
 FILEDIRS="$FILEDIRS ${INDIR}UseCases"
 FILEDIRS="$FILEDIRS ${INDIR}tests"
@@ -55,8 +55,6 @@ CALL="$CALL $@"
 #build=patches
 bin_epyunit=bin/epyunit
 cp $bin_epyunit  ${bin_epyunit}.py
-bin_jsonproc=bin/jsonproc
-cp $bin_jsonproc  ${bin_jsonproc}.py
 
 DOCHTML=${OUTDIR}apidoc/sphinx/_build/html/index.html
 cat <<EOF
@@ -74,7 +72,7 @@ for fx in ${FX[@]};do
 done
 
 echo "extensions.append('sphinx.ext.intersphinx.')" >> ${OUTDIR}/apidoc/sphinx/conf.py
-echo "sys.path.insert(0, os.path.abspath('$PWD/..'))" >> ${OUTDIR}/apidoc/sphinx/conf.py
+echo "sys.path.insert(0, os.path.abspath('$PWD'))" >> ${OUTDIR}/apidoc/sphinx/conf.py
 
 # put the docs together
 #
@@ -107,10 +105,6 @@ EOF
 } >> ${OUTDIR}/apidoc/sphinx/index.rst 
 
 #
-cat docsrc/callsubprocessunit.rst > ${OUTDIR}/apidoc/sphinx/callsubprocessunit.rst
-cat docsrc/fileobjects.rst > ${OUTDIR}/apidoc/sphinx/fileobjects.rst
-cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
-#
 cat docsrc/commandline_tools.rst         > ${OUTDIR}/apidoc/sphinx/commandline_tools.rst
 cat docsrc/epyunit.rst                   > ${OUTDIR}/apidoc/sphinx/epyunit.rst
 cat docsrc/epyunit_cli.rst               > ${OUTDIR}/apidoc/sphinx/epyunit_cli.rst
@@ -118,6 +112,7 @@ cat docsrc/call_integration.rst          > ${OUTDIR}/apidoc/sphinx/call_integrat
 cat docsrc/epyunit_example_cli.rst       > ${OUTDIR}/apidoc/sphinx/epyunit_example_cli.rst
 cat docsrc/epyunit_example_eclipse_executable.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_executable.rst
 cat docsrc/epyunit_example_eclipse_python.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_python.rst
+cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
 
 #
 # static - literal data

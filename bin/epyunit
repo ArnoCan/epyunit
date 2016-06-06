@@ -336,6 +336,7 @@ for _o,_a in _opts:
     elif _o in ("--version"):
         print str(__version__)
         sys.exit()
+
     elif _o in ("--Version"):
         print "app:      "+str(_APPNAME)
         print "version:  "+str(__version__)
@@ -505,7 +506,7 @@ else:
         if ret[1]:
             sys.stdout.write(ret[1])
         if ret[2]:
-            sys.stdout.write(ret[2])
+            sys.stderr.write(ret[2])
 
     elif _out == "repr": # Python 'repr()'
         print repr(ret)
