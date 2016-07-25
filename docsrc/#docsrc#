@@ -1,0 +1,39 @@
+  /local/home1/data/acue/Desktop-Elements/Development/rd/p-open_lap001/ePyUnit/components/epyunit/docsrc:
+  insgesamt 1064
+  drwxrwxr-x.  2 acue acue   4096 25. Jul 00:13 .
+  drwxrwxr-x. 12 acue acue   4096 25. Jul 00:14 ..
+  -rw-rw-r--.  1 acue acue 434683 24. Jul 04:52 Bildschirmfoto vom 2016-07-24 04:52:32 (Kopie).png
+  -rw-rw-r--.  1 acue acue   3567 24. Jul 19:02 call_integration.rst
+  -rw-rw-r--.  1 acue acue    308  2. Jun 06:51 clioptutils_syntax.rst
+  -rw-rw-r--.  1 acue acue    295 21. Jul 05:26 commandline_scripting.rst
+  -rw-rw-r--.  1 acue acue    456 24. Jul 09:22 commandline_tools.rst
+  -rw-rw-r--.  1 acue acue      0 14. Jul 14:46 custom.css
+  -rw-rw-r--.  1 acue acue    259  2. Jun 06:51 eclipse_integration.rst
+  -rw-rw-r--.  1 acue acue   2626 18. Jul 23:25 epyunit-64x64.png
+  -rw-rw-r--.  1 acue acue   3828 19. Jul 08:36 epyunit_cli.rst
+  -rw-rw-r--.  1 acue acue   4013  2. Jun 06:51 epyunit_example_cli.rst
+  -rw-rw-r--.  1 acue acue   3357  2. Jun 06:51 epyunit_example_eclipse_executable.rst
+  -rw-rw-r--.  1 acue acue   3067  2. Jun 06:51 epyunit_example_eclipse_python.rst
+  -rw-rw-r--.  1 acue acue    277 20. Jul 17:00 epyunit.rst
+  -rw-rw-r--.  1 acue acue   6653 25. Jul 00:13 index.rst
+  -rwxr-xr-x.  1 acue acue   2936  2. Jun 06:51 myscript.sh
+C -rw-rw-r--.  1 acue acue   3775 24. Jul 09:18 myscript-sh.rst
+  -rw-rw-r--.  1 acue acue    277 20. Jul 17:00 myscript-sh.rst~
+  -rw-rw-r--.  1 acue acue  11586 24. Jul 18:56 pydevd_integration.rst
+  -rw-rw-r--.  1 acue acue   8345 24. Jul 05:49 pydevd_integration.rst~
+  -rw-rw-r--.  1 acue acue   2074 24. Jul 06:59 pydeverdbg.rst
+  -rw-rw-r--.  1 acue acue   2603 22. Jul 07:12 pydeverdbg.rst~
+  -rw-rw-r--.  1 acue acue  48960 24. Jul 04:55 pydev-remotedebugger1b.png
+  -rw-rw-r--.  1 acue acue  11085 21. Jul 05:34 pydev-remotedebugger1.png
+  -rw-rw-r--.  1 acue acue  12045 21. Jul 05:34 pydev-remotedebugger2.png
+  -rw-rw-r--.  1 acue acue  45194 21. Jul 05:34 pydev-remotedebugger3.png
+  -rw-rw-r--.  1 acue acue 133632 23. Jul 22:02 remote-debug-basics - Copy.vsd
+  -rw-rw-r--.  1 acue acue  63450 24. Jul 07:28 remote-debug-basics.png
+  -rw-rw-rw-.  1 acue acue 174592 24. Jul 08:25 remote-debug-basics.vsd
+C -rw-rw-r--.  1 acue acue   7133 25. Jul 00:10 rules_logic.rst
+  -rw-rw-r--.  1 acue acue   6680 21. Jul 07:16 rules_logig.rst~
+  -rw-rw-r--.  1 acue acue   7821 21. Jul 05:07 shortcuts.rst
+  -rw-rw-r--.  1 acue acue   5212 21. Jul 05:06 software_design.rst
+C -rw-rw-r--.  1 acue acue    679 20. Jul 20:15 subprocessunit.rst
+  -rw-rw-r--.  1 acue acue    679 20. Jul 20:15 systemcalls.rst
+  -rw-rw-r--.  1 acue acue   6680 21. Jul 07:16 usecases.rst

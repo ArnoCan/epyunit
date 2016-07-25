@@ -1,55 +1,64 @@
+Call Integration into PyUnit
+****************************
 
-'epyunit' - Call Integration into PyUnit and PyDev
-**************************************************
+The 'epyunit' package provides extensions for the 
+PyUnit framework for the test of arbitrary executables.::
 
-The 'epyunit' package provides extensions of the 
-PyUnit framework based on library modules for Python. 
+  The overall main reason to setup this project is the integration of
+  lightweight unit tests for scripts with a GUI based on PyDev + Eclipse.
+
 The call API of the tested components could be integrated
-into PyUnit either by calling Python bindings, or by the 
-the provided executable 'epyunit' for the command line 
-interface and script automation.
+into the ePyUnit interface either by calling Python bindings, or by the 
+the provided executable 'epyunit' from the command line.
 
-The test components collect internally the data from multiple 
-output streams for combined interpretation.
-The final decision on the state of the current test case is 
-based on the selected interpretation criteria.
-The options therefore comprise output content related scan options, 
-and additional weight options, defining priorities for the combination
-of the partial result.
+The output evaluation of the called subprocess is based on one or more of:
+
+* **stdout** - Arbitrary output written to stdout.
+
+* **stderr** - Arbitrary output written to stderr.
+
+* **exit code** - Exit code value.
+
+The components collect internally the data from multiple 
+streams for combined processing.
+A few behaviour based options define the expected dominant values and
+reduce in a fuzzy based approach multiple criteria to the relevant:
+
+* prio-ok, prio-nok
+
+* exit-ignore, exit-ok, exit-nok
 
 
-Syntax Elements
-===============
+Common Parameters
+=================
 
-The provided options for the basic test output evaluation of the called 
-process are based on one or more of the following input sources. 
-These comprise in current version the character based streams stdout and stderr, 
-which could deliver multiple match criteria, whereas the exit code is a 
-single value for each testee by definition.
-
-Character based streams are interpreted by lines, where each line is matched seperately.
+The input data from the tesstee are collected from the the character based 
+streams stdout and  stderr.
+Character based streams are interpreted by lines, where each line is matched
+seperately.
 Multiple match strings could be provided by repetition of the match option.
-When enhanced regular expression matchin is required, the testee could either be defined
-as a piped group of shell scripts, or wrapped itself by a script for normalization of it's
-output stream.
-This provides for the full scope of individual application of regular expressions e.g.
-by 'sed' and 'awk'. 
+When enhanced regular expression for match criteria  is required, the 
+testee could either be defined as a piped group of shell scripts, or 
+wrapped itself by a script for the normalization of it's output stream.
+This provides for the full scope of individual applications of customized
+regular expressions as filters e.g. by 'sed' and 'awk'. 
+The additional exit code is a single value for each testee.
 
+The input sources are provided by the following parameters:
 
 * **stdout**
 
   Arbitrary output written to stdout could be checked
-  for user provided strings. 
+  for user provided strings. Multiple strings could be
+  provided:
 
-  The provided options are:
+  * Match on success condition::
 
-  * --ok-stdout=<string>
+      --ok-stdout=<string>
 
-    Match defines a success condition.
+  * Match on failure condition::
 
-  * --nok-stdout=<string>
-
-    Match defines a failure condition.
+      --nok-stdout=<string>
 
 * **stderr**
 
@@ -57,80 +66,77 @@ by 'sed' and 'awk'.
   for user provided strings. Multiple strings could be
   provided.
 
-  The provided options are:
+  * Match on success condition::
 
-  * --ok-stderr=<string>
+      --ok-stderr=<string>
 
-    Match defines a success condition.
+  * Match on failure condition::
 
-  * --nok-stderr=<string>
-
-    Match defines a failure condition.
+      --nok-stderr=<string>
 
 * **exit code**
 
   Exit code value.
+  The exit code of the testee is interpreted independently 
+  and eventually superposes the previous.
 
-  * --exit=<val>
+  * Ignores the exit code::
 
-    Match defines a success condition.
+      --exit-ignore
 
-  * --exit-nok
+  * Match on success condition::
 
-    Exit value '!=0' indicates success.
+      --exit=<val>
 
-  * --exit-ok
+  * Match on failure::
 
-    Exit value '0' indicates success.
+      --exit-nok
 
+  * Exit value '0' indicates success::
 
+      --exit-ok
 
-The following options resolve ambiguity when multiple criteria are matched:
+The following options resolve ambiguity when success and failure conditions
+are matched:
 
-* prio-ok
+* The success conditions dominate, optional counter::
 
-  In case of present failure and success conditions,
-  the success condition dominates.
+    --prio-ok[=#count-min]
 
-* prio-nok
+* The failure conditions dominate, optional counter::
 
-  In case of present failure and success conditions,
-  the failure condition dominates.
-  
-  This is the default.
+    --prio-nok[=#count-min]
 
-Independently the exit coded of the testee is interpreted and eventually
-superposes the previous due to one of following options.
+  This is the default::
 
-* exit-ignore
-
-  Ignores the exit code.
-
-* exit-value=<value>
-
-  Matches the exit code for success criteria.
-  When present defines OK.
-
-* exit-ok
-
-  Requires OK(0) for the previous to be valid.
-  Else superposes the overall result to failure.
-
-* exit-nok
-
-  Requires NOK(!=0) for the previous to be valid.
-  Else superposes the overall result to failure.
-
+    --prio-nok[=0]
 
 Examples
 ========
 
-Call examples are:
-
 * `CLI: command line interface <epyunit_example_cli.html>`_ 
 
-* Eclipse: PyDev integration by call of:
+* `Eclipse: Executable within Eclipse IDE <epyunit_example_eclipse_executable.html>`_ 
 
-  * `Executable <epyunit_example_eclipse_executable.html>`_ 
+* Detailed examples in the subdirectories of the source package:
 
-  * `Python API <epyunit_example_eclipse_python.html>`_ 
+  * tests + testdata 
+
+  * UseCases
+
+* `Python API <epyunit_example_eclipse_python.html>`_ 
+
+References
+==========
+
+* Eclipse - `<www.eclipse.org>`_ 
+
+* PyUnit - `<pyunit.sourceforge.net>`_ 
+
+* ePyUnit - `<https://pypi.python.org/pypi/epyunit>`_ 
+
+* PyFileSysObjects - `<https://pypi.python.org/pypi/pyfilesysobjects>`_ 
+
+* PySourceInfo - `<https://pypi.python.org/pypi/pysourceinfo>`_ 
+
+

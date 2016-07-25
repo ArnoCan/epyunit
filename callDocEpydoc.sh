@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.0.10"
-RELEASE="0.0.10"
+VERSION="0.1.7"
+RELEASE="0.1.7"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -43,6 +43,15 @@ EOF
 echo "CALL=<$CALL>"
 eval $CALL
 
+DOCHTMLDIR=${OUTDIR}apidoc/epydoc/
+DOCHTML=${DOCHTMLDIR}index.html
+# docdir
+DOCDIR="${DOCDIR:-doc/en/html/man3/$PROJECT.epydoc}"
+if [ ! -e "${DOCDIR}" ];then
+	mkdir -p "${DOCDIR}"
+fi
+cp -a "${DOCHTMLDIR}"/* "${DOCDIR}"
 echo
-echo "call: firefox -P preview.simple -new-instance ${OUTDIR}/epydoc/index.html"
+echo "call: firefox -P preview.simple ${DOCHTML}"
+echo "call: firefox -P preview.simple ${DOCDIR}/index.html"
 echo

@@ -9,19 +9,8 @@ or within Eclipse by the plugin PyDev / PyUnit.
 * Eclipse: Install PyDev, open the view PyUnit and proceed.
 
 
-**REMARK**: For additional unit tests refer to subdirectory 'UseCases' 
-
-
-10_selftest
------------
-Basic self test of PyUnit by the user tool option
-'*epyunit --selftest*'.
-
-30_libs
--------
-Provided library modules of 'epyunit'.
-
-60_bins
--------
-Official binaries of 'epyunit'.
+90_remote_debug
+---------------
+The subdirectory for remote debug requires a running instance of PyDev 
+in Eclipse, with a started remote debug server on standard port 5678
 

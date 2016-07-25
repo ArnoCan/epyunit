@@ -8,8 +8,13 @@
          Calls 'callDocSphinx.sh'.
       build_epydoc: Creates documentation for runtime system by Epydoc, html only.
          Calls 'callDocEpydoc.sh'.
+      instal_doc: Install a local copy of the previously build documents in 
+          accordance to PEP-370.
 
       test: Runs PyUnit tests by discovery.
+
+      usecases: Runs PyUnit UseCases by discovery, a lightweight
+          set of unit tests.
 
       --no-install-required: Suppresses installation dependency checks, 
           requires appropriate PYTHONPATH.
@@ -18,7 +23,7 @@
 
       --exit: Exit 'setup.py'.
 
-      --help-epyunit: Displays this help.
+      --help-filesysobjects: Displays this help.
 
    Returns:
       Results for success in installed 'epyunit'.
@@ -41,9 +46,10 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.0.10'
+__version__ = '0.1.7'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
+_NAME = 'epyunit'
 
 # some debug
 if __debug__:
@@ -56,6 +62,7 @@ import os,sys
 from setuptools import setup #, find_packages
 import fnmatch
 import re
+import shutil
 
 
 #
@@ -150,14 +157,112 @@ if 'build_epydoc' in sys.argv:
     print "Called/Finished callDocEpydoc.sh => exit="+str(exit_code)
     sys.argv.remove('build_epydoc')
 
-# call of complete test suite by 'discover'
-if 'test' in sys.argv:
+
+# # call of complete test suite by 'discover'
+if 'install_doc' in sys.argv:
     print "#"
-    exit_code = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+    idx = 0
+    for i in sys.argv: 
+        if i == 'install_doc': break
+        idx += 1
+    print "# install_doc.sh..."
+    # src    
+    src = os.path.normpath("doc/en/html/man3/"+str(_NAME))
+
+    # set platform
+    if sys.platform in ('win32'):
+        dst = os.path.expandvars("%APPDATA%/Python/doc/")
+    else:
+        dst = os.path.expanduser("~/.local/")
+    dst = os.path.normpath(dst+src)
+
+
+    print "#"
+
+    # copy sphinx
+    if os.path.exists(dst):
+        shutil.rmtree(dst)
+    shutil.copytree(src, dst)
+    print "# "+str(_NAME)
+    print "#   from        : "+str(src)
+    print "#   to          : "+str(dst)
+    print "#   display with: firefox -P preview.simple "+dst+"/index.html"
+    
+    # copy epydoc
+    src += '.epydoc'
+    dst += '.epydoc'
+    if os.path.exists(src):
+        if os.path.exists(dst):
+            shutil.rmtree(dst)
+        shutil.copytree(src, dst)
+        print "#"
+        print "# "+str(_NAME)+".epydoc"
+        print "#   from        : "+str(src)
+        print "#   to          : "+str(dst)
+        print "#   display with: firefox -P preview.simple "+dst+"/index.html"
+
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
-    sys.argv.remove('test')
+    sys.argv.remove('install_doc')
+
+# call of complete test suite by 'discover'
+if 'tests' in sys.argv or 'test' in sys.argv:
+    if os.path.dirname(__file__)+os.pathsep not in os.environ['PATH']:
+        p0 = os.path.dirname(__file__)
+        os.putenv('PATH', p0+os.pathsep+os.getenv('PATH',''))
+        print "# putenv:PATH[0]="+str(p0)
+    
+    print "#"
+    print "# Check 'inspect' paths - call in: tests"
+    exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+    print "# Check 'inspect' paths - call in: tests.30_libs"
+    exit_code += os.system('python -m unittest discover -s tests.30_libs -p CallCase.py') # traverse tree
+    print "# Check 'inspect' paths - call in: tests.30_libs.050_SystemCalls"
+    exit_code += os.system('python -m unittest discover -s tests.30_libs.050_SystemCalls -p CallCase.py') # traverse tree
+    print "#"
+    print "Called/Finished PyUnit tests => exit="+str(exit_code)
+    print "exit setup.py now: exit="+str(exit_code)
+    try:
+        sys.argv.remove('test')
+    except:
+        pass
+    try:
+        sys.argv.remove('tests')
+    except:
+        pass
+    
+
+# call of complete UseCases by 'discover'
+if 'usecases' in sys.argv or 'usecase' in sys.argv:
+    if os.path.dirname(__file__)+os.pathsep not in os.environ['PATH']:
+        p0 = os.path.dirname(__file__)
+        os.putenv('PATH', p0+os.pathsep+os.getenv('PATH',''))
+        print "# putenv:PATH[0]="+str(p0)
+    
+    print "#"
+    print "# Check 'inspect' paths - call in: UseCases"
+    exit_code = os.system('python -m unittest discover -s UseCases -p CallCase.py') # traverse tree
+    print "#"
+    print "Called/Finished PyUnit tests => exit="+str(exit_code)
+    print "exit setup.py now: exit="+str(exit_code)
+    try:
+        sys.argv.remove('usecase')
+    except:
+        pass
+    try:
+        sys.argv.remove('usecases')
+    except:
+        pass
+
+# # call of complete test suite by 'discover'
+# if 'test' in sys.argv:
+#     print "#"
+#     exit_code = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+#     print "#"
+#     print "Called/Finished PyUnit tests => exit="+str(exit_code)
+#     print "exit setup.py now: exit="+str(exit_code)
+#     sys.argv.remove('test')
 
 # Intentional HACK: ignore (online) dependencies, mainly foreseen for developement
 __no_install_requires = False
@@ -222,6 +327,7 @@ _classifiers = [
     "Operating System :: POSIX :: BSD :: OpenBSD",
     "Operating System :: POSIX :: Linux",
     "Operating System :: POSIX",
+    "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2",    
     "Programming Language :: Python :: 2.7",    
@@ -232,7 +338,6 @@ _classifiers = [
 
 _keywords  = ' Python PyUnit PyDev Eclipse CLI command line'
 _keywords += ' test unit unittest regression regressiontest fileobjects commandline'
-_keywords += ' JSON json ujson'
 
 _packages = ["epyunit"]
 _scripts = ["bin/epyunit", ]
@@ -251,7 +356,9 @@ _url='https://sourceforge.net/projects/epyunit/'
 _install_requires=[
     'inspect',
     're',
-    'sysobjects',
+    'glob',
+    'subprocess',
+    'filesysobjects',
 #    'termcolor'
 ]
 

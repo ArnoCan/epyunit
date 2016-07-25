@@ -13,28 +13,39 @@ Methods
 
 __init__
 """"""""
-	.. automethod:: SystemCalls.__init__
-
-set_kargs
-"""""""""
-	.. automethod:: SystemCalls.set_kargs
-
-get_proceed
-"""""""""""
-	.. automethod:: SystemCalls.get_proceed
-
-_callit
-"""""""
-	.. automethod:: SystemCalls._callit
-
-_callitdialogue
-"""""""""""""""
-	.. automethod:: SystemCalls._callitdialogue
+.. automethod:: SystemCalls.__init__
 
 callit
 """"""
-	.. automethod:: SystemCalls.callit
+.. automethod:: SystemCalls.callit
 
+displayit
+"""""""""
+.. automethod:: SystemCalls.displayit
+
+get_proceed
+"""""""""""
+.. automethod:: SystemCalls.get_proceed
+
+_mode_batch
+"""""""""""
+.. automethod:: SystemCalls._mode_batch
+
+_mode_dialogue
+""""""""""""""
+.. automethod:: SystemCalls._mode_dialogue
+
+setkargs
+"""""""""
+.. automethod:: SystemCalls.setkargs
+
+splitlines
+""""""""""
+.. automethod:: SystemCalls.splitlines
+
+__str__
+"""""""
+.. automethod:: SystemCalls.__str__
 
 Exceptions
 ----------

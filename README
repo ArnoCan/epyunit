@@ -151,22 +151,32 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.00.010 - Pre-Alpha:**
+**Current Release: 00.01.007 - Alpha:**
 
 Major Changes:
 
-* Splitted by shift of FileSzsObjects into it's own project.
+* Introduce automation of PyDev and Eclipse integration by 'pydevd.py'.
+  This includes also the start of independent processes from the commandline.
+* Introduced a seperate module for subprocess units on top of
+  the starter.
 
-* Test enhancements.
-
-* Documentation restructured.
-
-
+* The most may already work on Mac-OS and MS-Windows and others too, but due to 
+  priorities for now tested and released for Linux. Others are following soon.
+   
 Current test status:
+
+**REMARK**: Works already stable, but has still to be tested. Due to some
+  urgent required ads for a contract I have to push it already to the public
+  as reference, for the same reason require this now for the 'bash-core-lib' 
+  family of extensions for the bash on the road to the cross platform 
+  object oriented scripting platform including the new introduced shell-scriptlets.
+
+**ATTENTION**: Some of the tests involve the remote debug feature of PyDev/Eclipse,
+  thus require a running local RemoteDebugServer, see manuals.
 
 * UnitTests: >9
 
-* Use-Cases as UnitTests: >84
+* Use-Cases as UnitTests: >18
 
-**Total**: >93
+**Total**: >25
 
