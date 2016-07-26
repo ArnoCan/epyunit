@@ -75,7 +75,9 @@ is discussed here in detail, consisting of the components:
 The following details of the designed control flow contain the required
 Eclipse/PyDev actions, and the resulting code fragments
 for the main steps of the control flow for the 
-UseCase '`UseCases.selftest.remote_debug <UseCases.selftest.remote_debug.html>`_':
+UseCase '`UseCases.selftest.remote_debug <UseCases.selftest.remote_debug.html>`_'.
+Instead of the subprocess basically any Python based process could be started 
+manually from the commandline and attaches itself to the PyDev plugin of Eclipse. 
 
 #. **Eclipse-PyDev Framework: Start Remote Debug Server**
 
@@ -167,6 +169,46 @@ UseCase '`UseCases.selftest.remote_debug <UseCases.selftest.remote_debug.html>`_
 #. **Debug Session: end debug session**
 
    f.f.s. / a.s.a.p.
+
+Another example with **Basic Control**.
+
+  Almost the same as before, but some basic parameters are
+  set for some control.
+
+  #. Include the following statements in the executable to be 
+     started by another process::
+
+       from epyunit.PyDevERDbg import PYDEVD
+       
+       _pydevdpath=/path/to/your/eclipse/directory
+       _ignore=True
+       _remotedebug=True
+       
+       PYDEVD.startRemoteDebug(
+         pydevdpath=_pydevdpath,
+         ignore=_ignore,remotedebug=_remotedebug,
+       )
+       
+         
+
+  #. Start a debugging server, see Remote Debugger @ Eclipse-PyDev_.
+            
+     .. figure:: _static/pydev-remotedebugger1.png
+        :width: 300
+
+     Copyright by PyDev.org -> Eclipse-PyDev_.
+            
+  #. Set a breakpoint in the code of the remote process.
+  
+  #. Start the caller process, see Remote Debugger @ Eclipse-PyDev_.
+            
+     .. figure:: _static/pydev-remotedebugger3.png
+        :width: 300
+    
+     Copyright by PyDev.org -> Eclipse-PyDev_.
+    
+.. _Eclipse-PyDev: http://pydev.org/manual_adv_remote_debugger.html
+
 
 Examples
 ========
