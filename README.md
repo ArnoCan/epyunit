@@ -39,25 +39,32 @@ The main interface classes are:
 * **SystemCalls** - Adaptation of sub-process calls for unit tests.
 
 
-The architecture is based on the packages 'PyDev'::
+The architecture is based on the packages 'PyUnit' and 'PyDev'::
 
 
     
-                    +-----------------------+   call    +----------------------+
-                    |                       |  ------>  |                      | 
-    Subprocess      |        ePyUnit        |           |   Wrapped-Process    | 
-                    |                       |  <-----   |                      |
-                    +-----------------------+   stdin   +----------------------+
-                                |               stderr
-                                V               exit
-                    +-----------------------+
-    Python Units    |         PyUnit        |
-                    +-----------------------+  
-                                |
-                                V
-                    +-----------+-----------+
-    IDE             |  Eclipse  |    CLI    |    
-                    +-----------+-----------+ 
+                       +-----------------------+     call      +-----------------------+
+                       |                       |    ------>    |                       | 
+    Subprocess         |        ePyUnit        |               |  Wrapped-Executable   | 
+                       |                       |    <-----     |                       |
+                       +-----------------------+     stdin     +-----------------------+
+                                   |                 stderr                |
+                                   |                 exit                  V
+                                   |                           +-----------------------+
+    PyDev Remote                   |                           |    PyDevRemoteDBG     |      Debug into subprocess
+    Debug Server                   |                           +-----------------------+
+                                   |                                       |
+                   . . . . . . . . | . . . . . . . . . . . . . . . . . . . | . . . . . . . . 
+                                   |                                       |
+                                   V                                       V
+                       +-----------------------+               +-----------------------+
+    Python Units       |         PyUnit        |     <--->     |         PyDev         |
+                       +-----------------------+               +-----------------------+
+                           |               |                              |
+                           V               V                             /         
+                     +-----------+   +-----------+                      /
+    IDE              |    CLI    |   |  Eclipse  |<--------------------/  
+                     +-----------+   +-----------+ 
     
 
 For examples and patterns see subdirectories:
@@ -151,7 +158,7 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.01.007 - Alpha:**
+**Current Release: 00.01.008 - Alpha:**
 
 Major Changes:
 

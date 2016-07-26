@@ -46,7 +46,7 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.7'
+__version__ = '0.1.8'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 _NAME = 'epyunit'
@@ -214,6 +214,8 @@ if 'tests' in sys.argv or 'test' in sys.argv:
         print "# putenv:PATH[0]="+str(p0)
     
     print "#"
+    print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
+    print "#"
     print "# Check 'inspect' paths - call in: tests"
     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
     print "# Check 'inspect' paths - call in: tests.30_libs"
@@ -240,6 +242,9 @@ if 'usecases' in sys.argv or 'usecase' in sys.argv:
         os.putenv('PATH', p0+os.pathsep+os.getenv('PATH',''))
         print "# putenv:PATH[0]="+str(p0)
     
+    print "#"
+    print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
+    print "#"
     print "#"
     print "# Check 'inspect' paths - call in: UseCases"
     exit_code = os.system('python -m unittest discover -s UseCases -p CallCase.py') # traverse tree
@@ -304,7 +309,8 @@ if len(sys.argv)==1:
 #
 _name='epyunit'
 
-_description=("The 'epyunit' package provides a wrapper for unit tests of commandline interfaces." 
+_description=("The 'epyunit' package provides a wrapper for unit tests of commandline interfaces, " 
+              "and the automation of debugging with PyDev for external processes. "
               "The package could be used either from the comandline, or integrated into Eclipse "
               "with PyDev."
               )
@@ -338,6 +344,7 @@ _classifiers = [
 
 _keywords  = ' Python PyUnit PyDev Eclipse CLI command line'
 _keywords += ' test unit unittest regression regressiontest fileobjects commandline'
+_keywords += ' debug pydevd.py automation'
 
 _packages = ["epyunit"]
 _scripts = ["bin/epyunit", ]
