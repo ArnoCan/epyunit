@@ -92,6 +92,17 @@ myscript.sh::
            arbitrary err signalling NOK string
            arbitrary err output
 
+       # H: exit value: XEXIT9OK3NOK2
+         EXIT:
+           9
+         STDOUT:
+           OK
+           OK
+           OK
+         STDERR:
+           NOK
+           NOK
+
        # DEFAULT: define: here succeed '--default-ok': DEFAULT
          EXIT:
            123
@@ -154,6 +165,16 @@ myscript.sh::
     echo arbitrary err signalling NOK string >&2
     echo arbitrary err output >&2
     exit 8
+
+  # H: exit value
+  elif test "X$1" == "XEXIT9OK3NOK2";then
+    echo fromH
+    echo OK
+    echo OK
+    echo OK
+    echo NOK >&2
+    echo NOK >&2
+    exit 9
 
   # DEFAULT: define: here succeed '--default-ok'
   else

@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.1.8"
-RELEASE="0.1.8"
+VERSION="0.1.10"
+RELEASE="0.1.10"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -8,18 +8,25 @@ LICENSE='Artistic-License-2.0 + Forced-Fairplay-Constraints'
 
 MYPATH=${BASH_SOURCE%/*}/
 if [ "X${MYPATH#./}" != "X$MYPATH" ];then
-	MYPATH=${PWD}${MYPATH#.}
+	MYPATH=${PWD}/${MYPATH#.};MYPATH=${MYPATH//\/\//\/}
 fi
 
 # input base directory
 INDIR=${INDIR:-$MYPATH}
+if [ "X${INDIR#.}" != "X$INDIR" ];then
+	INDIR=${PWD}/${INDIR#.};INDIR=${INDIR//\/\//\/}
+fi
+
+echo "MYPATH=$MYPATH"
+echo "INDIR=$INDIR"
 
 # output base directory
 OUTDIR=${OUTDIR:-build/}
 if [ ! -e "${OUTDIR}" ];then
 	mkdir -p "${OUTDIR}"
 fi
-export PYTHONPATH=$PYTHONPATH:$PWD:${MYPATH}
+export PYTHONPATH=$PWD:${MYPATH}:$PYTHONPATH
+echo "PYTHONPATH=$PYTHONPATH"
 
 # source entities
 FILEDIRS=""

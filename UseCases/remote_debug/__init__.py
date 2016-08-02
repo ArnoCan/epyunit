@@ -21,7 +21,20 @@ Therefore three components are provided:
 
   The script provides hard-coded response output for the test
   of ePyUnit itself, but also wrapper processes in general.
-  
+
+The following figure depicts the components.
+  ::
+
+    +------------------+         +-----------------+         +-------------+
+    |                  |         |                 |         |             |
+    |  CallUseCase.py  |  <--->  | epyunit4RDbg.py |  <--->  | myscript.sh |  
+    |                  |         |                 |         |             |
+    +------------------+         +-----------------+         +-------------+
+             A                            A                         A
+             |                            |                         |
+          UseCase                 the actual testee            a resource
+       frame for tests                                          simulator
+
 **REMARK**: 
   This subdirectory for remote debug requires a running instance of PyDev 
   in Eclipse, with a started remote debug server on standard port 5678

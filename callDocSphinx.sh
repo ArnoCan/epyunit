@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.1.8"
-RELEASE="0.1.8"
+VERSION="0.1.10"
+RELEASE="0.1.10"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -42,8 +42,8 @@ FILEDIRS="$FILEDIRS ${INDIR}UseCases"
 #FILEDIRS="$FILEDIRS ${INDIR}UseCases/binaries/epyunit/epyunit4RDbg.py"
 
 
-#FILEDIRS="$FILEDIRS ${INDIR}tests"
-#FILEDIRS="$FILEDIRS ${INDIR}testdata"
+FILEDIRS="$FILEDIRS ${INDIR}tests"
+FILEDIRS="$FILEDIRS ${INDIR}testdata"
 
 CALL=""
 CALL="$CALL export PYTHONPATH=$PWD:$MYPATH:$PYTHONPATH;"
@@ -164,10 +164,12 @@ EOF
 cat docsrc/shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/shortcuts.rst
 cat docsrc/usecases.rst           > ${OUTDIR}/apidoc/sphinx/usecases.rst
 cat docsrc/software_design.rst    > ${OUTDIR}/apidoc/sphinx/software_design.rst
+cat docsrc/rules_shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/rules_shortcuts.rst
 
 cat docsrc/commandline_scripting.rst         > ${OUTDIR}/apidoc/sphinx/commandline_scripting.rst
 cat docsrc/eclipse_integration.rst         > ${OUTDIR}/apidoc/sphinx/eclipse_integration.rst
 
+cat docsrc/selftest.rst > ${OUTDIR}/apidoc/sphinx/selftest.rst
 cat docsrc/subprocessunit.rst > ${OUTDIR}/apidoc/sphinx/subprocessunit.rst
 cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
 cat docsrc/pydeverdbg.rst > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
@@ -184,7 +186,6 @@ cat docsrc/epyunit_cli.rst               > ${OUTDIR}/apidoc/sphinx/epyunit_cli.r
 cat docsrc/call_integration.rst          > ${OUTDIR}/apidoc/sphinx/call_integration.rst
 cat docsrc/epyunit_example_cli.rst       > ${OUTDIR}/apidoc/sphinx/epyunit_example_cli.rst
 cat docsrc/epyunit_example_eclipse_executable.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_executable.rst
-cat docsrc/epyunit_example_eclipse_python.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_python.rst
 
 
 #
@@ -195,6 +196,7 @@ cat licenses-amendments.txt > "${STATIC}/licenses-amendments.txt"
 cp docsrc/epyunit-64x64.png "${STATIC}"
 
 cp docsrc/remote-debug-basics.png "${STATIC}"
+cp docsrc/syntax-flow.png "${STATIC}"
 
 cp docsrc/pydev-remotedebugger1.png "${STATIC}"
 cp docsrc/pydev-remotedebugger1b.png "${STATIC}"

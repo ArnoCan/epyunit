@@ -63,7 +63,10 @@ failures and success.
 
 The automation of the subprocess debug integration into the PyDev/Eclipse debugging framework
 provides for seamless debugging of cross-process unittest.
-For an integrated example refer to `[details] <pydevd_integration.html#design>`_ 
+For an integrated example refer to `[details] <pydevd_integration.html#design>`_.
+The logic of rules for analysing test results is provided by
+`[details] <rules_logic.html#>`_.
+
   ::
 
     +------------------+         +---------------------+         +---------------------+
@@ -74,6 +77,8 @@ For an integrated example refer to `[details] <pydevd_integration.html#design>`_
 
 The current version not yet supports more than one level of nested Python subprocesses.
 For details refer to 
+
+* `Test Syntax, Rules, and Correlation <rules_logic.html>`_
 
 * `Common call integration of subprocess units <call_integration.html>`_ .
 
@@ -103,7 +108,7 @@ Application examples for ePyUnit see the multiplatform bash extensions:
 `Shortcuts <shortcuts.html>`_
 =============================
 
-* `Rules and Combination Logic <rules_logic.html>`_
+* `Rules and Combination Logic <rules_shortcuts.html>`_
 
 * `Commandline Interface <shortcuts.html>`_
 
@@ -126,14 +131,15 @@ Table of Contents
    pydevd_integration
 
    epyunit
+   rules_logic
+   rules_shortcuts
    subprocessunit
    systemcalls
    selftest
    pydeverdbg
    UseCases
-   ..
-	  tests
-	  testdata
+   tests
+   testdata
    clioptutils_syntax
    commandline_tools
    epyunit_cli

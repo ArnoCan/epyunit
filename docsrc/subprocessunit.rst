@@ -19,54 +19,63 @@ apply
 """""
 .. automethod:: SubprocessUnit.apply
 
+get_proceed
+"""""""""""
+.. automethod:: SubprocessUnit.get_proceed
+
 setkargs
-"""""""""
+""""""""
 .. automethod:: SubprocessUnit.setkargs
 
 __str__
 """""""
-.. automethod:: SystemCalls.__str__
+.. automethod:: SubprocessUnit.__str__
 
 
 Exceptions
 ----------
 
-* `epyunit.SubprocessUnitException [source] <_modules/epyunit/SubprocessUnit.html#SubprocessUnitException>`_
+..
+   * `epyunit.SubprocessUnitException [source] <_modules/epyunit/SubprocessUnit.html#SubprocessUnitException>`_
 
 
 
-Class: SUnitRules
+Class: SProcUnitRules
 ---------------------
 
-.. autoclass:: SUnitRules
+.. autoclass:: SProcUnitRules
 
 Methods
 ^^^^^^^
 
 __init__
 """"""""
-.. automethod:: SUnitRules.__init__
+.. automethod:: SProcUnitRules.__init__
 
 apply
 """""
-.. automethod:: SUnitRules.apply
+.. automethod:: SProcUnitRules.apply
+
+reset
+"""""
+.. automethod:: SProcUnitRules.reset
 
 setkargs
 """""""""
-.. automethod:: SUnitRules.setkargs
+.. automethod:: SProcUnitRules.setkargs
 
 setrules
 """"""""
-.. automethod:: SUnitRules.setrules
+.. automethod:: SProcUnitRules.setrules
 
 __str__
 """""""
-.. automethod:: SUnitRules.__str__
+.. automethod:: SProcUnitRules.__str__
 
 
 Exceptions
 ----------
 
-* `epyunit.SubprocessUnitException [source] <_modules/epyunit/SubprocessUnit.html#SubprocessUnitException>`_
+* `epyunit.SubprocUnit.SubprocessUnitException [source] <_modules/epyunit/SubprocessUnit.html#SubprocessUnitException>`_
 
 

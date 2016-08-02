@@ -158,17 +158,24 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.01.008 - Alpha:**
+**Current Release: 00.01.010 - Alpha:**
+
+**REMARK:** This is an informal pre-work-release with some bugs, lots of UnitFailures - the stable is following within one or two days.
 
 Major Changes:
 
-* Introduce automation of PyDev and Eclipse integration by 'pydevd.py'.
-  This includes also the start of independent processes from the commandline.
-* Introduced a seperate module for subprocess units on top of
-  the starter.
+* Fixes.
+
+* Introduced match lists of regexpr. 
 
 * The most may already work on Mac-OS and MS-Windows and others too, but due to 
   priorities for now tested and released for Linux. Others are following soon.
+
+ToDo:
+
+* Finish list of actual matches.
+
+* Correlator engine.
    
 Current test status:
 
@@ -181,9 +188,9 @@ Current test status:
 **ATTENTION**: Some of the tests involve the remote debug feature of PyDev/Eclipse,
   thus require a running local RemoteDebugServer, see manuals.
 
-* UnitTests: >9
+* UnitTests: >128
 
-* Use-Cases as UnitTests: >18
+* Use-Cases as UnitTests: >29
 
-**Total**: >25
+**Total**: >150
 

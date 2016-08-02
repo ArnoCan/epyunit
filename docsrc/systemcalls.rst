@@ -50,6 +50,8 @@ __str__
 Exceptions
 ----------
 
-* `epyunit.SystemCallsException [source] <_modules/epyunit/SystemCalls.html#SystemCallsException>`_
+.. autoexception:: SystemCallsException
+
+.. autoexception:: SystemCallsExceptionSubprocessError
 
 

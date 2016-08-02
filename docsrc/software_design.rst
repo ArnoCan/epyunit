@@ -33,7 +33,7 @@ the following additional components.
                                                |             |
                                                V             |
                                        +---------------+     V
-    IDE                                | Eclipse+PyDev |                      provides the framework for GUI
+    IDE                                | Eclipse+PyDev |                      provides the framework for the GUI
                                        +---------------+
 
 
@@ -64,7 +64,7 @@ the following additional components.
                                        +------------+-------------+              and 'pdb'
                                                     |
                                        +------------+-------------+     
-    IDE                                |   Eclipse  |      pdb    |           provides the framework for Pythob debug
+    IDE                                |   Eclipse  |      pdb    |           provides the framework for Python debug
                                        +------------+-------------+               and GUI
 
 
@@ -73,6 +73,8 @@ Components and Interfaces
 =========================
 
 * `epyunit <epyunit_cli.html>`_  : Command line and batch interface.
+
+* `SubprocUnit <subprocessunit.html>`_ : Provide unit tests for sub-processes as blackbox system calls.
 
 * `SystemCalls <systemcalls.html>`_ : Python class, wraps start of subprocesses by system calls.
 

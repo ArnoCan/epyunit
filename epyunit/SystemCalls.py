@@ -20,7 +20,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.7'
+__version__ = '0.1.10'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -33,9 +33,13 @@ if version < '2.7': # pragma: no cover
 import subprocess
 
 class SystemCallsException(Exception):
+    """Common error within epyunit.SystemCalls. 
+    """
     pass
 
 class SystemCallsExceptionSubprocessError(SystemCallsException):
+    """Error from subprocess. 
+    """
     pass
 
 class SystemCalls(object):
@@ -45,14 +49,14 @@ class SystemCalls(object):
     
     """
     def __init__(self,**kargs):
-        """Prepares the caller interface for subprocesses.
+        """Prepares the interface for subprocess calls with output cache.
         
-        The initial setup also includes the preparation of the result 
+        The initial setup includes the preparation of the result 
         cache for the response data from stdout and stderr.
 
         Args:
-            **kargs: Parameter specific for the operation,
-                see **setkargs**.
+            **kargs: Parameters specific for the operations,
+                passed through to **setkargs**.
 
         Returns:
             When successful returns 'True', else returns either 'False', or
@@ -71,45 +75,63 @@ class SystemCalls(object):
             passed through exceptions:
         
         """
-        self.first=True
-        self.verbose = 0
-        self.proceed = 'doit'
-        self.raw = False
-        self.console = 'cli'
-        self.bufsize = 16384
+        # initial defaults
+        self.console = 'cli' # console type for output
+        self.bufsize = 16384 # size of cache for output received from subprocess 
         #self.bufsize=-1
-
-        self.myexe = self._mode_batch
-        self.emptyiserr = False
-
-
+        self.emptyiserr = False # the subprocess call for an empty string is 'success', 
+                                # thus this has to be checked independently for eventually erroneously missing call string
+        self.errasexcept = False # raises in case of errors an exception
+        self.myexe = self._mode_batch # preconfigured call back for actual execution
+        self.out = 'pass' # output format/stream
+        self.passerr = False
+        self.proceed = 'doit' # what to do...
+        self.raw = False
         self.useexit = True
         self.usestderr = False
-        self.passerr = False
-        self.errasexcept = False
+        self.verbose = 0
 
-        self.out = 'pass'
+        self._appname = None 
+        self._testid = None 
+        self._timestamp = None 
+        self._environment = None 
+
         self.setkargs(**kargs)
         pass
 
     def callit(self,callstr,**kargs):
-        """Executes a prepared callstr by preset function pointer 'self.myexe'.
-        
-        Calls the preset function pointer 'self.myexe' for execution.
+        """Executes a prepared callstr by the preset function pointer 'self.myexe'.
         
         Args:
             callstr: a prepared shell-style call.
         
-            **kargs:
-                'proceed': Changes predefined value and
-                    dispatches to the subcall.
-                    kargs is passed through,
-                    for values refer to setkargs().
+            **kargs: kargs is passed through, for values refer
+                to **setkargs**.
 
-                'raw': Suppress the split of lines for
+                debug: Sets debug for rule data flow.
+
+                env: Passed through.
+
+                out: Output for display, valid:
+                    
+                    csv   : CSV with sparse records
+                    
+                    pass  : pass through STDOUT and STDERR from 
+                            subprocess
+
+                    repr  : Python 'repr()'
+                    
+                    str   : Python 'str()'
+                    
+                    xml   : XML
+                    
+                proceed: Changes predefined value and
+                    dispatches to the subcall.
+
+                raw: Suppress the split of lines for
                     stdout and stderr.
 
-                'env': Passed through.
+                verbose: Sets verbose for rule data flow.
 
         Returns:
             Result of call, the format is:
@@ -119,7 +141,6 @@ class SystemCalls(object):
                 ret[1]::= STDOUT as non-processed string.
                 
                 ret[2]::= STDERR as non-processed string.
-
 
             *REMARK*
                 When errors occur in buffered mode the
@@ -138,9 +159,10 @@ class SystemCalls(object):
         for k,v in kargs.iteritems():
             if k=='proceed':
                 proceed=self.get_proceed(v)
+                kargs.pop('proceed')
             elif k=='raw':
                 _raw=True
-
+                kargs.pop('raw')
         self.setkargs(**kargs)
                
         ret=[1,]
@@ -163,7 +185,7 @@ class SystemCalls(object):
             ret = self.splitLines(ret)
         return ret
 
-    def displayit(self,ret):
+    def displayit(self,ret,**kargs):
         """Displays result list ret in selected format.
 
         Args:
@@ -171,13 +193,19 @@ class SystemCalls(object):
             
             **kargs:
 
-                rules: Sets the rules object to used.
+                out: Output for display, valid:
+                    
+                    csv   : CSV with sparse records
+                    
+                    pass  : pass through STDOUT and STDERR from subprocess
 
-                out: Output for display.
-
-                verbose: Sets verbose for rule data flow.
+                    repr  : Python 'repr()'
+                    
+                    str   : Python 'str()'
+                    
+                    xml   : XML
                 
-                debug: Sets debug for rule data flow.
+                default:=self.out
 
         Returns:
             When successful returns 'True', else returns either 'False', or
@@ -187,7 +215,9 @@ class SystemCalls(object):
             passed through exceptions:
         
         """
-        if self.out == "pass": # pass through STDOUT and STDERR from subprocess
+        _out = kargs.get('out',self.out)
+ 
+        if _out == "pass": # pass through STDOUT and STDERR from subprocess
             if ret[1]:
                 if type(ret[1]) == list:
                     sys.stdout.write("\n".join(ret[1]))
@@ -199,13 +229,13 @@ class SystemCalls(object):
                 else:
                     sys.stderr.write(ret[2])
     
-        elif self.out == "repr": # Python 'repr()'
+        elif _out == "repr": # Python 'repr()'
             print repr(ret)
         
-        elif self.out == "str": # Python 'str()'
+        elif _out == "str": # Python 'str()'
             print str(ret)
     
-        elif self.out == "xml": # XML
+        elif _out == "xml": # XML
             print """<?xml version="1.0" encoding="UTF-8"?>"""
     
             # take timestamp        
@@ -250,7 +280,7 @@ class SystemCalls(object):
     
             print """</test-result>"""
     
-        elif self.out == "csv": # CSV with sparse records
+        elif _out == "csv": # CSV with sparse records
     
             _head = "testid"
             if self._appname:
@@ -315,6 +345,20 @@ class SystemCalls(object):
         The IO by stdout/stdin/stderr are redirected. Supports 
         shell-style parameters only.
 
+        Args:
+            callstr: a prepared shell-style call.
+            
+            **kargs:
+
+                env: Current environment.
+                    
+        Returns:
+            When successful returns 'True', else returns either 'False', or
+            raises an exception.
+
+        Raises:
+            passed through exceptions:
+        
         For further information refer to 'console' option of constructor/setkargs.
 
         """
@@ -407,18 +451,15 @@ class SystemCalls(object):
         return ret
 
     def setkargs(self,**kargs):
-        """Sets provided parameters.
+        """Sets provided parameters for the subprocess call context.
         
         Applicable for the initial call of self.__init__(), 
-        and later modification.
+        and later modification. Called for each start of
+        a subprocess in order to update optional the specific 
+        call context modification.
         
         Args:
             **kargs: Parameter specific for the operation,
-
-                errasexcept: Passes errors as exceptions, transforms the resuls from
-                    subprocesses into Exceptions data. Exits the process.
-
-                    default := False
 
                 bufsize: The size of the output buffer for the 
                     called subprocess. Refer to **subprocess.Popen**.
@@ -440,6 +481,8 @@ class SystemCalls(object):
 
                     verbose: Verbose.
 
+                debug: Sets debug for rule data flow.
+
                 emptyiserr: Treats passed empty call strings as error.
                     The applied 'subprocess.Popen()' treats them as
                     success, which may cover errors in generated
@@ -447,9 +490,14 @@ class SystemCalls(object):
 
                     default := False
  
+                errasexcept: Passes errors as exceptions, transforms the resuls from
+                    subprocesses into Exceptions data. Exits the process.
+
+                    default := False
+
                 out: Output for display. Supported types are:
                 
-                    csv: CSV seperated by ';'.
+                    csv: CSV seperated by ';', with sparse records
                     
                     pass: Pass through STDOUT and STDERR from 
                         subprocess
@@ -475,6 +523,8 @@ class SystemCalls(object):
 
                 raw: Pass through STDOUT and STDERR.
 
+                rules: Sets the rules object.
+
                 useexit: Use exit code for error detection of
                     subprocess.
                     
@@ -484,6 +534,8 @@ class SystemCalls(object):
                     detection of subprocess.
                     
                     default := False
+
+                verbose: Sets verbose for rule data flow.
 
         Returns:
             When successful returns 'True', else returns either 'False', or
@@ -496,22 +548,8 @@ class SystemCalls(object):
             
         """
         for k,v in kargs.iteritems():
-            if k=='proceed':
-                self.proceed=self.get_proceed(v)
-            elif k=='raw':
-                self.raw=v
-            elif k=='bufsize':
+            if k=='bufsize':
                 self.bufsize=int(v)
-            elif k=='passerr':
-                self.passerr=v
-            elif k=='errasexcept':
-                self.errasexcept=v
-            elif k=='useexit':
-                self.useexit=v
-            elif k=='usestderr':
-                self.usestderr=v
-            elif k=='emptyiserr':
-                self.emptyiserr=v
             elif k=='console':
                 self.console=v
                 if v == 'cli':
@@ -524,25 +562,41 @@ class SystemCalls(object):
                     pass
                 else:
                     self.myexe=self._mode_batch
+            elif k=='debug':
+                self.debug=v
+            elif k=='emptyiserr':
+                self.emptyiserr=v
             elif k=='env': # to be evaluated by the caller case by case only
                 pass
+            elif k=='errasexcept':
+                self.errasexcept=v
             elif k=='out':
                 self.out = v
                 if v in ('csv', 'pass', 'repr', 'str', 'xml', ):
                     self.out = v
                 else:
                     raise SystemCallsException("Unknown output type:"+str(self.out))
+            elif k=='passerr':
+                self.passerr=v
+            elif k=='proceed':
+                self.proceed=self.get_proceed(v)
+            elif k=='raw':
+                self.raw=v
+            elif k=='rules':
+                self.rules=v
+            elif k=='useexit':
+                self.useexit=v
+            elif k=='usestderr':
+                self.usestderr=v
             elif k=='verbose':
                 self.verbose=v
-            elif k=='debug':
-                self.debug=v
 
-            else:
-                raise Exception('STATE:ERROR:parameter not supported:'+str(k))
-        pass
+#             else:
+#                 raise Exception('STATE:ERROR:parameter not supported:'+str(k))
+        return True
 
     def splitLines(self,oldres):
-        """Converts the raw string fields of a return value into line arrays.
+        """Converts the raw string fields including '\n' of a return value into line arrays.
         
         Args:
             oldres: The raw result of a previous call.
@@ -580,6 +634,8 @@ class SystemCalls(object):
         return res
 
     def __str__(self):
+        """Prints preset call parameters.
+        """
         ret = ""
         ret += "\nSystemCalls.bufsize      = "+str(self.bufsize)
         ret += "\nSystemCalls.console      = "+str(self.console)

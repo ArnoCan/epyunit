@@ -33,10 +33,17 @@ The following parameters modify the control flow:
 
 * Test options and flags:
 
-    * **--inTestMode_suppress_init**:
+    * **--pderd_inTestMode_suppress_init**:
         Control initialization of the preconfigured debug stub.
         It is foreseen to be the only instance under normal
         circumstances.
+
+    * **--pderd_debug_self**:
+        Enabled debugging messages for debug, this also includes
+        the pre-debug initialization of the remote debug server.
+
+    * **--pderd_unit_self**:
+        Enabled log messages for unittests.
 
     * **testflags**:
         Flags to force specific behaviour - mostly faulty -
@@ -59,7 +66,7 @@ import pysourceinfo
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.7'
+__version__ = '0.1.10'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -78,12 +85,22 @@ from filesysobjects.FileSysObjects import findRelPathInSearchPath,clearPath,addP
 
 PYDEVD = None
 
-if '--inTestMode_suppress_init' in sys.argv:
-    inTestMode_suppress_init = True
+if '--pderd_inTestMode_suppress_init' in sys.argv:
+    pderd_inTestMode_suppress_init = True
     for px in sys.argv:
         sys.argv.pop(sys.argv.index(px))
 else:
-    inTestMode_suppress_init = False
+    pderd_inTestMode_suppress_init = False
+if '--pderd_debug_self' in sys.argv:
+    _dbg_self = True
+    sys.argv.pop(sys.argv.index('--pderd_debug_self'))
+else:
+    _dbg_self = False
+if '--pderd_unit_self' in sys.argv:
+    _dbg_unit = True
+    sys.argv.pop(sys.argv.index('--pderd_unit_self'))
+else:
+    _dbg_unit = False
 
 
 class PyDevERDbgException(Exception):
@@ -502,6 +519,8 @@ class PyDevERDbg(object):
                 raise PyDevERDbgException(e)
         else:
             raise PyDevERDbgException("ERROR:Requires init:self.runningInPyDevDbg="+str(self.runningInPyDevDbg))
+        if _dbg_self or _dbg_unit:
+            print >>sys.stderr,"RDBG:debug started"
             
     def stopDebug(self):
         """Stops remote debugging for PyDev.
@@ -513,10 +532,16 @@ class PyDevERDbg(object):
             raise PyDevERDbgException()
 
 
-if not inTestMode_suppress_init:
+if not pderd_inTestMode_suppress_init:
+    if _dbg_self or _dbg_unit:
+        print >>sys.stderr,"RDBG:init PYDEVD"
     if not PYDEVD or not PyDevERDbg._initok:
         PYDEVD=PyDevERDbg()
         _pydevd = PYDEVD.scanEclipseForPydevd()
+        if _dbg_self:
+            print >>sys.stderr,"RDBG:found pydevd.py:"+str(_pydevd)
+        if _dbg_unit:
+            print >>sys.stderr,"RDBG:found pydevd.py"
         addPathToSearchPath(os.path.dirname(_pydevd),**{'exist':True,'prepend':True,}) 
         import pydevd #@UnresolvedImport
         pass

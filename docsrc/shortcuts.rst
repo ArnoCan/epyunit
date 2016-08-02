@@ -8,29 +8,79 @@ CLI Wrapper for filtered subprocess calls.
   +---------------------------------+----------------------------------------------------+
   | [docs]                          | [source]                                           | 
   +=================================+====================================================+
-  | `epyunit`_                      | `bin.epyunit`_                                     |
+  | `epyunit_cli`_                  |                                                    |
   +---------------------------------+----------------------------------------------------+
 
-.. _bin.epyunit: _modules/epyunit/epyunit.html#
+.. _epyunit_cli: epyunit_cli.html#
 
-.. _epyunit: epyunit.html#
+epyunit.SubprocUnit
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Library for subprocesses as units.
+
+* SubprocessUnit
+
+  +---------------------------------+----------------------------------------------------+
+  | [docs]                          | [source]                                           | 
+  +=================================+====================================================+
+  | `SubprocessUnit`_               | `SubprocessUnit.__init__`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `apply (0)`_                    | `SubprocessUnit.apply`_                            |
+  +---------------------------------+----------------------------------------------------+
+  | `get_proceed (0)`_              | `SubprocessUnit.get_proceed`_                      |
+  +---------------------------------+----------------------------------------------------+
+  | `setkargs (0)`_                 | `SubprocessUnit.setkargs`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `__str__`_                      | `SubprocessUnit.__str__`_                          |
+  +---------------------------------+----------------------------------------------------+
+
+.. _SubprocessUnit.__init__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__init__
+.. _SubprocessUnit: subprocessunit.html#init
+.. _SubprocessUnit.apply: _modules/epyunit/SubprocUnit.html#SubprocessUnit.apply
+.. _apply (0): subprocessunit.html#apply
+.. _SubprocessUnit.setkargs: _modules/epyunit/SubprocUnit.html#SubprocessUnit.setkargs
+.. _setkargs (0): subprocessunit.html#setkargs
+.. _SubprocessUnit.get_proceed: _modules/epyunit/SubprocUnit.html#SubprocessUnit.get_proceed
+.. _get_proceed (0): subprocessunit.html#get-proceed
+.. _SubprocessUnit.__str__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__str__
+.. _\__str__: subprocessunit.html#str
+
+* SProcUnitRules
+
+  +---------------------------------+----------------------------------------------------+
+  | [docs]                          | [source]                                           | 
+  +=================================+====================================================+
+  | `SProcUnitRules`_               | `SProcUnitRules.__init__`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `apply (1)`_                    | `SProcUnitRules.apply`_                            |
+  +---------------------------------+----------------------------------------------------+
+  | `reset`_                        | `SProcUnitRules.reset`_                            |
+  +---------------------------------+----------------------------------------------------+
+  | `setkargs (1)`_                 | `SProcUnitRules.setkargs`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `setrules`_                     | `SProcUnitRules.setrules`_                         |
+  +---------------------------------+----------------------------------------------------+
+
+.. _SProcUnitRules.__init__: _modules/epyunit/SubprocUnit.html#SProcUnitRules.__init__
+.. _\SProcUnitRules: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.__init__
+
+.. _SProcUnitRules.apply: _modules/epyunit/SubprocUnit.html#SProcUnitRules.apply
+.. _apply (1): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.apply
+
+.. _SProcUnitRules.reset: _modules/epyunit/SubprocUnit.html#SProcUnitRules.reset
+.. _reset: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.reset
+
+.. _SProcUnitRules.setkargs: _modules/epyunit/SubprocUnit.html#SProcUnitRules.setkargs
+.. _setkargs (1): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setkargs
+
+.. _SProcUnitRules.setrules: _modules/epyunit/SubprocUnit.html#SProcUnitRules.setrules
+.. _setrules: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setrules
+
 
 epyunit.SystemCalls
 ^^^^^^^^^^^^^^^^^^^
 Wrapper library for subprocesses.
 
-* API
-
-  +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
-  +=================================+====================================================+
-  | `callit`_                       | `SystemCalls.callit`_                              |
-  +---------------------------------+----------------------------------------------------+
-
-.. _SystemCalls.callit: _modules/epyunit/SystemCalls.html#SystemCalls.callit
-.. _callit: systemcalls.html#callit
-
-* Internals
+* SystemCalls
 
   +---------------------------------+----------------------------------------------------+
   | [docs]                          | [source]                                           | 
@@ -73,26 +123,18 @@ Wrapper library for subprocesses.
 
 
 
+
 epyunit.PyDevERDbg
 ^^^^^^^^^^^^^^^^^^
 Automation of the debugging of subprocesses by PyDev RemoteDebugServer.
 
-* API
+* PyDevERDbg
 
   +------------------------------------+----------------------------------------------------+
   | [docs]                             | [source]                                           | 
   +====================================+====================================================+
   | `PyDevERDbg`_                      | `PyDevERDbg.__init__`_                             |
   +------------------------------------+----------------------------------------------------+
-
-.. _PyDevERDbg.__init__: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.__init__
-.. _\PyDevERDbg: pydeverdbg.html#init
-
-* Internals
-
-  +------------------------------------+----------------------------------------------------+
-  | [docs]                             | [source]                                           | 
-  +====================================+====================================================+
   | `scanEclipseForPydevd`_            | `PyDevERDbg.scanEclipseForPydevd`_                 |
   +------------------------------------+----------------------------------------------------+
   | `setDebugParams`_                  | `PyDevERDbg.setDebugParams`_                       |
@@ -102,6 +144,8 @@ Automation of the debugging of subprocesses by PyDev RemoteDebugServer.
   | `stopDebug`_                       | `PyDevERDbg.stopDebug`_                            |
   +------------------------------------+----------------------------------------------------+
 
+.. _PyDevERDbg.__init__: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.__init__
+.. _\PyDevERDbg: pydeverdbg.html#init
 .. _PyDevERDbg.scanEclipseForPydevd: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.scanEclipseForPydevd
 .. _\scanEclipseForPydevd: pydeverdbg.html#scaneclipseforpydevd
 .. _PyDevERDbg.setDebugParams: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.setDebugParams

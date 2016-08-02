@@ -56,16 +56,16 @@ package for the automation of the integration and start.
 .. figure:: _static/remote-debug-basics.png
    :width: 800
 
-The UseCase '`UseCases.selftest.remote_debug <UseCases.selftest.remote_debug.html>`_'
+The UseCase '`UseCases.remote_debug <UseCases.remote_debug.html>`_'
 is discussed here in detail, consisting of the components:
 
 * UseCase: CallCase.py
-  `[doc] <UseCases.selftest.remote_debug.calldir.html#module-UseCases.selftest.remote_debug.calldir.CallCase>`_
-  `[source] <_modules/UseCases/selftest/remote_debug/calldir/CallCase.html#CallUnits.testCase000>`_
+  `[doc] <UseCases.remote_debug.calldir.html#module-UseCases.remote_debug.calldir.CallCase>`_
+  `[source] <_modules/UseCases/remote_debug/calldir/CallCase.html#CallUnits.testCase000>`_
 
 * Subprocess-Level-0: epyunit4RDbg.py 
-  `[doc] <UseCases.selftest.remote_debug.subprocdir.bin.html#module-UseCases.selftest.remote_debug.subprocdir.bin.epyunit4RDbg>`_
-  `[source] <_modules/UseCases/selftest/remote_debug/subprocdir/bin/epyunit4RDbg.html#MySubProcessLevel01.execute>`_
+  `[doc] <UseCases.remote_debug.subprocdir.bin.html#module-UseCases.remote_debug.subprocdir.bin.epyunit4RDbg>`_
+  `[source] <_modules/UseCases/remote_debug/subprocdir/bin/epyunit4RDbg.html#MySubProcessLevel01.execute>`_
 
 * Subprocess-Level-1: myscript.sh
   `[doc] <myscript-sh.html>`_
@@ -75,7 +75,7 @@ is discussed here in detail, consisting of the components:
 The following details of the designed control flow contain the required
 Eclipse/PyDev actions, and the resulting code fragments
 for the main steps of the control flow for the 
-UseCase '`UseCases.selftest.remote_debug <UseCases.selftest.remote_debug.html>`_'.
+UseCase '`UseCases.remote_debug <UseCases.remote_debug.html>`_'.
 Instead of the subprocess basically any Python based process could be started 
 manually from the commandline and attaches itself to the PyDev plugin of Eclipse. 
 

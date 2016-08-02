@@ -80,49 +80,6 @@ A setup and call example for the Eclipse integration with PyDev.
 
   3. Call PyUnit within Eclipse 
 
-The commandline wrapper call for case 'A' is 
-::
-
-  epyunit \
-    --ok-stdout="arbitrary signalling OK string" \
-    myscript.sh OK
-
-The commandline wrapper call for case 'B' is 
-::
-
-  epyunit \
-    --nok-stderr="arbitrary signalling ERROR string" \
-    myscript.sh NOK
-
-The commandline wrapper call for case 'C' is 
-::
-
-  epyunit \
-    --ok-stdout="arbitrary signalling OK string" \
-    --nok-stderr="arbitrary signalling ERROR string" \
-    --prio-ok
-    myscript.sh PRIO
-
-The commandline wrapper call for case 'D' is 
-::
-
-  epyunit \
-    --ok-stdout="arbitrary signalling OK string" \
-    --nok-stderr="arbitrary signalling ERROR string" \
-    --exit-ok \
-    myscript.sh NOK
-
-The commandline wrapper call for case 'E' is 
-::
-
-  epyunit \
-    --ok-stdout="arbitrary signalling OK string" \
-    --nok-stderr="arbitrary signalling ERROR string" \
-    --exit-ok \
-    --default-ok \
-    myscript.sh
-
-
 For detailed examples refer to the subdirectories of the source package for:
 
 * Unit tests 

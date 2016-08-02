@@ -1,6 +1,6 @@
 #
 # NAME:      myscript.sh
-# VERSION:   01.01.002
+# VERSION:   01.01.003
 # AUTHOR:    Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
 # COPYRIGHT: Copyright (C) 2015,2016 Arno-Can Uestuensoez
 #
@@ -89,6 +89,18 @@ Provided test cases:
      arbitrary err signalling NOK string
      arbitrary err output
 
+# H: exit value: EXIT9OK3NOK2
+   EXIT:
+     9
+   STDOUT:
+     fromG
+     OK
+     OK
+     OK
+   STDERR:
+     NOK
+     NOK
+
 # DEFAULT: define: here succeed '--default-ok': DEFAULT
    EXIT:
      123
@@ -159,6 +171,15 @@ elif test "X$1" == "XEXIT8";then
     echo arbitrary err output >&2
     exit 8
 
+# H: exit value
+elif test "X$1" == "XEXIT9OK3NOK2";then
+    echo fromH
+    echo OK
+    echo OK
+    echo OK
+    echo NOK >&2
+    echo NOK >&2
+    exit 9
 
 # DEFAULT: define: here succeed '--default-ok'
 else

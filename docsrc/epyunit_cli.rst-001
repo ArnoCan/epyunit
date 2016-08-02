@@ -1,0 +1,280 @@
+
+===================================
+ 'epyunit' - Command line interface
+===================================
+
+The *epyunit* commandline interface provides a call wrapper
+for unit and regression tests of arbitrary executables.
+The wrapper internally relies on the standard packages 'PyUnit'
+and integrates into Eclipse by 'PyDev'. Thus unit tests could
+be applied in particular for shell scripts and intermixed 
+application processes implemented in multiple programming 
+languages. Automation of remote debugging by PyDev is 
+supported.
+
+**SYNOPSIS:**:
+  ::
+
+    epyunit [OPTIONS] [--] <testee> [<testee-options>]
+
+**OPTIONS:**:
+  ::
+
+    --appname=<arbitrary-name-of-app>
+      An arbitrary application name to be inserted into record 
+      headers.
+
+    --csv
+      Prints complete test result CSV format including header.
+
+    -d --debug
+       Debug entries, does NOT work with 'python -O ...'.
+       Developer output, aimed for filtering.
+
+    --environment
+      Include platform info into header.
+
+    --exitign=(True|False)
+      Ignore exit value. 
+
+    --exittype=(True|False)
+      Exit value 'True' indicates success for '0',
+      'False' indicates success for '!=0'.
+    
+    --exitval=<exit-value>
+      Indicates success when exit value is equal to the provided 
+      value.
+
+    -h --help
+       This help.
+
+    --pass
+      Pass through the testee results on STDOUT and STDERR.
+      The exit value is interpreted by rules, else the
+      execution state of the framework defines the exit 
+      value.
+    
+    --passall
+      Pass through the testee result on STDOUT and STDERR
+      including transparently the received exit value.
+
+    --priotype
+      In case of present failure and success conditions,
+        TRUE:  the success condition dominates.
+        FALSE: the failure condition dominates.
+
+    --pydev-remote-debug[=host[:port]]
+      Activates remote debugging with PyDev plugin of Eclipse.
+
+    --redebug
+      Enables 're.DEBUG'
+
+    --redotall
+      Enables 're.DOTALL'
+  
+    --reignorecase
+      Enables 're.IGNORECASE'.
+  
+    --remultiline
+      Enables 're.MULTILINE'.
+  
+    --repr
+      Prints complete test result by Python call of 'repr()'.
+
+    --result=#total-results
+      The treshold of the total matched results for changing
+      the overall state to success. 
+
+    --resultnok=#total-failure-results
+      The treshold of the total matched failure results for
+      changing the overall state to success. 
+
+    --resultok=#total-success-results
+      The treshold of the total matched success results for
+      changing the overall state to success. 
+
+    --reunicode
+      Enables 're.UNICODE'.
+  
+    --selftest
+       Performs a basic functional selftest by executing the 
+       basic examples based on 'myscript.sh'.
+ 
+    --stderrnok=<nok-string>
+      Error string on stderr indicates success.
+
+    --stdoutnok=<nok-string>
+      Error string on stdout indicates success.
+
+    --stderrok=<ok-string>
+      OK string on stderr indicates success.
+
+    --stdoutok=<ok-string>
+      OK string on stdout indicates success.
+
+    --subproc
+      Starts the subprocess by:
+
+         'epyunit.SystemCalls'
+
+      instead of the default:
+
+         'epyunit.SubprocessUnit'
+
+    --test-id=<arbitrary-identifier-for-record-header>
+      Prints the test-id with the formats 'csv', and 'xml'.
+      Too be applied in case of multiple test case calls.
+
+    --timestamp
+      Includes date and time into record header.
+
+    -Version --Version
+       Current version - detailed.
+
+    -v --verbose
+       Verbose, some relevant states for basic analysis.
+       When '--selftest' is set, repetition raises the display 
+       level.
+
+    -version --version
+       Current version - terse.
+
+    --xml
+      Prints complete test result XML format.
+
+**ARGUMENTS**:
+  ::
+
+    [--] 
+      To be used when ambigous options and/or arguments exist, 
+      the first match terminates the evaluatoin of the 
+      wrapper options.
+
+    <testee> 
+      The wrapped testee.
+
+    [<testee-options>]
+      Options of the testee.
+
+**DESCRIPTION**:
+
+The call interface 'epyunit' provides the commandline interface for
+the unit test wrapper classes.
+
+The call is simply a prefix to the actual testee including it's options.
+The wrapper itself provides various criteria for the indication of the
+success and/or failure of the test case.
+Therefore correlation of stdout, stderr, and exit 
+values is provided. 
+
+The following categories of parameter are provided:
+
+* Filtering of subprocess unittest results:
+
+  .. hlist::
+     :columns: 4
+
+     * --exitign
+     * --exittype
+     * --exitval
+     * --stderrnok
+     * --stdoutnok
+     * --stderrok
+     * --stdoutok
+
+* Adjust the result decision process:
+
+  * Define the expected result types:
+
+    .. hlist::
+       :columns: 4
+
+       * --priotype
+
+  * Define counter thresholds:
+
+    .. hlist::
+       :columns: 4
+
+       * --result
+       * --resultnok
+       * --resultok
+
+  * Parameters of 're.compile' for matching test results:
+
+    .. hlist::
+       :columns: 4
+
+       * --redebug
+       * --redotall
+       * --reignorecase
+       * --remultiline
+       * --reunicode
+
+  * Define role of wrapper for 'subprocess':
+
+    .. hlist::
+       :columns: 4
+
+       * --subproc
+
+* Seamless subprocess debugging:
+
+  .. hlist::
+     :columns: 4
+
+     * --pydev-remote-debug
+
+* output format
+
+  .. hlist::
+     :columns: 4
+
+     * --csv
+     * --pass
+     * --passall
+     * --repr
+     * --xml
+
+
+* miscellaneous
+
+  .. hlist::
+     :columns: 4
+
+     * -d
+     * --debug
+     * --appname
+     * --environment
+     * -h 
+     * --help
+     * --selftest
+     * --test-id
+     * --timestamp
+     * -Version 
+     * --Version
+     * -v 
+     * --verbose
+     * -version
+     * --version
+
+**ENVIRONMENT**:
+
+  * PYTHON OPTIONS:
+    -O, -OO: Eliminates '__debug__' code.
+ 
+**EXAMPLES**:
+
+* `CLI: command line interface <epyunit_example_cli.html>`_ 
+
+* `Eclipse: Executable within Eclipse IDE <epyunit_example_eclipse_executable.html>`_ 
+
+* Detailed examples in the subdirectories of the source package:
+
+  * tests + testdata 
+
+  * UseCases
+
+COPYRIGHT:
+  Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
+  Copyright (C)2015-2016 Arno-Can Uestuensoez

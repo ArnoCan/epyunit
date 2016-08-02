@@ -5,7 +5,7 @@ The 'epyunit' package provides extensions for the
 PyUnit framework for the test of arbitrary executables.::
 
   The overall main reason to setup this project is the integration of
-  lightweight unit tests for scripts with a GUI based on PyDev + Eclipse.
+  lightweight blackbox unit tests for scripts with a GUI based on PyDev + Eclipse.
 
 The call API of the tested components could be integrated
 into the ePyUnit interface either by calling Python bindings, or by the 
@@ -24,20 +24,28 @@ streams for combined processing.
 A few behaviour based options define the expected dominant values and
 reduce in a fuzzy based approach multiple criteria to the relevant:
 
-* prio-ok, prio-nok
+* priotype
 
-* exit-ignore, exit-ok, exit-nok
+* result, resultok, resultnok
+
+
+The following exit criteria provide either for weighting the output, or
+as criteria itself.
+
+* exitign, exittype, exitval
+
 
 
 Common Parameters
 =================
 
-The input data from the tesstee are collected from the the character based 
+The input data of the tesstee are collected from the the character based 
 streams stdout and  stderr.
-Character based streams are interpreted by lines, where each line is matched
+Character based streams are interpreted by lines by default, where each line is matched
 seperately.
+The behavipur could be adapted by 're' flags.
 Multiple match strings could be provided by repetition of the match option.
-When enhanced regular expression for match criteria  is required, the 
+When enhanced regular expression and functions for match criteria  are required, the 
 testee could either be defined as a piped group of shell scripts, or 
 wrapped itself by a script for the normalization of it's output stream.
 This provides for the full scope of individual applications of customized
@@ -54,11 +62,13 @@ The input sources are provided by the following parameters:
 
   * Match on success condition::
 
-      --ok-stdout=<string>
+      CLI: --stdoutok=(string-literal|regexpr) x N
+      API: 'stdoutok': [ (string-literal|regexpr), ]
 
   * Match on failure condition::
 
-      --nok-stdout=<string>
+      CLI: --stdoutnok=(string-literal|regexpr) x N
+      API: 'stdoutnok': [ (string-literal|regexpr), ]
 
 * **stderr**
 
@@ -68,11 +78,13 @@ The input sources are provided by the following parameters:
 
   * Match on success condition::
 
-      --ok-stderr=<string>
+      CLI: --stderrok=(string-literal|regexpr) x N
+      API: 'stderrok' : [ (string-literal|regexpr), ]
 
   * Match on failure condition::
 
-      --nok-stderr=<string>
+      CLI: --stderrnok=(string-literal|regexpr) x N
+      API: 'stderrnok': [ (string-literal|regexpr), ]
 
 * **exit code**
 
@@ -82,34 +94,53 @@ The input sources are provided by the following parameters:
 
   * Ignores the exit code::
 
-      --exit-ignore
+      CLI: --exitign
+      API: 'exitign': (True|False)
 
   * Match on success condition::
 
-      --exit=<val>
+      CLI: --exitval=<value>
+      API: 'exitval': <value>
 
   * Match on failure::
 
-      --exit-nok
+      CLI: --exittype=False
+      API: 'exittype': False
 
   * Exit value '0' indicates success::
 
-      --exit-ok
+      CLI: --exittype=True
+      API: 'exittype': True
 
 The following options resolve ambiguity when success and failure conditions
 are matched:
 
-* The success conditions dominate, optional counter::
+* The success conditions dominate::
 
-    --prio-ok[=#count-min]
+    CLI: --priotype=True
+    API: 'priotype': True
 
-* The failure conditions dominate, optional counter::
+* The failure conditions dominate::
 
-    --prio-nok[=#count-min]
+    CLI: --priotype=False
+    API: 'priotype': False
 
-  This is the default::
+Similar the following counters:
 
-    --prio-nok[=0]
+* The matches at all::
+
+    CLI: --result=<int-value>
+    API: 'result': <int-value>
+
+* The number of success matches::
+
+    CLI: --resultok=<int-value>
+    API: 'resultok': <int-value>
+
+* The number of failure matches::
+
+    CLI: --resultnok=<int-value>
+    API: 'resultnok': <int-value>
 
 Examples
 ========
@@ -123,8 +154,6 @@ Examples
   * tests + testdata 
 
   * UseCases
-
-* `Python API <epyunit_example_eclipse_python.html>`_ 
 
 References
 ==========

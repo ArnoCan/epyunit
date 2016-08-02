@@ -1,4 +1,4 @@
-"""Verifies 'jsondata --selftest'.
+"""Verifies 'epyunit --selftest'.
 """
 from __future__ import absolute_import
 
@@ -17,10 +17,6 @@ setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst
 epyu = findRelPathInSearchPath('bin/epyunit',slst,matchidx=0)
 
 class CallUnits(unittest.TestCase):
-    name=os.path.curdir+__file__
-
-    output=True
-    output=False
 
     def testCase000(self):
         """Selftest.
