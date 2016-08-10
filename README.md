@@ -121,13 +121,13 @@ Project Data
 
 * MISSION: Extend the standard PyUnit package for arbitrary ExecUnits.
 
-* VERSION: 00.00
+* VERSION: 00.01
 
-* RELEASE: 00.00
+* RELEASE: 00.01
 
 * NICKNAME: 'Dromi'
 
-* STATUS: pre-alpha
+* STATUS: alpha
 
 * AUTHOR: Arno-Can Uestuensoez
 
@@ -158,9 +158,11 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.01.010 - Alpha:**
+**Current Release: 00.01.011 - Alpha:**
 
-**REMARK:** This is an informal pre-work-release with some bugs, lots of UnitFailures - the stable is following within one or two days.
+**REMARK:** This is an informal pre-work-release - tested on Linux only.
+  The content is a major advance, and the major part is stable, 
+  but overall still in work.
 
 Major Changes:
 
@@ -171,26 +173,26 @@ Major Changes:
 * The most may already work on Mac-OS and MS-Windows and others too, but due to 
   priorities for now tested and released for Linux. Others are following soon.
 
+* The class 'epyunit.spUnittest.TestExecutable' is pre-alpha
+
+* The documents are mostly complete, but still in review.
+
 ToDo:
 
+* Finish the class 'epyunit.spUnittest.TestExecutable'
+ 
 * Finish list of actual matches.
 
 * Correlator engine.
    
 Current test status:
 
-**REMARK**: Works already stable, but has still to be tested. Due to some
-  urgent required ads for a contract I have to push it already to the public
-  as reference, for the same reason require this now for the 'bash-core-lib' 
-  family of extensions for the bash on the road to the cross platform 
-  object oriented scripting platform including the new introduced shell-scriptlets.
-
 **ATTENTION**: Some of the tests involve the remote debug feature of PyDev/Eclipse,
   thus require a running local RemoteDebugServer, see manuals.
 
-* UnitTests: >128
+* UnitTests: >500
 
 * Use-Cases as UnitTests: >29
 
-**Total**: >150
+**Total**: >530
 

@@ -3,7 +3,7 @@ API Shortcuts - epyunit
 
 epyunit - CLI
 ^^^^^^^^^^^^^
-CLI Wrapper for filtered subprocess calls.
+CLI Wrapper for filtered subprocess calls and streaming of results.
 
   +---------------------------------+----------------------------------------------------+
   | [docs]                          | [source]                                           | 
@@ -13,9 +13,47 @@ CLI Wrapper for filtered subprocess calls.
 
 .. _epyunit_cli: epyunit_cli.html#
 
+epyunit.spUnittest
+^^^^^^^^^^^^^^^^^^
+
+Classes derived from unittest for seamless integration of subprocess tests into PyUnit.
+
+* TestExecutable
+
+  +---------------------------------+----------------------------------------------------+
+  | [docs]                          | [source]                                           | 
+  +=================================+====================================================+
+  | `TestExecutable`_               | `TestExecutable.__init__`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `callSubprocess`_               | `TestExecutable.callSubprocess`_                   |
+  +---------------------------------+----------------------------------------------------+
+  | `assertExit`_                   | `TestExecutable.assertExit`_                       |
+  +---------------------------------+----------------------------------------------------+
+  | `assertStdout`_                 | `TestExecutable.assertStdout`_                     |
+  +---------------------------------+----------------------------------------------------+
+  | `assertStderr`_                 | `TestExecutable.assertStderr`_                     |
+  +---------------------------------+----------------------------------------------------+
+  | `__str__ (0)`_                  | `TestExecutable.__str__`_                          |
+  +---------------------------------+----------------------------------------------------+
+
+.. _TestExecutable.__init__: _modules/epyunit/spUnittest.html#TestExecutable.__init__
+.. _TestExecutable: spunittest.html#init
+.. _TestExecutable.callSubprocess: _modules/epyunit/spUnittest.html#TestExecutable.callSubprocess
+.. _callSubprocess: spunittest.html#callsubprocess
+.. _TestExecutable.assertExit: _modules/epyunit/spUnittest.html#TestExecutable.assertExit
+.. _assertExit: spunittest.html#assertExit
+.. _TestExecutable.assertStdout: _modules/epyunit/spUnittest.html#TestExecutable.assertStdout
+.. _assertStdout: spunittest.html#assertstdout
+.. _TestExecutable.assertStderr: _modules/epyunit/spUnittest.html#TestExecutable.assertStderr
+.. _assertStderr: spunittest.html#assertstderr
+.. _TestExecutable.__str__: _modules/epyunit/spUnittest.html#TestExecutable.__str__
+.. _\__str__ (0): spunittest.html#str
+
 epyunit.SubprocUnit
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Library for subprocesses as units.
+Based on 'epyunit.SystemCalls' for execution and fetch of results.
+Adds a state machine for decision on fuzzy results based on multiple sources.
 
 * SubprocessUnit
 
@@ -30,7 +68,7 @@ Library for subprocesses as units.
   +---------------------------------+----------------------------------------------------+
   | `setkargs (0)`_                 | `SubprocessUnit.setkargs`_                         |
   +---------------------------------+----------------------------------------------------+
-  | `__str__`_                      | `SubprocessUnit.__str__`_                          |
+  | `__str__ (1)`_                  | `SubprocessUnit.__str__`_                          |
   +---------------------------------+----------------------------------------------------+
 
 .. _SubprocessUnit.__init__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__init__
@@ -42,7 +80,7 @@ Library for subprocesses as units.
 .. _SubprocessUnit.get_proceed: _modules/epyunit/SubprocUnit.html#SubprocessUnit.get_proceed
 .. _get_proceed (0): subprocessunit.html#get-proceed
 .. _SubprocessUnit.__str__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__str__
-.. _\__str__: subprocessunit.html#str
+.. _\__str__ (1): subprocessunit.html#str
 
 * SProcUnitRules
 
@@ -78,7 +116,7 @@ Library for subprocesses as units.
 
 epyunit.SystemCalls
 ^^^^^^^^^^^^^^^^^^^
-Wrapper library for subprocesses.
+Wrapper library for subprocesses and caching of the results.
 
 * SystemCalls
 
@@ -126,7 +164,7 @@ Wrapper library for subprocesses.
 
 epyunit.PyDevERDbg
 ^^^^^^^^^^^^^^^^^^
-Automation of the debugging of subprocesses by PyDev RemoteDebugServer.
+Automation of the seamless cross-process debugging of subprocesses by PyDev RemoteDebugServer.
 
 * PyDevERDbg
 
@@ -154,8 +192,4 @@ Automation of the debugging of subprocesses by PyDev RemoteDebugServer.
 .. _\startDebug: pydeverdbg.html#startdebug
 .. _PyDevERDbg.stopDebug: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.stopDebug
 .. _\stopDebug: pydeverdbg.html#stopdebug
-
-
-
-
 

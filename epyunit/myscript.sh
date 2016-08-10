@@ -101,6 +101,15 @@ Provided test cases:
      NOK
      NOK
 
+# I: exit value: STDERRONLY
+   EXIT:
+    0
+   STDOUT:
+    -
+   STDERR:
+     NOK
+     NOK
+
 # DEFAULT: define: here succeed '--default-ok': DEFAULT
    EXIT:
      123
@@ -180,6 +189,13 @@ elif test "X$1" == "XEXIT9OK3NOK2";then
     echo NOK >&2
     echo NOK >&2
     exit 9
+
+# I: exit value
+elif test "X$1" == "XSTDERRONLY";then
+    echo fromI >&2
+    echo NOK >&2
+    echo NOK >&2
+    exit 0
 
 # DEFAULT: define: here succeed '--default-ok'
 else

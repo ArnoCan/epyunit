@@ -21,6 +21,34 @@ SYNOPSIS:
 
   epyunit [OPTIONS] [--] <testee> [<testee-options>]
 
+  rulesets:
+
+    --exitign,  --exittype,  --exitval, --priotype
+    --redebug, --redotall, --reignorecase, --remultiline, 
+    --result, --resultnok, --resultok, --reunicode, 
+    --stderrnok, --stderrok, --stdoutnok, --stdoutok, 
+
+
+  output and format:
+    
+    --csv, --pass, --passall, --raw, --repr, --str, --xml
+  
+    --appname, --test-id, --timestamp
+
+  process wrapper:
+  
+    --debug, --environment, --help, -Version, --Version,
+    --verbose, -version, --version
+
+    --selftest, --subproc, --subunit, 
+
+    --exit-unit-ok, --exit-unit-failed
+
+  subprocess debugging:
+
+    --pydev-remote-debug, --rdbg
+  
+  
 OPTIONS:
 
   --appname=<arbitrary-name-of-app>
@@ -44,6 +72,16 @@ OPTIONS:
     Exit value 'True' indicates success for '0',
     'False' indicates success for '!=0'.
     
+  --exit-unit-failed=<exit-value>
+    Exit value to be emitted in case of failure of unittest.
+    
+    default := 1
+    
+  --exit-unit-ok=<exit-value>
+    Exit value to be emitted in case of success of unittest.
+    
+    default := 0
+
   --exitval=<exit-value>
     Indicates success when exit value is equal to the provided 
     value.
@@ -163,8 +201,9 @@ OPTIONS:
 ARGUMENTS:
 
   [--] 
-     The ambigous options and arguments exist, the first match
-     terminates the evaluatoin of the wrapper options.
+     The double hyphen terminates the options of the call, 
+     thus the remaining part of the call is treated as the 
+     subcall of the testee.
 
   <testee> 
      The wrapped testee.
@@ -219,11 +258,11 @@ import sys
 # activate remote debug stub call
 #
 _rdbg = None
-_rdbg_default = "localhost:5678"
+_rdbg_default = "localhost:5678" # the defaults as defined by PyDev
 if "--rdbg" in sys.argv:
     _ai = sys.argv.index("--rdbg")
     _a = sys.argv.pop(_ai) #--rdbg
-    if sys.argv[_ai][:1] != '-':
+    if _ai < len(sys.argv) and sys.argv[_ai][:1] != '-':
         _rdbg = sys.argv.pop(_ai) #value
     else:
         _rdbg = _rdbg_default
@@ -238,6 +277,7 @@ if "--rdbg" in sys.argv:
 import getopt, os
 import platform
 
+# just to assure PYTHONPATH...
 try:
     from epyunit.SystemCalls import SystemCalls
     from epyunit.SubprocUnit import SubprocessUnit
@@ -278,6 +318,8 @@ _longopts = [
     
     # output and error streams
     "stderrnok=","stdoutnok=","stderrok=","stdoutok=",
+    "redebug","redotall","reignorecase","remultiline",
+    "reunicode",
     
     
     # format
@@ -286,6 +328,8 @@ _longopts = [
     # runtime environent
     "appname=", "test-id=", "timestamp", "environment",
     "subproc", "subunit",
+
+    "exit-unit-failed", "exit-unit-ok",
 
     # debug
     "rdbg=",
@@ -379,6 +423,9 @@ _prio = "NOK"
 
 # exit value defined as success, or ignored: OK(0) | NOK(!=0) | IGNORE
 _exit = "OK"
+_exitokval = 0
+_exitnok = "NOK"
+_exitnokval = 1
 
 
 # activate check of exit code: OK(0) else NOK(>0)
@@ -397,8 +444,6 @@ _CHK_STDOUT_NOK = [] # list of provided strings: NOK condition
 
 # counter values for occured matches
 _result = 0 # overall
-_result_ok = 0 # number of matched success criteria 
-_result_nok = 0 # number of matched failure criteria
 
 # full result value display
 _out = None
@@ -424,8 +469,9 @@ _CALL_SUBPROC = SubprocessUnit
 
 for _o,_a in _opts:
     
+    #-------------------------------------------------------------
     #
-    # *** rules ***
+    # *** rules - stored in _myRulesMap ***
     #
 
     #
@@ -471,7 +517,8 @@ for _o,_a in _opts:
             _myRulesMap['exittype'] = True
         else:
             _myRulesMap['exittype'] = False
-        
+
+    
     #
     # *** stderr ***
     #
@@ -507,6 +554,8 @@ for _o,_a in _opts:
     elif _o in ("--reunicode",):
         _myRulesMap['unicode'] = True 
         
+
+    #-------------------------------------------------------------
     #
     # ** output format ***
     #
@@ -533,8 +582,11 @@ for _o,_a in _opts:
         _kargs['out'] = 'pass'
         _out = _O_PASSA
 
+
+
+    #-------------------------------------------------------------
     #
-    # *** misc ***
+    # *** framework misc - passed by kargs ***
     #
 
     elif _o in ("-a","--appname",):
@@ -556,6 +608,12 @@ for _o,_a in _opts:
 
     elif _o == "--subunit":
         _CALL_SUBPROC = SubprocessUnit
+
+    elif _o == "--exit-unit-failed":
+        _exitokval = _a
+
+    elif _o == "--exit-unit-ok":
+        _exitnokval = _a
 
     #
     # debug and trace
@@ -670,12 +728,22 @@ if ret[0] == 126:
 if _verbose+_debug > 0:
     print ret
 
+# apply unittest filters
+_unit_status = sx.apply(ret)
 
-sx.displayit(ret)    
-if _out in (_O_PASSA,):
+# display data
+sx.displayit(ret)
+
+# reply exit value
+if _out in (_O_PASSA,): # pass all - including exit value of callee
     sys.exit(ret[0])
 
 if _verbose or _debug:
     print "epyunit => "+str(_result)
-sys.exit(_result)
-    
+
+if _unit_status:
+    sys.exit(_exitokval)
+else:
+    sys.exit(_exitnokval)
+
+#sys.exit(_result) # the exit value for the state of the wrapper itself

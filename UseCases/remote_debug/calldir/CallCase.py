@@ -88,9 +88,8 @@ class CallUnits(unittest.TestCase):
         #
         # *** the default tuple - with demo-labels for stdout + stderr ***
         #
-        assert ret[0] == 0
-        assert ret[1] == ["STDOUT:OK"]
-        assert ret[2] == [ "STDERR:OK"]
+        retX = [ 0, ["STDOUT:OK"], [ "STDERR:OK"], ]
+        self.assertEqual(ret, retX)
 
 #
 #######################

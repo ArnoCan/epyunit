@@ -77,6 +77,26 @@ for fx in ${FX[@]};do
 	eval $CALL "$fx"
 done
 
+
+# rst files
+for d in docsrc/*.rst;do cat $d > ${OUTDIR}/apidoc/sphinx/${d##*/}; done
+
+
+#
+# static - literal data
+#
+# images
+for d in docsrc/*.{png,jpg};do cp $d "${STATIC}"; done
+
+# html
+for d in docsrc/*.html;do cp $d "${STATIC}"; done
+
+# txt
+for d in docsrc/*.txt;do cp $d "${STATIC}"; done
+
+# css
+for d in docsrc/*.css;do cp $d "${STATIC}"; done
+
 {
 cat <<EOF
 
@@ -122,17 +142,16 @@ html_theme_options = {
 }
 
 # def setup(app):
-#     app.add_stylesheet('css/custom.css')
+#     app.add_stylesheet('custom.css')
 
 
 EOF
 } >> ${OUTDIR}/apidoc/sphinx/conf.py
-mkdir -p "${STATIC}/css/"
-cp docsrc/custom.css "${STATIC}/css/custom.css"
 
 # put the docs together
 #
 cat docsrc/index.rst                     > ${OUTDIR}/apidoc/sphinx/index.rst
+
 {
 cat <<EOF
 Project data summary:
@@ -160,48 +179,50 @@ Project data summary:
 EOF
 } >> ${OUTDIR}/apidoc/sphinx/index.rst 
 
-#
-cat docsrc/shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/shortcuts.rst
-cat docsrc/usecases.rst           > ${OUTDIR}/apidoc/sphinx/usecases.rst
-cat docsrc/software_design.rst    > ${OUTDIR}/apidoc/sphinx/software_design.rst
-cat docsrc/rules_shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/rules_shortcuts.rst
+# #
+# cat docsrc/shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/shortcuts.rst
+# cat docsrc/usecases.rst           > ${OUTDIR}/apidoc/sphinx/usecases.rst
+# cat docsrc/software_design.rst    > ${OUTDIR}/apidoc/sphinx/software_design.rst
+# cat docsrc/rules_shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/rules_shortcuts.rst
 
-cat docsrc/commandline_scripting.rst         > ${OUTDIR}/apidoc/sphinx/commandline_scripting.rst
-cat docsrc/eclipse_integration.rst         > ${OUTDIR}/apidoc/sphinx/eclipse_integration.rst
+# cat docsrc/commandline_scripting.rst         > ${OUTDIR}/apidoc/sphinx/commandline_scripting.rst
+# cat docsrc/eclipse_integration.rst         > ${OUTDIR}/apidoc/sphinx/eclipse_integration.rst
 
-cat docsrc/selftest.rst > ${OUTDIR}/apidoc/sphinx/selftest.rst
-cat docsrc/subprocessunit.rst > ${OUTDIR}/apidoc/sphinx/subprocessunit.rst
-cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
-cat docsrc/pydeverdbg.rst > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
-cat docsrc/rules_logic.rst > ${OUTDIR}/apidoc/sphinx/rules_logic.rst
+# cat docsrc/selftest.rst > ${OUTDIR}/apidoc/sphinx/selftest.rst
+# cat docsrc/spunittest.rst > ${OUTDIR}/apidoc/sphinx/spunittest.rst
+# cat docsrc/subprocessunit.rst > ${OUTDIR}/apidoc/sphinx/subprocessunit.rst
+# cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
+# cat docsrc/pydeverdbg.rst > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
+# cat docsrc/rules_logic.rst > ${OUTDIR}/apidoc/sphinx/rules_logic.rst
 
-cat docsrc/pydevd_integration.rst > ${OUTDIR}/apidoc/sphinx/pydevd_integration.rst
-cat docsrc/myscript-sh.rst > ${OUTDIR}/apidoc/sphinx/myscript-sh.rst
-cat docsrc/myscript.sh > ${OUTDIR}/apidoc/sphinx/myscript.sh
-#
-cat docsrc/commandline_tools.rst         > ${OUTDIR}/apidoc/sphinx/commandline_tools.rst
-cat docsrc/pydeverdbg.rst                > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
-cat docsrc/epyunit.rst                   > ${OUTDIR}/apidoc/sphinx/epyunit.rst
-cat docsrc/epyunit_cli.rst               > ${OUTDIR}/apidoc/sphinx/epyunit_cli.rst
-cat docsrc/call_integration.rst          > ${OUTDIR}/apidoc/sphinx/call_integration.rst
-cat docsrc/epyunit_example_cli.rst       > ${OUTDIR}/apidoc/sphinx/epyunit_example_cli.rst
-cat docsrc/epyunit_example_eclipse_executable.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_executable.rst
+# cat docsrc/pydevd_integration.rst > ${OUTDIR}/apidoc/sphinx/pydevd_integration.rst
+# cat docsrc/myscript-sh.rst > ${OUTDIR}/apidoc/sphinx/myscript-sh.rst
+# cat docsrc/myscript.sh > ${OUTDIR}/apidoc/sphinx/myscript.sh
+# #
+# cat docsrc/commandline_tools.rst         > ${OUTDIR}/apidoc/sphinx/commandline_tools.rst
+# cat docsrc/pydeverdbg.rst                > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
+# cat docsrc/epyunit.rst                   > ${OUTDIR}/apidoc/sphinx/epyunit.rst
+# cat docsrc/epyunit_cli.rst               > ${OUTDIR}/apidoc/sphinx/epyunit_cli.rst
+# cat docsrc/call_integration.rst          > ${OUTDIR}/apidoc/sphinx/call_integration.rst
+# cat docsrc/epyunit_example_cli.rst       > ${OUTDIR}/apidoc/sphinx/epyunit_example_cli.rst
+# cat docsrc/epyunit_example_eclipse_executable.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_executable.rst
 
 
-#
-# static - literal data
-cat ArtisticLicense20.html > "${STATIC}/ArtisticLicense20.html"
-cat licenses-amendments.txt > "${STATIC}/licenses-amendments.txt"
-#
-cp docsrc/epyunit-64x64.png "${STATIC}"
+# #
+# # static - literal data
+# cat ArtisticLicense20.html > "${STATIC}/ArtisticLicense20.html"
+# cat licenses-amendments.txt > "${STATIC}/licenses-amendments.txt"
 
-cp docsrc/remote-debug-basics.png "${STATIC}"
-cp docsrc/syntax-flow.png "${STATIC}"
+# #
+# cp docsrc/epyunit-64x64.png "${STATIC}"
 
-cp docsrc/pydev-remotedebugger1.png "${STATIC}"
-cp docsrc/pydev-remotedebugger1b.png "${STATIC}"
-cp docsrc/pydev-remotedebugger2.png "${STATIC}"
-cp docsrc/pydev-remotedebugger3.png "${STATIC}"
+# cp docsrc/remote-debug-basics.png "${STATIC}"
+# cp docsrc/syntax-flow.png "${STATIC}"
+
+# cp docsrc/pydev-remotedebugger1.png "${STATIC}"
+# cp docsrc/pydev-remotedebugger1b.png "${STATIC}"
+# cp docsrc/pydev-remotedebugger2.png "${STATIC}"
+# cp docsrc/pydev-remotedebugger3.png "${STATIC}"
 
 #CALL="SPHINXOPTS= "
 CALL=" "

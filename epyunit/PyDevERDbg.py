@@ -66,7 +66,7 @@ import pysourceinfo
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.10'
+__version__ = '0.1.11'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -530,6 +530,35 @@ class PyDevERDbg(object):
                 pydevd.stopdebug()
         except Exception as e:
             raise PyDevERDbgException()
+
+    def __str__(self):
+        """Prints current remote debug parameters.
+        """
+        ret  = ""
+        ret += "\nPyDevERDbg.host                      = "+str(self.host)
+        ret += "\nPyDevERDbg.stdoutToServer            = "+str(self.stdoutToServer)
+        ret += "\nPyDevERDbg.stderrToServer            = "+str(self.stderrToServer)
+        ret += "\nPyDevERDbg.port                      = "+str(self.port)
+        ret += "\nPyDevERDbg.suspend                   = "+str(self.suspend)
+        ret += "\nPyDevERDbg.trace_only_current_thread = "+str(self.trace_only_current_thread)
+        ret += "\nPyDevERDbg.overwrite_prev_trace      = "+str(self.overwrite_prev_trace)
+        ret += "\nPyDevERDbg.patch_multiprocessing     = "+str(self.patch_multiprocessing)
+        return ret
+
+    def __repr__(self):
+        """Prints the current representation of remote debug parameters.
+        """
+        ret = "{"
+        ret += "'host': "+str(self.host)
+        ret += ", 'stdoutToServer': "+str(self.stdoutToServer)
+        ret += ", 'stderrToServer': "+str(self.stderrToServer)
+        ret += ", 'port': "+str(self.port)
+        ret += ", 'suspend': "+str(self.suspend)
+        ret += ", 'trace_only_current_thread': "+str(self.trace_only_current_thread)
+        ret += ", 'overwrite_prev_trace': "+str(self.overwrite_prev_trace)
+        ret += ", 'patch_multiprocessing': "+str(self.patch_multiprocessing)
+        ret += "}"
+        return ret
 
 
 if not pderd_inTestMode_suppress_init:

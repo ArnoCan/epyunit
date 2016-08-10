@@ -47,8 +47,12 @@ __str__
 """""""
 .. automethod:: SystemCalls.__str__
 
+__repr__
+""""""""
+.. automethod:: SystemCalls.__repr__
+
 Exceptions
-----------
+^^^^^^^^^^
 
 .. autoexception:: SystemCallsException
 

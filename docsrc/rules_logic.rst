@@ -1,48 +1,73 @@
-Test Syntax, Rules, and Correlation
-===================================
+epyunit - Test Syntax, Rules, and Correlation
+=============================================
 
 The provided unit test environment by ePyUnit is designed as a simple add-on
 for PyUnit, and/or PyDev+Eclipse.
-Thus with a little efford the command line interface as well as an integrated
-GUI plugin for Eclipse were utilized for genric blackbox tests.
-Therefore the feature set is limited to the mandatory basics of blackbox tests 
-with major reuse of PyUnit and PyDev.
+Thus a command line interface as well as an integrated
+GUI plugin for Eclipse are provided.
 
-The provided instrumentation of decisions on the resulting test state is provided 
-as string tables with regular expressions to be matched on the output of testees.
-This also includes the match on the resulting exit value of the called process.
-Though only processes with output relibably representing the actual execution
-state could be tested. When the testee provides indirect results only like 
-log entries, a wrapper e.g. as a short bash-script could be applied.
-
+The provided syntax for analysing the test ouput is described in the following chapter.
 The analysed results could be priorized and correlated by several parameters,
 thus a lightweight fuzzy approach of data analysis is implemented for the 
 test results.
 
-The following figure depicts the main components of a subprocess test.
-  ::
+* **Single level subprocesses**
 
-    +------------------+         +---------------------+         +---------------------+
-    |                  |         |                     |         |                     |
-    |  Python-Process  |  <--->  |  Python-Subprocess  |  <--->  |    Shell-Script     |  
-    |                  |         |                     |         |                     |
-    +------------------+         +---------------------+         +---------------------+
-             A                              A                              A
-             |                              |                              |
-       data correlator               the actual testee                 a resource
-       frame for tests                responding with                  triggering
-                                        test output                    the testee
+  The following figure depicts the main components of a simple subprocess test
+  by UseCases and testCases.
+  This comprises a caller, either the binariy 'epyunit', or the library module
+  'SubprocUnit', and a subprocess as testee.
+  The script 'myscript.sh' is used as testee with defined responses.
+  These tests are performed for the library itself and could be find
+  in the source package 'tests/30_libs'.
+    ::
 
+                                                                          --------------
+                                     +---------------------+            /                \
+      +------------------+         +-+-------------------+ |          ----------------    |
+      |                  |         |                     | |        /                  \ /
+      |  Python-Process  |  <--->  |      Subprocess     | |------ |      Resource      |  
+      |                  |         |                     |-+        \                  /
+      +------------------+         +---------------------+            ----------------
+               A                              A                              A
+               |                              |                              |
+         The test wrapper             The actual testee                 Resources
+       executing the testee            responding with                  triggering
+       CLI:    epyunit                   test output                    the testee
+       Python: SubprocessUnit                                        for tests of epyunit
+                                                                     itself 'myscript.sh'
 
-The tested subprocesses are viewed as blackboxes with output representing the
-state of the last action.
-Therefore the data correlator inspects the output of the testee only and combines
-one or multiple sources into an overall state.
+* **Nested subprocesses**
+
+  Another slightly more complex scenario is given when the command line interface 'epyunit'
+  is called as a wrapper from within a python program.
+  These tests are performed for the 'epyunit' executable itself and could be find
+  in the source package 'tests/60_bins'.
+    ::
+
+                                                                         -----
+                                                  +-----------+        /       \
+      +----------------+      +---------+      +------------+ |      -------    |
+      |                |      |         |      |            | |     /         \ /
+      | Python-Process | <--> | epyunit | <--> | Subprocess | | -- |  Resource |  
+      |                |      |         |      |            |-+     \         /
+      +----------------+      +---------+      +------------+         -------
+              A                    A                 A                   A
+              |                    |                 |                   |
+           Test call          test wrapper     actual testee         Resources
+
 
 The Data Correlator - Status Decision
 """""""""""""""""""""""""""""""""""""
+Subprocesses are treated as blackboxes with output representing the state.
+Therefore the data correlator inspects the output of the testee only and combines
+one or multiple sources into an overall state.
 
-The following test case definition syntax is provided by the correlator engine for subprocesses.
+The following test case definition syntax is provided by the correlator engine for subprocesses
+'epyunit.SubprocUnit'
+`[API] <epyunit.html#class-sprocunitrules>`_ 
+`[source] <_modules/epyunit/SubprocUnit.html#SProcUnitRules>`_ 
+.
 
   .. figure:: _static/syntax-flow.png
      :width: 500
@@ -68,7 +93,7 @@ The following test case definition syntax is provided by the correlator engine f
   .
 * **pritotype**
 
-  The priotiry of matched resulttype which dominates.
+  Defines the priority of the dominating resulttype.
   The default is ERROR, thus each error sets the overall state to failure.
 
 * **coutres**
@@ -105,69 +130,98 @@ The following test case definition syntax is provided by the correlator engine f
   these are actually dynamically precompiled with provided flags.
 
 
-Testnorm and Reference Cases
-""""""""""""""""""""""""""""
+Test Norm and Reference Cases
+"""""""""""""""""""""""""""""
+The 'ePyUnit' package contains the script '`myscript.sh <myscript-sh.html>`_ ' for the siumulation of subprocess
+responses as examples and test results, located in the package directory.
+The following results are returned for the simulation of a testee.
+Each column represents one set of result data. Including the exit value, the STDOUT
+string, and the STDERR string. 
 
-* **Shell-Script** - Responses of simulated result sets
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+-----------+---------+
+  | output type    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | STDERONLY | DEFAULT |
+  +================+======+=====+======+========+=========+=======+=======+==============+===========+=========+
+  | exit-value     | 0    | 0   | 0    | 0      | 1       | 7     | 8     | 9            | 0         | 123     |
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+-----------+---------+
+  | stdout         | txt  | txt | txt  | txt    | txt     | txt   | txt   | txt          | --        | txt     |
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+-----------+---------+
+  | stderr         | --   | txt | txt  | --     | --      | --    | txt   | txt          | txt       | --      |
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+-----------+---------+
 
-  The following results are returned from the internal reference script 'myscript.sh'
-  for the simulation of a testee.
-  The realworld application has to define it's own result interface. 
+The generic format e.g. of the response set 'EXIT9OK3NOK2' used in a number of generic tests
+for the state decision engine is:
+  ::
 
-  Each column represents one set of result data. Including the exit value, the STDOUT
-  string, and the STDERR string. As already mentioned, this is a direct output
-  example, others may involve a caller wrapper, which forwards indirect results 
-  such as logfile or database entries.
+   > # call of the TNR script
+   > myscript.sh EXIT9OK3NOK2
+   fromH
+   OK
+   OK
+   OK
+   NOK
+   NOK
+   > echo $?
+   9
 
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
-  | output type    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
-  +================+======+=====+======+========+=========+=======+=======+==============+=========+
-  | exit-value     | 0    | 0   | 0    | 0      | 1       | 7     | 8     | 9            | 123     |
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
-  | stdout         | txt  | txt | txt  | txt    | txt     | txt   | txt   | txt          | txt     |
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
-  | stderr         | --   | txt | txt  | --     | --      | --    | txt   | txt          | --      |
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+The resulting semantics on the standard output channels is:
+  ::
 
-  The generic format of the response set EXIT9OK3NOK2 used in a number of generic tests
-  for the state decision engine is:
-    ::
+    EXIT:      9
+    STDOUT:    OK
+               OK
+               OK
+    STDERR:    NOK
+               NOK
 
-      EXIT:      9
-      STDOUT:    OK
-                 OK
-                 OK
-      STDERR:    NOK
-                 NOK
+The output protocol is defined in various formats for further processing.
 
-  For further detauils refer to 'myscript.sh'`[source] <myscript-sh.html>`_
-  .
+
 Exit values
 """""""""""
-* **exit values**: Result of flags on the input type of exit values
 
-  The controlling flags for the resulting exit states are:
+The exit values of subprocesses represent mostly their execution state.
+These could be interpreted in various ways, which is defined by the flags:
 
-  * exitign - ignore exit values, for output stream only
+* **exitign** 
 
-  * exittype - define success on exit==0, or else
-
-  * exitval - define success for a specific exit value only
-
-  The following results are returned for specific exit values as input into
-  the wrapper 'epyunit'. Each column represents some resulting states 
-  for a specific reference data set dependent on the applied rule/option.
-  The resulting values are based on the exit value only.
+  Ignore exit values, if filter defined check output stream.
+  Results in the values:
 
   +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
   | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
   +================+======+=====+======+========+=========+=======+=======+==============+=========+
   | exitign=True   | 0    | 0   | 0    | 0      | 0       | 0     | 0     | 0            | 0       |
   +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+  .
+
+* **exittype**
+
+  Defines success on exit category.
+
+    True:  exit==0
+
+    False: exit!=0
+
+  Resulting in the values:
+
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+  | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+  +================+======+=====+======+========+=========+=======+=======+==============+=========+
   | exittype=False | 1    | 1   | 1    | 1      | 0       | 0     | 0     | 0            | 0       |
   +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
   | exittype=True  | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
   +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+  .
+
+* **exitval**
+
+  Defines success for a specific exit value only, resulting on the values:
+
+  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+  | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+  +================+======+=====+======+========+=========+=======+=======+==============+=========+
   | exitval=0      | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
   +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
   | exitval=1      | 1    | 1   | 1    | 1      | 0       | 1     | 1     | 1            | 1       |
@@ -190,6 +244,17 @@ Output Streams
 
   The standard out and err streams are handled technically similarly. The difference
   is the semantics as either an 'error-stream', or more or less as a 'success-stream'.
+
+  The controlling pattern for the resulting states  by string match are:
+
+  * **stdoutok** - list of 're' pattern indicating a success state from STDOUT
+
+  * **stdoutnok** - list of 're' pattern indicating a failure state from STDOUT
+
+  * **stderrok** - list of 're' pattern indicating a success state from STDERR
+
+  * **stderrnok** - list of 're' pattern indicating a failure state from STDERR
+
   Technically a set of match-rules is provided by the caller, which are evaluated on 
   the input data until a match occurs. In case of multiple rules each is matched in
   order to correctly detect required macth counts.
@@ -210,15 +275,15 @@ Output Streams
   The match behaviour of the 're' module could be influenced by some flags which are 
   represented as:
 
-  * debug - *re.DEBUG*
+  * redebug - *re.DEBUG*
 
-  * dotall - *re.DOTALL*
+  * redotall - *re.DOTALL*
 
-  * ignorecase - *re.IGNORECASE*
+  * reignorecase - *re.IGNORECASE*
 
-  * multiline - *re.MULTILINE*
+  * remultiline - *re.MULTILINE*
 
-  * unicode - *re.UNICODE*
+  * reunicode - *re.UNICODE*
 
   .
 
@@ -231,16 +296,106 @@ Resolution of Fuzzy Results
   of the testee.
   In those cases a simple definition of the dominant priotype results in a unique
   result.
+  The 'priotype' could be seen as a joker, which dominates all others.
 
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
-  | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
-  +================+======+=====+======+========+=========+=======+=======+==============+=========+
-  | priotype = OK  | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
-  | priotype = NOK | 0    | 1   | 1    | 0      | 1       | 1     | 1     | 1            | 1       |
-  +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+  * defaults:
+
+    Result in the output:
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 1    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
 
   .
+
+  * exittype:
+    ::
+
+       --exittype=False
+
+    Inverts the semantics of 'exit'.
+    Results in the output:
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 1    | 1   | 1    | 1      | 0       | 0     | 0     | 0            | 0       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 1    | 1   | 1    | 1      | 0       | 0     | 0     | 0            | 0       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+  .
+
+  * stderrnok:
+    ::
+
+       --stderrnok='.+'
+
+    Scans the STDERR output, sets the partial state to failure when a 're.match()' occurs.
+    Results in the output:
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 0    | 1   | 1    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+    With additional flag:
+    ::
+
+       --stderrnok='.+'
+       --ignoreexit=True
+
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 0    | 1   | 1    | 0      | 0       | 0     | 1     | 1            | 0       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 0    | 1   | 1    | 0      | 0       | 0     | 1     | 1            | 0       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+  .
+
+  * stderrok:
+    ::
+
+       --stderrok='.+'
+
+    Scans the STDER output, sets the partial state to success when a 're.match()' occurs.
+    Results in the output:
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 0    | 0   | 0    | 0      | 1       | 1     | 1     | 1            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+    With additional flag:
+    ::
+
+       --stderrok='.+'
+       --ignoreexit=True
+
+
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | rule/option    | OK   | NOK | PRIO | EXITOK | EXITNOK | EXIT7 | EXIT8 | EXIT9OK3NOK2 | DEFAULT |
+    +================+======+=====+======+========+=========+=======+=======+==============+=========+
+    | priotype = OK  | 1    | 0   | 0    | 1      | 1       | 1     | 0     | 0            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+    | priotype = NOK | 1    | 0   | 0    | 1      | 1       | 1     | 0     | 0            | 1       |
+    +----------------+------+-----+------+--------+---------+-------+-------+--------------+---------+
+
+  .
+
 * **counter values**: Counter for success and failure matches
 
   The counter values provide also a means for the resolution of ambiguity,
@@ -251,3 +406,20 @@ Resolution of Fuzzy Results
   * resultnok
   * resultok
 
+Output Formats for Postprocessing
+"""""""""""""""""""""""""""""""""
+The following output formats are available in current version.
+
+* **csv**: Records with the hard-coded FS=';'
+
+* **pass**: Pass STDOUT and STDERR transparently, set wrapper execution state as exit code.
+
+* **passall**: Pass STDOUT, STDERR, and exit code  transparently.
+
+* **raw**: Saem as passall.
+
+* **repr**: Python 'repr' format.
+
+* **str**: Python 'str' format.
+
+* **xml**: XML format

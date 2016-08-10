@@ -53,30 +53,39 @@ Methods
 
 __init__
 """"""""
-	.. automethod:: PyDevERDbg.__init__
+.. automethod:: PyDevERDbg.__init__
 
 scanEclipseForPydevd
 """"""""""""""""""""
-	.. automethod:: PyDevERDbg.scanEclipseForPydevd
+.. automethod:: PyDevERDbg.scanEclipseForPydevd
 
 setDebugParams
 """"""""""""""
-	.. automethod:: PyDevERDbg.setDebugParams
+.. automethod:: PyDevERDbg.setDebugParams
 
 startDebug
 """"""""""
-	.. automethod:: PyDevERDbg.startDebug
+.. automethod:: PyDevERDbg.startDebug
 
 stopDebug
 """""""""
-	.. automethod:: PyDevERDbg.stopDebug
+.. automethod:: PyDevERDbg.stopDebug
+
+__str__
+"""""""
+.. automethod:: PyDevERDbg.__str__
+
+__repr__
+""""""""
+.. automethod:: PyDevERDbg.__repr__
+
 
 Exceptions
-----------
+^^^^^^^^^^
 
-    .. autoclass:: PyDevERDbgException
+.. autoexception:: PyDevERDbgException
 
-    .. autoclass:: PyDevERDbgLoadException
+.. autoexception:: PyDevERDbgLoadException
 
-    .. autoclass:: PyDevERDbgServerException
+.. autoexception:: PyDevERDbgServerException
 

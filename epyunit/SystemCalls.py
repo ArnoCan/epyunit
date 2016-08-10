@@ -20,7 +20,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.10'
+__version__ = '0.1.11'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -32,15 +32,57 @@ if version < '2.7': # pragma: no cover
 
 import subprocess
 
+# output enums
+_O_STD = 1
+_O_ERR = 2
+_O_STR = 3
+
 class SystemCallsException(Exception):
     """Common error within epyunit.SystemCalls. 
     """
     pass
 
-class SystemCallsExceptionSubprocessError(SystemCallsException):
+#class SystemCallsExceptionSubprocessError(SystemCallsException):
+class SystemCallsExceptionSubprocessError(SystemExit):
     """Error from subprocess. 
     """
-    pass
+    def __init__(self,*args,**kargs):
+        """Calls the 'exceptions.SystemExit' with pass through of parameters.
+    
+        Args:
+            **kargs: Additional parameters specific for ePyUnit 
+                where the interface is not actually clear.
+                These are removed before the pass-through call.
+
+                exitval: Replaces 'exceptions.SystemExit.code', the
+                    first param value when of type 'int'. The default
+                    is defined as '1'.
+                    
+                    REMARK: Did not found an official interface for
+                        'exceptions.SystemExit.__init__', thus opted
+                        to temporary injection.
+
+                exitmsg: Defines display test.
+
+        Returns:
+            None/Itself
+
+        Raises:
+            itself
+        
+        """
+        _code = kargs.get('exitval')
+        if _code:
+            kargs.pop('exitval')
+        _msg = kargs.get('exitmsg')
+        if _msg:
+            kargs.pop('exitmsg')
+        super(SystemCallsExceptionSubprocessError,self).__init__(*args,**kargs)
+        if _code:
+            self.code = _code
+        if _msg:
+            self.message = _msg
+        pass
 
 class SystemCalls(object):
     """Wraps system calls for subprocesses.
@@ -84,6 +126,7 @@ class SystemCalls(object):
         self.errasexcept = False # raises in case of errors an exception
         self.myexe = self._mode_batch # preconfigured call back for actual execution
         self.out = 'pass' # output format/stream
+        self.outtarget = 'stdout' # output format/stream
         self.passerr = False
         self.proceed = 'doit' # what to do...
         self.raw = False
@@ -112,19 +155,6 @@ class SystemCalls(object):
 
                 env: Passed through.
 
-                out: Output for display, valid:
-                    
-                    csv   : CSV with sparse records
-                    
-                    pass  : pass through STDOUT and STDERR from 
-                            subprocess
-
-                    repr  : Python 'repr()'
-                    
-                    str   : Python 'str()'
-                    
-                    xml   : XML
-                    
                 proceed: Changes predefined value and
                     dispatches to the subcall.
 
@@ -193,6 +223,14 @@ class SystemCalls(object):
             
             **kargs:
 
+                outtarget: The target of display:
+                
+                    str: return as formatted string
+                
+                    stdout: print to sys.stdout
+                
+                    stderr: print to sys.stderr
+                
                 out: Output for display, valid:
                     
                     csv   : CSV with sparse records
@@ -208,41 +246,76 @@ class SystemCalls(object):
                 default:=self.out
 
         Returns:
-            When successful returns 'True', else returns either 'False', or
-            raises an exception.
+            When successful returns
+
+                outtarget=='str': returns a printable formatted string
+
+                outtarget in ('stdout', 'stderr',): 
+
+                    'True':  for success
+
+                    'False': for failure
 
         Raises:
             passed through exceptions:
         
         """
+        _target = kargs.get('outtarget',self.outtarget)
+        if _target == 'str':
+            _t = _O_STR
+        elif _target == 'stderr':
+            _t = _O_ERR
+        else:
+            _t = _O_STD
+        self._oc = ""
+
         _out = kargs.get('out',self.out)
  
+        def _output(s,_o=None):
+            if not _o:
+                _o = _t 
+            if _o == _O_STR:
+                self._oc += s
+            elif _o == _O_ERR:
+                sys.stderr.write(s)
+            else:
+                sys.stdout.write(s)
+             
+            
         if _out == "pass": # pass through STDOUT and STDERR from subprocess
             if ret[1]:
                 if type(ret[1]) == list:
-                    sys.stdout.write("\n".join(ret[1]))
+                    _output("\n".join(ret[1])+'\n')
                 else:
-                    sys.stdout.write(ret[1])
+                    _output(ret[1])
             if ret[2]:
-                if type(ret[2]) == list:
-                    sys.stderr.write("\n".join(ret[2]))
+                if _t == _O_STD:
+                    _tx = _O_ERR
                 else:
-                    sys.stderr.write(ret[2])
-    
+                    _tx = _t
+                if type(ret[2]) == list:
+                    _output("\n".join(ret[2])+'\n',_tx)
+                else:
+                    _output(ret[2],_tx)
+
         elif _out == "repr": # Python 'repr()'
-            print repr(ret)
+            _output(repr(ret))
         
         elif _out == "str": # Python 'str()'
-            print str(ret)
+            _output("exit:   "+str(ret[0])+'\n')
+            _output("stdout: "+str(ret[1])+'\n')
+            _output("stderr: "+str(ret[2])+'\n')
     
         elif _out == "xml": # XML
-            print """<?xml version="1.0" encoding="UTF-8"?>"""
+            _output("""<?xml version="1.0" encoding="UTF-8"?>\n""")
     
             # take timestamp        
             _dn = datetime.datetime.now()
             _date=str(_dn.year)+'-'+str(_dn.month)+'-'+str(_dn.day)
             _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
-            _head="<test-result id="+str(self._testid)
+            _head="<test-result "
+            if self._testid:
+                _head +=  " id="+str(self._testid)
             if self._appname:
                 _head +=  " appname='"+str(self._appname)+"'"
             if self._timestamp:
@@ -257,41 +330,50 @@ class SystemCalls(object):
                 _head +=  " distver='"+str(self._distver)+"'"
             _head += ">"
     
-            print str(_head)
+            _output(str(_head)+'\n')
     
             # exit code
-            print   "    <exit-code>"+str(ret[0])+"</exit-code>"
+            _output("    <exit-code>"+str(ret[0])+"</exit-code>\n")
             
             # STDOUT
-            print   "    <stdout>"
+            _output("    <stdout>\n")
             lx = 0
             for l in ret[1]:
-                print   "        <line cnt="+str(lx)+">"+str(l)+"</line>"
+                _output("        <line cnt="+str(lx)+">"+str(l)+"</line>\n")
                 lx += 1
-            print   "    </stdout>"
+            _output("    </stdout>\n")
             
             # STDERR
-            print   "    <stderr>"
+            _output("    <stderr>\n")
             lx = 0
             for l in ret[2]:
-                print   "        <line cnt="+str(lx)+">"+str(l)+"</line>"
+                _output("        <line cnt="+str(lx)+">"+str(l)+"</line>\n")
                 lx += 1
-            print   "    </stderr>"
+            _output("    </stderr>\n")
     
-            print """</test-result>"""
+            _output("""</test-result>""")
     
         elif _out == "csv": # CSV with sparse records
-    
-            _head = "testid"
+            _head = None
+                
+            if self._testid:
+                if _head: _head = ';' 
+                _head += "testid"
             if self._appname:
+                if _head: _head = ';' 
                 _head +=  ";appname"
             if self._timestamp:
+                if _head: _head = ';' 
                 _head += ";date;time"
             if self._environment:
+                if _head: _head = ';' 
                 _head += ";host;user;os;osver;dist;distver"
-            _head += ";exitcode;stdout-line;stdout;stderr-line;stderr"
+
+            if _head: _head = ';'
+            else: _head = "" 
+            _head += "exitcode;total-lines;stdout-line;stdout;stderr-line;stderr"
     
-            print str(_head)
+            _output(str(_head)+'\n')
             
             # take timestamp        
             _dn = datetime.datetime.now()
@@ -299,38 +381,66 @@ class SystemCalls(object):
             _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
     
             _lxtot=0
+
+            # output record prefix
+            _recpre = None
+
+            # common prefix
+            if self._testid: 
+                if _recpre: _recpre += ';'
+                _recpre += str(self._testid)
+            if self._appname: 
+                if _recpre: _recpre += ';'
+                _recpre +=  str(self._appname)
+            if self._timestamp: 
+                if _recpre: _recpre += ';'
+                _recpre += str(_date)+";"+str(_time)
+            if self._environment: 
+                if _recpre: _recpre += ';'
+                _recpre += str(self._host)+";"+str(self._user)+";"+str(self._os)+";"+str(self._osver)+";"+str(self._dist)+";"+str(self._distver)
+
+            _lx1 = 0
+            _lx2 = 0
+
+            _r1 = len(ret[1])
+            _r2 = len(ret[2])
+            if _r1 > _r2:
+                _rmax = _r1
+            else:
+                _rmax = _r2
             
-            # STDOUT
-            lx = 0
-            for l in ret[1]:    
-                _rec = str(self._testid)
-                if self._appname:
-                    _rec +=  ";"+str(self._appname)
-                if self._timestamp:
-                    _rec += ";"+str(_date)+";"+str(_time)
-                if self._environment:
-                    _rec += ";"+str(self._host)+";"+str(self._user)+";"+str(self._os)+";"+str(self._osver)+";"+str(self._dist)+";"+str(self._distver)
-                _rec += ";"+str(ret[0])+";"+str(_lxtot)+";"+str(lx)+";"+str(l)+";;"
-                
-                print str(_rec)
-                lx += 1
+            for _ri in range(_rmax):
                 _lxtot +=1
-            
-            # STDERR
-            lx = 0
-            for l in ret[2]:
-                _rec = str(self._testid)
-                if self._appname:
-                    _rec +=  ";"+str(self._appname)
-                if self._timestamp:
-                    _rec += ";"+str(_date)+";"+str(_time)
-                if self._environment:
-                    _rec += ";"+str(self._host)+";"+str(self._user)+";"+str(self._os)+";"+str(self._osver)+";"+str(self._dist)+";"+str(self._distver)
-                _rec += ";"+str(ret[0])+";"+str(_lxtot)+";;;"+str(lx)+";"+str(l)
+                _rec = _recpre
+                if _rec: _rec += ';'
+                else: _rec = ''
+                _rec += str(ret[0])+";"+str(_lxtot)
                 
-                print str(_rec)
-                lx += 1
-                _lxtot +=1
+                # STDOUT
+                if len(ret[1]) > _ri: 
+                    if _rec: _rec += ';'
+                    else: _rec = ''
+                    _rec += str(_lx1)+";"+str(ret[1][_ri])
+                    _lx1 += 1
+                else:
+                    if _rec: _rec += ';;'
+                    else: _rec = ';'
+                    
+                # STDERR
+                if len(ret[2]) > _ri:    
+                    if _rec: _rec += ';'
+                    else: _rec = ''
+                    _rec += str(_lx2)+";"+str(ret[2][_ri])
+                    _lx2 += 1
+                else:
+                    if _rec: _rec += ';;'
+                    else: _rec = ';'
+                
+                _output(str(_rec)+'\n')
+
+        if _t == _O_STR:
+            return self._oc 
+        return True
 
     def get_proceed(self,s): 
         """Verifies valid proceed type."""
@@ -357,13 +467,14 @@ class SystemCalls(object):
             raises an exception.
 
         Raises:
+            for parameter 'errasexcept': SystemCallsExceptionSubprocessError
             passed through exceptions:
         
         For further information refer to 'console' option of constructor/setkargs.
 
         """
         if self.emptyiserr and ( not callstr or callstr == ''):
-            return [1,'', 'ERROR:MissingCallstr']
+            return [2,'', 'ERROR:MissingCallstr']
 
         ret=[1,]
         _env = kargs.get('env')
@@ -397,24 +508,46 @@ class SystemCalls(object):
         self.p.poll()
 
         _errcond = False
-        if self.errasexcept or self.passerr: 
-            if self.useexit and self.usestderr:
-                if self.p.returncode or self.res[2]:
-                    _errcond = True
-            elif self.useexit and self.p.returncode:
+#         if self.errasexcept or self.passerr: 
+#             if self.useexit and self.usestderr:
+#                 if self.p.returncode or self.res[2]:
+#                     _errcond = True
+#             elif self.useexit and self.p.returncode:
+#                 _errcond = True
+#             elif self.usestderr and self.res[2]:
+#                 _errcond = True
+        if self.useexit and self.usestderr:
+            if self.p.returncode or self.res[1]:
                 _errcond = True
-            elif self.usestderr and self.res[2]:
-                _errcond = True
+        elif self.useexit and self.p.returncode:
+            _errcond = True
+        elif self.usestderr and self.res[1]:
+            _errcond = True
 
         if _errcond and self.errasexcept: # transforms errors from subprocesses into Exceptions
+            # flush cache...
             if self.res[0]:
-                print self.res[0]
-            raise SystemCallsExceptionSubprocessError(str(callstr) +"\n"+ str(self.res[1]))
+                sys.stdout.write(self.res[0])
+            if self.res[1]:
+                sys.stderr.write(self.res[1])
+            # .. raise exception 
+            #raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(callstr) +"\n"+ str(self.res[1]),'exitval':self.p.returncode,})
+            raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(callstr) +"\n",})
+        
         elif _errcond and self.passerr: # passes errors from subprocesses simply through as error exit
-            if self.res[0]:
-                print self.res[0]
-            print >>sys.stderr, str(callstr) +"\n"+ str(self.res[1])
+            # flush cache...
+            if self.res[0]: # stdout
+                sys.stdout.write(self.res[0])
+            if self.res[1]: # stderr
+                sys.stderr.write(str(self.res[1]))
+            # ..now exit
             sys.exit(self.p.returncode)
+        
+        elif _errcond and not self.p.returncode and self.usestderr: # treats any presence of stderr as error
+            ret[0] = 1
+            ret.extend(self.res)
+            return ret
+
         else: # wraps result of subprocess call into a tuple 
             ret[0]=self.p.returncode
             ret.extend(self.res)
@@ -431,7 +564,7 @@ class SystemCalls(object):
         
         #FIXME: has to be tested
         if self.emptyiserr and ( not callstr or callstr == ''):
-            return [1,'', 'ERROR:MissingCallstr']
+            return [2,'', 'ERROR:MissingCallstr']
         
         ret=[0,]
         try:
@@ -531,7 +664,9 @@ class SystemCalls(object):
                     default := True 
 
                 usestderr: Use 'sys.stderr' output for error 
-                    detection of subprocess.
+                    detection of subprocess. When set to 'True',
+                    the presence of a string is treated as error
+                    condition.
                     
                     default := False
 
@@ -637,15 +772,31 @@ class SystemCalls(object):
         """Prints preset call parameters.
         """
         ret = ""
-        ret += "\nSystemCalls.bufsize      = "+str(self.bufsize)
-        ret += "\nSystemCalls.console      = "+str(self.console)
-        ret += "\nSystemCalls.emptyiserr   = "+str(self.emptyiserr)
-        ret += "\nSystemCalls.errasexcept  = "+str(self.errasexcept)
-        ret += "\nSystemCalls.myexe        = "+str(self.myexe)
-        ret += "\nSystemCalls.passerr      = "+str(self.passerr)
-        ret += "\nSystemCalls.proceed      = "+str(self.proceed)
-        ret += "\nSystemCalls.raw          = "+str(self.raw)
-        ret += "\nSystemCalls.useexit      = "+str(self.useexit)
-        ret += "\nSystemCalls.usestderr    = "+str(self.usestderr)
+        ret += "\nbufsize      = "+str(self.bufsize)
+        ret += "\nconsole      = "+str(self.console)
+        ret += "\nemptyiserr   = "+str(self.emptyiserr)
+        ret += "\nerrasexcept  = "+str(self.errasexcept)
+        ret += "\nmyexe        = "+str(self.myexe)
+        ret += "\npasserr      = "+str(self.passerr)
+        ret += "\nproceed      = "+str(self.proceed)
+        ret += "\nraw          = "+str(self.raw)
+        ret += "\nuseexit      = "+str(self.useexit)
+        ret += "\nusestderr    = "+str(self.usestderr)
         return ret
 
+    def __repr__(self):
+        """Prints the current representation of call parameters for subprocesses.
+        """
+        ret = "{"
+        ret += "'bufsize': "+str(self.bufsize)
+        ret += ", 'console': "+str(self.console)
+        ret += ", 'emptyiserr': "+str(self.emptyiserr)
+        ret += ", 'errasexcept': "+str(self.errasexcept)
+        ret += ", 'myexe': "+str(self.myexe.__name__)
+        ret += ", 'passerr': "+str(self.passerr)
+        ret += ", 'proceed': "+str(self.proceed)
+        ret += ", 'raw': "+str(self.raw)
+        ret += ", 'useexit': "+str(self.useexit)
+        ret += ", 'usestderr': "+str(self.usestderr)
+        ret += "}"
+        return ret

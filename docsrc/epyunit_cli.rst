@@ -12,15 +12,124 @@ application processes implemented in multiple programming
 languages. Automation of remote debugging by PyDev is 
 supported.
 
-**SYNOPSIS:**:
+The interface is minimalistic but allows for almost any required
+blackbox test including seamless cross-process-debugging of executables.
+  ::
+
+    Less Is More...
+
+In particular blackbox-tests unittests of bash-scripts are provided by a simple
+call interface for seamless integration into PyDev and Eclipse.
+
+SYNOPSIS:
+^^^^^^^^^
   ::
 
     epyunit [OPTIONS] [--] <testee> [<testee-options>]
 
-**OPTIONS:**:
+* rulesets for testcase evaluation
+  `[syntax-tree] <rules_logic.html#the-data-correlator-status-decision>`_ 
+  `[API] <epyunit.html#class-sprocunitrules>`_ 
+  `[source] <_modules/epyunit/SubprocUnit.html#SProcUnitRules>`_ :
+
+  * match pattern for filter
+    `[exitvalues] <rules_logic.html#exit-values>`_ 
+    `[outputstreams] <rules_logic.html#output-streams>`_ :
+    ::
+
+      --exitign,   --exittype,  --exitval,      
+      --stdoutnok, --stdoutok, 
+      --stderrnok, --stderrok,  
+
+    Goto:
+    :ref:`exitign <exitign>`,
+    :ref:`exittype <exittype>`,
+    :ref:`exitval <exitval>`,
+    :ref:`stdoutnok <stdoutnok>`,
+    :ref:`stdoutok <stdoutok>`,
+    :ref:`stderrnok <stderrnok>`,
+    :ref:`stderrok <stderrok>`
+
+  * filter parameters
+    `[outputstreams] <rules_logic.html#output-streams>`_ :
+    ::
+
+      --redebug,   --redotall,  --reignorecase, --remultiline, 
+      --reunicode,
+
+    Goto:
+    :ref:`redebug <redebug>`,
+    :ref:`redotall <redotall>`,
+    :ref:`reignorecase <reignorecase>`,
+    :ref:`remultiline <remultiline>`,
+    :ref:`reunicode <reunicode>`
+
+  * correlator parameters
+    `[fuzzy results] <rules_logic.html#resolution-of-fuzzy-results>`_ :
+    ::
+
+      --priotype
+      --result,    --resultnok, --resultok,      
+
+    Goto:
+    :ref:`priotype <priotype>`,
+    :ref:`result <result>`,
+    :ref:`resultnok <resultnok>`,
+    :ref:`resultok <resultok>`
+
+* output and format
+  `[format] <rules_logic.html#output-formats-for-postprocessing>`_ :
+  ::
+
+    --csv,     --pass,    --passall,   --raw, 
+    --repr,    --str,     --xml
+      
+    --appname, --test-id, --timestamp
+
+  Goto:
+  :ref:`csv <csv>`,
+  :ref:`pass <pass>`,
+  :ref:`passall <passall>`,
+  :ref:`raw <raw>`,
+  :ref:`repr <repr>`,
+  :ref:`str <str>`,
+  :ref:`xml <xml>`
+
+* process wrapper:
+  ::
+
+    --debug,    --environment, --help,   -Version,
+    --Version,  --verbose,     -version, --version
+    
+    --selftest, --subproc,     --subunit, 
+
+  Goto:
+  :ref:`debug <debug>`,
+  :ref:`environment <environment>`,
+  :ref:`help <help>`,
+  :ref:`Version <Versionu>`,
+  :ref:`verbose <verbose>`,
+  :ref:`version <versionl>`,
+  :ref:`selftest <selftest>`,
+  :ref:`subproc <subproc>`,
+  :ref:`subunit <subunit>`
+
+* subprocess debugging:
+  ::
+
+    --pydev-remote-debug, --rdbg
+
+  Goto:
+  :ref:`pydev-remote-debug <pydev-remote-debug>`,
+  :ref:`rdbg <pydev-remote-debug>`
+
+OPTIONS:
+^^^^^^^^
 
 .. index::
    single: options; --appname
+
+.. _appname:
 
 * **appname**
 
@@ -33,6 +142,8 @@ supported.
 .. index::
    single: options; --csv
 
+.. _csv:
+
 * **csv**
 
   Prints complete test result CSV format including header.
@@ -42,6 +153,8 @@ supported.
 
 .. index::
    single: options; --debug
+
+.. _debug:
 
 * **debug**
 
@@ -55,6 +168,8 @@ supported.
 .. index::
    single: options; --environment
 
+.. _environment:
+
 * **environment**
 
   Include platform info into header.
@@ -64,6 +179,8 @@ supported.
 
 .. index::
    single: options; --exitign
+
+.. _exitign:
 
 * **exitign**
 
@@ -75,17 +192,23 @@ supported.
 .. index::
    single: options; --exittype
 
+.. _exittype:
+
 * **exittype**
 
-  Exit value 'True' indicates success for '0',
-  'False' indicates success for '!=0'.
+  Expect exit value type as success.
     ::
 
        --exittype=(True|False)
 
+    * True:  Exit value '0' indicates success.
+    * False: Exit value '!=0' indicates success.
+
 .. index::
    single: options; --exitval
     
+.. _exitval:
+
 * **exitval**
 
   Indicates success when exit value is equal to the provided 
@@ -96,6 +219,8 @@ supported.
 
 .. index::
    single: options; --help
+
+.. _help:
 
 * **help**
 
@@ -108,6 +233,8 @@ supported.
 .. index::
    single: options; --pass
 
+.. _pass:
+
 * **pass**
 
   Pass through the testee results on STDOUT and STDERR.
@@ -116,9 +243,15 @@ supported.
     ::
 
        --pass
+       
+         exit:   exec-state-of-wrapper-epyunit
+         STDOUT: output-from-subprocess
+         STDERR: output-from-subprocess
 
 .. index::
    single: options; --passall
+
+.. _passall:
 
 * **passall**
 
@@ -127,23 +260,34 @@ supported.
     ::
 
        --passall
+         
+         exit:   exit-of-subprocess
+         STDOUT: output-from-subprocess
+         STDERR: output-from-subprocess
 
 .. index::
    single: options; --priotype
 
+.. _priotype:
+
 * **priotype**
 
   In case of present failure and success conditions,
-  * TRUE:  the success condition dominates.
-  * FALSE: the failure condition dominates.
-
     ::
 
-       --priotype
+       --priotype=(True|False)
+
+         default := False
+
+  * True:  The success conditions dominate, if present at least one.
+
+  * False: the failure condition dominates. if present at least one.
 
 
 .. index::
    single: options; --pydev-remote-debug
+
+.. _pydev-remote-debug:
 
 * **pydev-remote-debug**
 
@@ -152,9 +296,28 @@ supported.
 
        --pydev-remote-debug[=host[:port]]
 
+         host := (ip-add|dns-name)
+         port := (port-number)       
+          
+         default := localhost:5678
+
+.. index::
+   single: options; --raw
+
+.. _raw:
+
+* **raw**
+
+  Enables 'raw', equal to :ref:`passall <passall>`.
+    ::
+
+       --raw
+
 .. index::
    single: options; --redebug
    single: re; re.DEBUG
+
+.. _redebug:
 
 * **redebug**
 
@@ -166,6 +329,8 @@ supported.
 .. index::
    single: options; --redotall
    single: re; re.DOTALL
+
+.. _redotall:
 
 * **redotall**
 
@@ -179,6 +344,8 @@ supported.
    single: options; --reignorecase
    single: re; re.IGNORECASE
 
+.. _reignorecase:
+
 * **reignorecase**
 
   Enables 're.IGNORECASE'.
@@ -191,6 +358,8 @@ supported.
    single: options; --remultiline
    single: re; re.MULTILINE
 
+.. _remultiline:
+
 * **remultiline**
 
   Enables 're.MULTILINE'.
@@ -200,6 +369,8 @@ supported.
 
 .. index::
    single: options; --repr
+
+.. _repr:
 
 * **repr**
 
@@ -211,6 +382,8 @@ supported.
 .. index::
    single: options; --result
 
+.. _result:
+
 * **result**
 
   The treshold of the total matched results for changing
@@ -218,9 +391,13 @@ supported.
     ::
 
        --result=#total-results
+       
+         #total-results = #total-failure-results + #total-success-results
 
 .. index::
-   single: options; --resultnok
+   single: options; --resultnokw
+
+.. _resultnok:
 
 * **resultnok**
 
@@ -232,6 +409,8 @@ supported.
 
 .. index::
    single: options; --resultok
+
+.. _resultok:
 
 * **resultok**
 
@@ -245,6 +424,8 @@ supported.
    single: options; --reunicode
    single: re; re.UNICODE
 
+.. _reunicode:
+
 * **reunicode**
 
   Enables 're.UNICODE'.
@@ -254,6 +435,8 @@ supported.
 
 .. index::
    single: options; --selftest
+
+.. _selftest:
 
 * **selftest**
 
@@ -266,45 +449,71 @@ supported.
 .. index::
    single: options; --stderrnok
 
+.. _stderrnok:
+
 * **stderrnok**
 
-  Error string on stderr indicates success.
+  Matched string '<nok-string>' on stderr indicates success.
     ::
 
        --stderrnok=<nok-string>
+       
+       <nok-string>:=(literal|regexpr)
+       literal := string-literal
+       regexpr := regular-expression-re-module
 
 .. index::
    single: options; --stdoutnok
 
+.. _stdoutnok:
+
 * **stdoutnok**
 
-  Error string on stdout indicates success.
+  Matched string '<nok-string>' on stdout indicates success.
     ::
 
        --stdoutnok=<nok-string>
+       
+       <nok-string>:=(literal|regexpr)
+       literal := string-literal
+       regexpr := regular-expression-re-module
 
 .. index::
    single: options; --stderrnok
 
+.. _stderrok:
+
 * **stderrok**
 
-  OK string on stderr indicates success.
+  Matched string '<ok-string>' on stderr indicates success.
     ::
 
        --stderrok=<ok-string>
+       
+       <ok-string>:=(literal|regexpr)
+       literal := string-literal
+       regexpr := regular-expression-re-module
 
 .. index::
    single: options; --stdotok
 
+.. _stdoutok:
+
 * **stdoutok**
 
-  OK string on stdout indicates success.
+  Matched string '<ok-string>' on stdout indicates success.
     ::
 
        --stdoutok=<ok-string>
+       
+       <ok-string>:=(literal|regexpr)
+       literal := string-literal
+       regexpr := regular-expression-re-module
 
 .. index::
    single: options; --str
+
+.. _str:
 
 * **str**
 
@@ -315,6 +524,8 @@ supported.
 
 .. index::
    single: options; --subproc
+
+.. _subproc:
 
 * **subproc**
 
@@ -334,6 +545,8 @@ supported.
 .. index::
    single: options; --subunit
 
+.. _subunit:
+
 * **subunit**
 
   Change the framework for the subprocess call.
@@ -348,6 +561,8 @@ supported.
 .. index::
    single: options; --test-id
 
+.. _test-id:
+
 * **test-id**
 
   Prints the test-id with the formats 'csv', and 'xml'.
@@ -359,6 +574,8 @@ supported.
 .. index::
    single: options; --timestamp
 
+.. _timestamp:
+
 * **timestamp**
 
   Includes date and time into record header.
@@ -368,6 +585,8 @@ supported.
 
 .. index::
    single: options; --Version
+
+.. _Versionu:
 
 * **Version**
 
@@ -379,6 +598,8 @@ supported.
 
 .. index::
    single: options; --verbose
+
+.. _verbose:
 
 * **verbose**
 
@@ -393,6 +614,8 @@ supported.
 .. index::
    single: options; --version
 
+.. _versionl:
+
 * **version**
 
   Current version - terse.
@@ -400,6 +623,8 @@ supported.
 
        --version
        -version
+
+.. _xml:
 
 .. index::
    single: options; --xml
@@ -411,7 +636,8 @@ supported.
 
        --xml
 
-**ARGUMENTS**:
+ARGUMENTS:
+^^^^^^^^^^
 
 .. index::
    single: arguments; --
@@ -430,7 +656,7 @@ supported.
 
 * **testee**
 
-  The wrapped testee.     
+  The wrapped testee, see :ref:`EXAMPLES <examples>`.
     ::
 
       <testee> 
@@ -440,12 +666,13 @@ supported.
 
 * **testee-options**
 
-  Options of the testee.     
+  Options of the testee, see :ref:`EXAMPLES <examples>`.
     ::
 
       [<testee-options>]
 
-**DESCRIPTION**:
+DESCRIPTION:
+^^^^^^^^^^^^
 
 The call interface 'epyunit' provides the commandline interface for
 the unit test wrapper classes.
@@ -582,12 +809,50 @@ The following categories of parameter are provided:
      * -version
      * --version
 
-**ENVIRONMENT**:
+ENVIRONMENT:
+^^^^^^^^^^^^
 
   * PYTHON OPTIONS:
     -O, -OO: Eliminates '__debug__' code.
  
-**EXAMPLES**:
+EXAMPLES:
+^^^^^^^^^
+
+.. _examples:
+
+Some simple call examples are:
+  ::
+
+    epyunit -- myscript.sh EXITOK
+    epyunit -- myscript.sh EXITNOK
+    epyunit -- myscript.sh EXIT8
+
+A call example for cross-process-border remote debugging:
+  ::
+
+    epyunit --rdbg -- epyunit --rdbg -- myscript.sh EXITNOK
+    0.                1.                2.
+
+  #. Start outmost process from command line and attach it
+     to PyDev by stub. 
+     ::
+
+       epyunit --rdbg
+
+  #. Start level-01 subprocess outermost process and attach it
+     to PyDev by stub. 
+     ::
+
+       epyunit --rdbg -- epyunit --rdbg
+
+  #. Start level-02 subprocess, here a shell script from level-2 subprocess,
+     and attach it to PyDev by stub. 
+     ::
+
+       epyunit --rdbg -- epyunit --rdbg -- myscript.sh EXITNOK
+
+Additional examples could be found within the source code, unit tests, and UseCases.
+
 
 * `CLI: command line interface <epyunit_example_cli.html>`_ 
 
@@ -600,5 +865,7 @@ The following categories of parameter are provided:
   * UseCases
 
 COPYRIGHT:
+^^^^^^^^^^
+
   Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
   Copyright (C)2015-2016 Arno-Can Uestuensoez

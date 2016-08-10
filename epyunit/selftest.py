@@ -7,7 +7,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.10'
+__version__ = '0.1.11'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -49,10 +49,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':123,'stdoutok':["arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_val': 123, 'exit_type':'VAL',}
-    _myRules.setrules(_myrx)
-    
+    _myrx = {'reset':True, 'exitign': False, 'exitval': 123, 'exittype':'VAL',}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose >1:
         print _myRules 
@@ -65,7 +63,14 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh DEFAULT ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [123,["arbitrary output"],[]]
+
+    retX = [123,["arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -73,10 +78,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':0,'stdoutok':["fromA", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'OK','stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exitval': 0, 'exittype':'OK', 'stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -87,7 +90,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh OK ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [0,["fromA", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    retX = [0,["fromA", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -96,10 +105,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':0,'stdoutok':["fromC", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'OK','stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exittype':'OK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -110,7 +117,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh PRIO ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [0,["fromC", "arbitrary output","arbitrary signalling OK string","arbitrary output"],["arbitrary signalling ERROR string"]]
+    retX = [0,["fromC", "arbitrary output","arbitrary signalling OK string","arbitrary output"],["arbitrary signalling ERROR string"]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -119,10 +132,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':0,'stdoutok':["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'OK','stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exittype':'OK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -133,7 +144,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh EXITOK ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [0,["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    retX = [0,["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -142,10 +159,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':1,'stdoutok':["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'NOK','stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'multiline':True, 'exitign': False, 'exittype':'NOK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -156,7 +171,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh EXITNOK ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [1,["fromE", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    retX = [1,["fromE", "arbitrary output","arbitrary signalling OK string","arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -165,10 +186,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':7,'stdoutok':["fromF", "arbitrary output","arbitrary signalling NOK string","arbitrary output"],'stderrok':[],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'VAL','exit_val':7,'stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':7,'stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -179,7 +198,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh EXIT7 ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [7,["fromF", "arbitrary output","arbitrary signalling NOK string","arbitrary output"],[]]
+    retX = [7,["fromF", "arbitrary output","arbitrary signalling NOK string","arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -188,10 +213,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':8,'stdoutok':["fromG", 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'],'stderrok': ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output'],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'VAL','exit_val':8,'stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':8,'stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -201,7 +224,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh EXIT8 ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [8,["fromG", 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
+    retX = [8,["fromG", 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
 
@@ -209,10 +238,8 @@ def selftest(**kargs):
     #*******
     #
     _myParams = {'exitval':123,'stdoutok':["arbitrary output"],'stderrok': [],}
-    _myRules.setrules(_myRules.rules_reset)
-    _myrx = { 'exit_chk': True, 'exit_type':'NOK','stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
-    _myRules.setrules(_myrx)
-
+    _myrx = {'reset':True, 'exitign': False, 'exittype':'NOK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
+    _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules 
@@ -222,7 +249,13 @@ def selftest(**kargs):
             print "\n#*** epyunit/myscript.sh DEFAULT ***" 
         if _verbose>1:
             sx.displayit(ret)                   
-    assert ret == [123,["arbitrary output"],[]]
+    retX = [123,["arbitrary output"],[]]
+    try:
+        assert ret ==retX
+    except:
+        print >>sys.stderr, ""
+        print >>sys.stderr, "retX="+str(retX)
+        print >>sys.stderr, "ret= "+str(ret)
     assert sx.apply(ret)
 
     pass

@@ -19,4 +19,5 @@ __all__=[
     "SubprocessUnit",
     "SProcUnitRules",
     "selftest",
+    "TestExecutable",
 ]

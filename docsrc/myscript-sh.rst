@@ -11,7 +11,7 @@ myscript.sh::
 
   #
   # NAME:      myscript.sh
-  # VERSION:   01.01.001
+  # VERSION:   01.01.003
   # AUTHOR:    Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
   # COPYRIGHT: Copyright (C) 2015,2016 Arno-Can Uestuensoez
   #
@@ -103,6 +103,15 @@ myscript.sh::
            NOK
            NOK
 
+       # I: exit value: STDERRONLY
+         EXIT:
+           0
+         STDOUT:
+           -
+         STDERR:
+           NOK
+           NOK
+
        # DEFAULT: define: here succeed '--default-ok': DEFAULT
          EXIT:
            123
@@ -175,6 +184,13 @@ myscript.sh::
     echo NOK >&2
     echo NOK >&2
     exit 9
+
+  # I: exit value
+  elif test "X$1" == "XSTDERRONLY";then
+    echo fromI >&2
+    echo NOK >&2
+    echo NOK >&2
+    exit 0
 
   # DEFAULT: define: here succeed '--default-ok'
   else

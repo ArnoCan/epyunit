@@ -126,11 +126,7 @@ class CallUnits(unittest.TestCase):
         callkargs = {}
         ret = sx.callit(_call,**callkargs)
 
-        print("4TEST")
-        print(ret[2])
-        print(_call)
-        
-        assert ret ==  [0, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
+        assert ret ==  [1, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
         pass
  
 #

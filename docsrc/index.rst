@@ -1,15 +1,16 @@
-
-.. epyunit documentation master file, created by
-   sphinx-quickstart on `date`.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Abstract
 ========
 
-The 'epyunit' package provides extensions for the 
-PyUnit framework for blackbox tests of arbitrary executables.
-The 'epyunit' package provides a minimal but sufficient approach in particular for
+The **'ePyUnit' package** provides extensions for the 
+**PyUnit** framework for blackbox tests of executables
+including nested  calls of subprocesses.
+The included automation extension for the **PyDev** based debugging of 
+- local and remote - Python subprocesses provides simplified support of detailed error analysis.
+The coming versions are going to support the full scope of features on arbitrary local and 
+remote distributed processes.
+
+
+The *'ePyUnit' package* provides a minimal but sufficient approach in particular for
 the low-effort test automation of scripts and tools.
 
 * ePyUnit encapsulates processes and relies on PyUnit for commandline
@@ -33,14 +34,14 @@ variables either for further processing, or optional pass-through to the caller.
     
                        +-----------------------+     call      +-----------------------+
                        |                       |    ------>    |                       | 
-    Subprocess         |        ePyUnit        |               |  Wrapped-Executable   | 
+    Subprocess         |        epyunit        |               |  Wrapped-Executable   | 
                        |                       |    <-----     |                       |
                        +-----------------------+     stdin     +-----------------------+
                                    |                 stderr                |
                                    |                 exit                  V
                                    |                           +-----------------------+
-    PyDev Remote                   |                           |    PyDevRemoteDBG     |      Debug into subprocess
-    Debug Server                   |                           +-----------------------+
+    PyDev Remote                   |                           |    PyDevRemoteDBG     |      Cross-Process Debugging into 
+    Debug Server                   |                           +-----------------------+      local and remote subprocesses
                                    |                                       |
                    . . . . . . . . | . . . . . . . . . . . . . . . . . . . | . . . . . . . . 
                                    |                                       |
@@ -63,32 +64,44 @@ failures and success.
 
 The automation of the subprocess debug integration into the PyDev/Eclipse debugging framework
 provides for seamless debugging of cross-process unittest.
-For an integrated example refer to `[details] <pydevd_integration.html#design>`_.
-The logic of rules for analysing test results is provided by
-`[details] <rules_logic.html#>`_.
-
+For an integrated example refer to `sequences of control flow [Design details] <pydevd_integration.html#design>`_,
+for the analysing logic and rules of test results refer to is provided by 
+`Test Syntax, Rules, and Correlation [details] <rules_logic.html#>`_.
+The provided scenarios are single level subprocesses
   ::
 
-    +------------------+         +---------------------+         +---------------------+
-    |                  |         |                     |         |                     |
-    |  Python-Process  |  <--->  |  Python-Subprocess  |  <--->  |    Shell-Script     |  
-    |                  |         |                     |         |                     |
-    +------------------+         +---------------------+         +---------------------+
+    +----------------+      +------------+
+    | Python-Process | <--> | Subprocess |
+    +----------------+      +------------+
 
-The current version not yet supports more than one level of nested Python subprocesses.
-For details refer to 
+and nested multilevel subprocesses
+  ::
+
+    +----------------+      +------------+            +------------+
+    | Python-Process | <--> | Subprocess | <- ... --> | Subprocess |  
+    +----------------+      +------------+            +------------+
+
+Where each level of subprocesses could start an arbitrary number of local and remote
+subprocesses itself, and either correlate or pass-through the results.
+The provided package comprises functional atoms for various UseCases, as well
+as extension classes for the 'unittest' package to be used in combination
+with PyUnit and PyDev..
 
 * `Test Syntax, Rules, and Correlation <rules_logic.html>`_
 
-* `Common call integration of subprocess units <call_integration.html>`_ .
+* `Common call integration of subprocess units <call_integration.html>`_ 
 
-* `Automation of Subprocess Debugging and Test-Integration of pydevd.py <pydevd_integration.html>`_ 
+* `Integration into the  Class Hierarchy of PyUnit <unittest_subprocesses.html>`_ 
+
+* `Automation of Subprocess Debugging and Test-Integration by 'pydevd.py' <pydevd_integration.html>`_ 
 
 For the implementation and architecture refer to
 
 * `Software design <software_design.html>`_ 
 
 * `Python library functions <call_integration.html>`_ 
+
+* `spUnittest module <unittest_subprocesses.html>`_ 
 
 Application examples for ePyUnit see the multiplatform bash extensions:
 

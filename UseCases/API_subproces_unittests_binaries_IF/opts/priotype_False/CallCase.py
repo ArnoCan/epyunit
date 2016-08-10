@@ -52,13 +52,8 @@ class CallUnits(unittest.TestCase):
         callkargs = {}
         ret = sx.callit(_call,**callkargs)
 
-        assert ret == [0, ['fromB', 'arbitrary output', 'arbitrary output', ], ['arbitrary signalling ERROR string'],]
+        assert ret == [1, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
         pass
-
-#         assert ret[0] == 9
-#         assert ret[1] == ['fromH', 'OK', 'OK', 'OK']
-#         assert ret[2] == ['NOK', 'NOK', ]
-#         pass
  
  
 #
