@@ -121,15 +121,29 @@ Application examples for ePyUnit see the multiplatform bash extensions:
 `Shortcuts <shortcuts.html>`_
 =============================
 
-* `Rules and Combination Logic <rules_shortcuts.html>`_
+Concepts and workflows:
 
-* `Commandline Interface <shortcuts.html>`_
+* Rules and Combination Logic 
+  `[extracts] <rules_shortcuts.html>`_ 
+  `[details] <rules_logic.html>`_
 
-* `Programming Interface <shortcuts.html>`_
+* Integration of PyDev Remote Debug Server 'pydevd.py'
+  `[shortcuts] <shortcuts.html#epyunit-pydeverdbg>`_
+  `[example] <UseCases.remote_debug.html>`_
+  `[details] <pydevd_integration.html>`_
+  `[PyDev-Online-Manual] <http://pydev.org/manual_adv_remote_debugger.html>`_
 
 * `Selected Common UsesCases <usecases.html>`_
 
-* `Integration of PyDev Remote Debug Server - 'pydevd.py' <pydevd_integration.html>`_
+Common Interfaces:
+
+* `Commandline Interface <shortcuts.html#epyunit-cli>`_
+
+* `Programming Interface <shortcuts.html#epyunit-spunittest>`_
+
+Complete technical API:
+
+* `API by Epydoc <epydoc/index.html>`_
 
 Table of Contents
 =================

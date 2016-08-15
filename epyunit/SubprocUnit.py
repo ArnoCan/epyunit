@@ -4,7 +4,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.11'
+__version__ = '0.1.12'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -15,6 +15,8 @@ from types import NoneType
 version = '{0}.{1}'.format(*sys.version_info[:2])
 if version < '2.7': # pragma: no cover
     raise Exception("Requires Python-2.7.* or higher")
+
+from epyunit.SystemCalls import SystemCalls
 
 _parentrepr = re.compile(ur'[{](.*[^}])}')
 """
@@ -64,7 +66,6 @@ exittype: value
 """
 _exitenums = {4:'_E_IGN', 8:'_E_OK', 16:'_E_NOK',32:'_E_VAL', }
 
-from epyunit.SystemCalls import SystemCalls
 
 class SProcUnitRulesException(Exception):
     """Application error of unittest rules.
@@ -135,18 +136,19 @@ class SProcUnitRules(object):
         #
         # the re pattern
         #
-        self.stderrnok = []
-        self.stderrok = []
-        self.stdoutnok = []
-        self.stdoutok = []
+        self.stderrnok = []; """list of 're' patterns indicating error on STDERR"""
+        self.stderrok = []; """list of 're' patterns indicating success on STDERR"""
+        self.stdoutnok = []; """list of 're' patterns indicating success on STDOUT"""
+        self.stdoutok = []; """list of 're' patterns indicating success on STDOUT"""
 
         #
         # the actual matched strings
         #
-        self.stderrnok_matched = []
-        self.stderrok_matched = []
-        self.stdoutnok_matched = []
-        self.stdoutok_matched = []
+        self.stderrnok_matched = []; """list of actually matched failure strings on STDERR"""
+        self.stderrok_matched = []; """list of actually matched success strings on STDERR"""
+        self.stdoutnok_matched = []; """list of actually matched failure strings on STDOUT"""
+        self.stdoutok_matched = []; """list of actually matched success strings on STDOUT"""
+
         self.reset()
         
         _args = kargs.copy()

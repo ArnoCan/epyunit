@@ -14,11 +14,12 @@ import os
  
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SubprocUnit 
+from epyunit import spUnittest
 
 #
 #######################
 # 
-class CallUnits(unittest.TestCase):
+class CallUnits(spUnittest.TestCase):
 
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)

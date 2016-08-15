@@ -43,6 +43,12 @@ Environment Variables
 
 .. _PyDevRemoteDebugging: http://pydev.org/manual_adv_remote_debugger.html
 
+Function: checkRDbg
+-------------------
+
+.. autofunction:: checkRDbg
+
+
 Class: PyDevERDbg
 -----------------
 

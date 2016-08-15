@@ -47,8 +47,7 @@ class CallUnits(unittest.TestCase):
     def testCase010(self):
         callkargs = {}
         _call  = self._call
-#        _call += " --rdbg "
-#        _call += " --pderd_debug_self "
+        #_call += " --pderd_debug_self "
         _call += self.scri
         _call += " OK "
         ret = self.sx.callit(_call,**callkargs)

@@ -33,7 +33,9 @@ class CallUnits(unittest.TestCase):
         """Simple call, providing a return value only.
         """
         _call  = epyu + " --selftest "
-        #_call  += " --rdbg "
+        _call  += " --rdbg "
+        _call  += " --rdbg-forward all "
+        #_call  += " --pderd_debug_self "
 
         syskargs = {}
         sx = epyunit.SystemCalls.SystemCalls(**syskargs)
@@ -41,7 +43,7 @@ class CallUnits(unittest.TestCase):
         callkargs = {}
         ret = sx.callit(_call,**callkargs)
 
-        assert ret[0] == 0
+        assert ret[0] == 0 
         retX = [0, [], []]
         self.assertEqual(retX, ret)
  
@@ -74,13 +76,29 @@ class CallUnits(unittest.TestCase):
                 '', 
                 '#*** epyunit/myscript.sh EXIT8 ***', 
                 '', 
-                '#*** epyunit/myscript.sh DEFAULT ***'
-            ], 
+                '#*** epyunit/myscript.sh DEFAULT ***', 
+                '', 
+                '#*** epyunit/myscript.py DEFAULT ***', 
+                '', 
+                '#*** epyunit/myscript.py OK ***', 
+                '', 
+                '#*** epyunit/myscript.py PRIO ***', 
+                '', 
+                '#*** epyunit/myscript.py EXITOK ***', 
+                '', 
+                '#*** epyunit/myscript.py EXITNOK ***', 
+                '', 
+                '#*** epyunit/myscript.py EXIT7 ***', 
+                '', 
+                '#*** epyunit/myscript.py EXIT8 ***', 
+                '', 
+                '#*** epyunit/myscript.py DEFAULT ***',
+            ],                
             []
         ]
-        retX[1] = [ x for x in retX[1] if x!='']
+        #retX[1] = [ x for x in retX[1] if x!='']
 
-        self.assertEqual(retX[1], retX[1])
+        self.assertEqual(retX[1], ret[1])
         self.assertEqual(retX[2], [])
 
 #

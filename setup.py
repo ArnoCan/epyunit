@@ -4,10 +4,17 @@
    'setuptools' options.
 
    Args:
+      build_doc: Creates Sphinx based documentation with embeded javadoc-style
+          API documentation, html only.
+
       build_sphinx: Creates documentation for runtime system by Sphinx, html only.
          Calls 'callDocSphinx.sh'.
-      build_epydoc: Creates documentation for runtime system by Epydoc, html only.
-         Calls 'callDocEpydoc.sh'.
+
+      build_epydoc: Creates standalone documentation for runtime system by Epydoc, 
+         html only.
+
+      project_doc: Install a local copy into the doc directory of the project.
+
       instal_doc: Install a local copy of the previously build documents in 
           accordance to PEP-370.
 
@@ -46,7 +53,7 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.11'
+__version__ = '0.1.12'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 _NAME = 'epyunit'
@@ -61,8 +68,7 @@ if __debug__:
 import os,sys
 from setuptools import setup #, find_packages
 import fnmatch
-import re
-import shutil
+import re, shutil, tempfile
 
 
 #
@@ -76,7 +82,7 @@ def find_files(srcdir, *wildcards, **kw):
             *wildcards: list of globs.
             **kw: Additional control of resolution:
                 single_level: Flat only.
-                subpath: Cut topmost path elemenr from listelements,
+                subpath: Cut topmost path elements from listelements,
                     special for dictionaries.
                 nopostfix: Drop filename postfix.
                 packages: List packages only, else files.
@@ -142,65 +148,184 @@ def usage():
 exit_code = 0
 
 # custom doc creation by sphinx-apidoc
-if 'build_sphinx' in sys.argv:
+if 'build_sphinx' in sys.argv or 'build_doc' in sys.argv:
+    try:
+        os.makedirs('build'+os.sep+'apidoc'+os.sep+'sphinx')
+    except:
+        pass
+
     print "#---------------------------------------------------------"
     exit_code = os.system('./callDocSphinx.sh') # create apidoc
     print "#---------------------------------------------------------"
     print "Called/Finished callDocSphinx.sh => exit="+str(exit_code)
-    sys.argv.remove('build_sphinx')
+    if 'build_sphinx' in sys.argv:
+        sys.argv.remove('build_sphinx')
+
+# common locations
+src0 = os.path.normpath("build/apidoc/sphinx/_build/html")
+dst0 = os.path.normpath("build/apidoc/"+str(_NAME))    
+
+# custom doc creation by sphinx-apidoc with embeded epydoc
+if 'build_doc' in sys.argv:
+
+    # copy sphinx to mixed doc
+    if not os.path.exists(src0):
+        raise Exception("Missing generated sphinx document source:"+str(src0))
+    if os.path.exists(dst0):
+        shutil.rmtree(dst0)
+    shutil.copytree(src0, dst0)
+    
+    print "#---------------------------------------------------------"
+    exit_code = os.system('epydoc --config docsrc/epydoc.conf') # create apidoc
+    print "#---------------------------------------------------------"
+    print "Called/Finished epydoc --config docsrc/epydoc.conf => exit="+str(exit_code)
+
+    def _sed(filename, pattern, repl, flags=0):
+        pattern_compiled = re.compile(pattern,flags)
+        fname = os.path.normpath(filename)
+        with tempfile.NamedTemporaryFile(mode='w', delete=False) as ftmp:
+            with open(fname) as src_file:
+                for line in src_file:
+                    ftmp.write(pattern_compiled.sub(repl, line))
+    
+        shutil.copystat(fname, ftmp.name)
+        shutil.move(ftmp.name, fname)
+
+
+    pt = '<a target="moduleFrame" href="toc-everything.html">Everything</a>'
+    rp  = r'<a href="../index.html" target="_top">Home</a>'
+    rp += r' - '
+    rp += r'<a href="./index.html" target="_top">Top</a>'
+    rp += r' - '
+    rp += pt
+
+    fn = dst0+'/epydoc/toc.html'
+    _sed(fn, pt, rp, re.MULTILINE)
+
+    pt = '<h4>Next topic</h4>'
+    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface - Epydoc</a></p>'
+    rp += pt
+
+    fn = dst0+'/index.html'
+    _sed(fn, pt, rp, re.MULTILINE)
+
+    pt = '<h4>Previous topic</h4>'
+    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface - Epydoc</a></p>'
+    rp += pt
+
+
+    patchlist = [
+        'usecases.html',
+        'rules_logic.html',
+        'shortcuts.html',
+        'rules_shortcuts.html',
+        'subprocessunit.html',
+        'epyunit.html',
+        'systemcalls.html',
+        'software_design.html',
+    ]
+    for px in patchlist:
+        fn = dst0+os.sep+px
+        _sed(fn, pt, rp, re.MULTILINE)
+    
+    sys.argv.remove('build_doc')
+
+  
 
 # custom doc creation by epydoc
 if 'build_epydoc' in sys.argv:
+    try:
+        os.makedirs('build'+os.sep+'apidoc'+os.sep+'epydoc')
+    except:
+        pass
+    
     print "#---------------------------------------------------------"
-    exit_code = os.system('./callDocEpydoc.sh') # create apidoc
+    exit_code = os.system('epydoc --config docsrc/epydoc-standalone.conf') # create apidoc
     print "#---------------------------------------------------------"
-    print "Called/Finished callDocEpydoc.sh => exit="+str(exit_code)
+    print "Called/Finished epydoc --config docsrc/epydoc-standalone.conf => exit="+str(exit_code)
     sys.argv.remove('build_epydoc')
 
 
-# # call of complete test suite by 'discover'
-if 'install_doc' in sys.argv:
+# install local project doc
+if 'project_doc' in sys.argv:
+    print "# project_doc.sh..."
+
+    dstroot = os.path.normpath("doc/en/html/man3/")+os.sep
+    
+    try:
+        os.makedirs(dstroot)
+    except:
+        pass
+
+    if os.path.exists(dst0):
+        if os.path.exists(dstroot+str(_NAME)):
+            shutil.rmtree(dstroot+str(_NAME))
+        shutil.copytree(dst0, dstroot+str(_NAME))
+
+
+    src0 = os.path.normpath("build/apidoc/sphinx/_build/html")
+    if os.path.exists(src0):
+        if os.path.exists(dstroot+str(_NAME)+".sphinx"):
+            shutil.rmtree(dstroot+str(_NAME)+".sphinx")
+        shutil.copytree(src0, dstroot+str(_NAME)+".sphinx")
+
+    src0 = os.path.normpath("build/apidoc/epydoc")
+    if os.path.exists(src0):
+        if os.path.exists(dstroot+str(_NAME)+".epydoc"):
+            shutil.rmtree(dstroot+str(_NAME)+".epydoc")
+        shutil.copytree(src0, dstroot+str(_NAME)+".epydoc")
+
     print "#"
     idx = 0
     for i in sys.argv: 
         if i == 'install_doc': break
         idx += 1
+    
+    print "#"
+    print "Called/Finished PyUnit tests => exit="+str(exit_code)
+    print "exit setup.py now: exit="+str(exit_code)
+    sys.argv.remove('project_doc')
+
+# install user doc
+if 'install_doc' in sys.argv:
     print "# install_doc.sh..."
-    # src    
-    src = os.path.normpath("doc/en/html/man3/"+str(_NAME))
 
     # set platform
     if sys.platform in ('win32'):
-        dst = os.path.expandvars("%APPDATA%/Python/doc/")
+        dstroot = os.path.expandvars("%APPDATA%/Python/doc/en/html/man3/")
     else:
-        dst = os.path.expanduser("~/.local/")
-    dst = os.path.normpath(dst+src)
+        dstroot = os.path.expanduser("~/.local/doc/en/html/man3/")
+    dstroot = os.path.normpath(dstroot)+os.sep
+    
+    try:
+        os.makedirs(dstroot)
+    except:
+        pass
 
+    if os.path.exists(dst0):
+        if os.path.exists(dstroot+str(_NAME)):
+            shutil.rmtree(dstroot+str(_NAME))
+        shutil.copytree(dst0, dstroot+str(_NAME))
+
+
+    src0 = os.path.normpath("build/apidoc/sphinx/_build/html")
+    if os.path.exists(src0):
+        if os.path.exists(dstroot+str(_NAME)+".sphinx"):
+            shutil.rmtree(dstroot+str(_NAME)+".sphinx")
+        shutil.copytree(src0, dstroot+str(_NAME)+".sphinx")
+
+    src0 = os.path.normpath("build/apidoc/epydoc")
+    if os.path.exists(src0):
+        if os.path.exists(dstroot+str(_NAME)+".epydoc"):
+            shutil.rmtree(dstroot+str(_NAME)+".epydoc")
+        shutil.copytree(src0, dstroot+str(_NAME)+".epydoc")
 
     print "#"
-
-    # copy sphinx
-    if os.path.exists(dst):
-        shutil.rmtree(dst)
-    shutil.copytree(src, dst)
-    print "# "+str(_NAME)
-    print "#   from        : "+str(src)
-    print "#   to          : "+str(dst)
-    print "#   display with: firefox -P preview.simple "+dst+"/index.html"
+    idx = 0
+    for i in sys.argv: 
+        if i == 'install_doc': break
+        idx += 1
     
-    # copy epydoc
-    src += '.epydoc'
-    dst += '.epydoc'
-    if os.path.exists(src):
-        if os.path.exists(dst):
-            shutil.rmtree(dst)
-        shutil.copytree(src, dst)
-        print "#"
-        print "# "+str(_NAME)+".epydoc"
-        print "#   from        : "+str(src)
-        print "#   to          : "+str(dst)
-        print "#   display with: firefox -P preview.simple "+dst+"/index.html"
-
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)

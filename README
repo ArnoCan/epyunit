@@ -158,7 +158,7 @@ VERSIONS and RELEASES
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
 
-**Current Release: 00.01.011 - Alpha:**
+**Current Release: 00.01.012 - Alpha:**
 
 **REMARK:** This is an informal pre-work-release - tested on Linux only.
   The content is a major advance, and the major part is stable, 
@@ -167,6 +167,10 @@ VERSIONS and RELEASES
 Major Changes:
 
 * Fixes.
+
+* Provide first version of integrated documentation created by SPhinx+Epydoc
+
+* Migrated API creation by Epydoc to Windows7 and MacOS-SnowLeopard
 
 * Introduced match lists of regexpr. 
 

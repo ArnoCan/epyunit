@@ -18,42 +18,53 @@ import unittest
 import os
  
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-import epyunit.SubprocUnit 
+import epyunit.SubprocUnit
+from epyunit import spUnittest
 
 #
 #######################
 # 
-class CallUnits(unittest.TestCase):
+class CallUnits(spUnittest.TestExecutable):
 
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
-        
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
-        
-        syskargs = {}
-        self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
 
+        #        
+        # *** For test only ***
+        #        
         # epyunit.SubprocessUnit
-        _repr = repr(self.sx)
+        _repr = repr(self.spunit)
         _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False, 'rules': SProcUnitRules}"""
         assert _repr == _reprX
 
+        #        
+        # *** For test only ***
+        #        
         # epyunit.SProcUnitRules
-        if self.sx.getruleset():
-            _repr = repr(self.sx.getruleset())
+        if self.spunit.getruleset():
+            _repr = repr(self.spunit.getruleset())
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.spunit.getruleset().states()
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
 
+        #
+        # set search path for test components
+        #
+        self.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
+
+        # fetch path for executable 'epyunit'
         self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
 
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
-        self.scri = self.scri
+        # fetch path for executable 'myscript.sh'
+        self.scri_sh = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
+
+        # fetch path for executable 'myscript.py'
+        self.scri = findRelPathInSearchPath('epyunit/myscript.py',self.slst,matchidx=0)
 
     def testCase010(self):
         _call  = self.scri
@@ -61,11 +72,12 @@ class CallUnits(unittest.TestCase):
 
         callkargs = {}
         
-        ret = self.sx.callit(_call,**callkargs)
-        assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
+        ret = self.callSubprocess(_call,**callkargs)
+        retX =  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
+        self.assertEqual(retX, ret)
 
         state = self.sx.apply(ret)
-        assert state
+        self.assertTrue(state)
         pass
 
     def testCase011(self):
@@ -73,7 +85,7 @@ class CallUnits(unittest.TestCase):
         _call = self.scri
         _call += " NOK "
 
-        ret = self.sx.callit(_call,**callkargs)
+        ret = self.callSubprocess(_call,**callkargs)
         assert ret ==   [0, ['fromB', 'arbitrary output', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)
@@ -85,7 +97,7 @@ class CallUnits(unittest.TestCase):
         _call = self.scri
         _call += " PRIO "
 
-        ret = self.sx.callit(_call,**callkargs)
+        ret = self.callSubprocess(_call,**callkargs)
         assert ret ==  [0, ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)

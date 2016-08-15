@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.1.10"
-RELEASE="0.1.10"
+VERSION="0.1.12"
+RELEASE="0.1.12"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -81,7 +81,6 @@ done
 # rst files
 for d in docsrc/*.rst;do cat $d > ${OUTDIR}/apidoc/sphinx/${d##*/}; done
 
-
 #
 # static - literal data
 #
@@ -97,9 +96,13 @@ for d in docsrc/*.txt;do cp $d "${STATIC}"; done
 # css
 for d in docsrc/*.css;do cp $d "${STATIC}"; done
 
+cp ArtisticLicense20.html "${STATIC}"
+cp licenses-amendments.txt "${STATIC}"
+
 {
 cat <<EOF
 
+import sys,os
 extensions.append('sphinx.ext.intersphinx.')
 sys.path.insert(0, os.path.abspath('$PWD/..'))
 sys.path.insert(0, os.path.abspath('$PWD'))
@@ -107,6 +110,7 @@ sys.path.insert(0, os.path.abspath('$PWD'))
 html_logo = "_static/epyunit-64x64.png"
 #html_favicon = None
 
+html_theme = "default"
 #html_theme = "classic"
 #html_theme = "pyramid"
 #html_theme = "agogo"
@@ -114,9 +118,11 @@ html_logo = "_static/epyunit-64x64.png"
 html_theme_options = {
 #    "rightsidebar": "true",
 #    "relbarbgcolor": "black",
+
     "externalrefs": "true",
     "sidebarwidth": "290",
     "stickysidebar": "true",
+
 #    "collapsiblesidebar": "true",
 
 #    "footerbgcolor": "",
@@ -179,50 +185,6 @@ Project data summary:
 EOF
 } >> ${OUTDIR}/apidoc/sphinx/index.rst 
 
-# #
-# cat docsrc/shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/shortcuts.rst
-# cat docsrc/usecases.rst           > ${OUTDIR}/apidoc/sphinx/usecases.rst
-# cat docsrc/software_design.rst    > ${OUTDIR}/apidoc/sphinx/software_design.rst
-# cat docsrc/rules_shortcuts.rst          > ${OUTDIR}/apidoc/sphinx/rules_shortcuts.rst
-
-# cat docsrc/commandline_scripting.rst         > ${OUTDIR}/apidoc/sphinx/commandline_scripting.rst
-# cat docsrc/eclipse_integration.rst         > ${OUTDIR}/apidoc/sphinx/eclipse_integration.rst
-
-# cat docsrc/selftest.rst > ${OUTDIR}/apidoc/sphinx/selftest.rst
-# cat docsrc/spunittest.rst > ${OUTDIR}/apidoc/sphinx/spunittest.rst
-# cat docsrc/subprocessunit.rst > ${OUTDIR}/apidoc/sphinx/subprocessunit.rst
-# cat docsrc/systemcalls.rst > ${OUTDIR}/apidoc/sphinx/systemcalls.rst
-# cat docsrc/pydeverdbg.rst > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
-# cat docsrc/rules_logic.rst > ${OUTDIR}/apidoc/sphinx/rules_logic.rst
-
-# cat docsrc/pydevd_integration.rst > ${OUTDIR}/apidoc/sphinx/pydevd_integration.rst
-# cat docsrc/myscript-sh.rst > ${OUTDIR}/apidoc/sphinx/myscript-sh.rst
-# cat docsrc/myscript.sh > ${OUTDIR}/apidoc/sphinx/myscript.sh
-# #
-# cat docsrc/commandline_tools.rst         > ${OUTDIR}/apidoc/sphinx/commandline_tools.rst
-# cat docsrc/pydeverdbg.rst                > ${OUTDIR}/apidoc/sphinx/pydeverdbg.rst
-# cat docsrc/epyunit.rst                   > ${OUTDIR}/apidoc/sphinx/epyunit.rst
-# cat docsrc/epyunit_cli.rst               > ${OUTDIR}/apidoc/sphinx/epyunit_cli.rst
-# cat docsrc/call_integration.rst          > ${OUTDIR}/apidoc/sphinx/call_integration.rst
-# cat docsrc/epyunit_example_cli.rst       > ${OUTDIR}/apidoc/sphinx/epyunit_example_cli.rst
-# cat docsrc/epyunit_example_eclipse_executable.rst   > ${OUTDIR}/apidoc/sphinx/epyunit_example_eclipse_executable.rst
-
-
-# #
-# # static - literal data
-# cat ArtisticLicense20.html > "${STATIC}/ArtisticLicense20.html"
-# cat licenses-amendments.txt > "${STATIC}/licenses-amendments.txt"
-
-# #
-# cp docsrc/epyunit-64x64.png "${STATIC}"
-
-# cp docsrc/remote-debug-basics.png "${STATIC}"
-# cp docsrc/syntax-flow.png "${STATIC}"
-
-# cp docsrc/pydev-remotedebugger1.png "${STATIC}"
-# cp docsrc/pydev-remotedebugger1b.png "${STATIC}"
-# cp docsrc/pydev-remotedebugger2.png "${STATIC}"
-# cp docsrc/pydev-remotedebugger3.png "${STATIC}"
 
 #CALL="SPHINXOPTS= "
 CALL=" "
@@ -246,9 +208,10 @@ DOCDIR="${DOCDIR:-doc/en/html/man3/$PROJECT}"
 if [ ! -e "${DOCDIR}" ];then
 	mkdir -p "${DOCDIR}"
 fi
-cp -a "${DOCHTMLDIR}"/html/* "${DOCDIR}"
-echo
-echo "display with: firefox -P preview.simple ${DOCHTML}"
-echo "display with: firefox -P preview.simple ${DOCDIR}/index.html"
+# #cp -a "${DOCHTMLDIR}"/html/* "${DOCDIR}"
+# echo
+# echo "display with: firefox -P preview.simple ${DOCHTML}"
+# echo "display with: firefox -P preview.simple ${DOCDIR}/index.html"
 echo
 #rm ${bin_epyunit}.py
+

@@ -1,17 +1,17 @@
 API Shortcuts - epyunit
 =======================
 
+epyunit - epydoc
+^^^^^^^^^^^^^^^^
+Epydoc - Javadoc style API documentation for Python.
+
+* `API by Epydoc <epydoc/index.html>`_
+
 epyunit - CLI
 ^^^^^^^^^^^^^
 CLI Wrapper for filtered subprocess calls and streaming of results.
 
-  +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
-  +=================================+====================================================+
-  | `epyunit_cli`_                  |                                                    |
-  +---------------------------------+----------------------------------------------------+
-
-.. _epyunit_cli: epyunit_cli.html#
+* `epyunit <epyunit_cli.html#>`_
 
 epyunit.spUnittest
 ^^^^^^^^^^^^^^^^^^
@@ -165,6 +165,19 @@ Wrapper library for subprocesses and caching of the results.
 epyunit.PyDevERDbg
 ^^^^^^^^^^^^^^^^^^
 Automation of the seamless cross-process debugging of subprocesses by PyDev RemoteDebugServer.
+
+* checkRDbg
+
+  Helper function for initialization and bootstrap of debugging components.
+
+  +------------------------------------+----------------------------------------------------+
+  | [docs]                             | [source]                                           | 
+  +====================================+====================================================+
+  | `checkRDbg`_                       | `checkRDbg.checkAndInitRDbg`_                      |
+  +------------------------------------+----------------------------------------------------+
+
+.. _checkRDbg.checkAndInitRDbg: _modules/epyunit/checkRDbg.html#checkAndInitRDbg
+.. _checkRDbg: checkrdbg.html#checkandinitrdbg
 
 * PyDevERDbg
 

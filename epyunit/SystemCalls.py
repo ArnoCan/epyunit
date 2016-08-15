@@ -10,8 +10,12 @@ A quick example call is::
 
   python -c 'from epyunit.SystemCalls import SystemCalls;x=SystemCalls(**{"proceed":"trace"});x.callit("myscript.sh xOK")'
 
+or::
+
+  python -c 'from epyunit.SystemCalls import SystemCalls;x=SystemCalls(**{"proceed":"trace"});x.callit("myscript.py xOK")'
+
 **SECURITY REMARK**: Current version supports for subprocesses the ShellMode only.
-For test environments in R&D this - hopefully - is perfectly OK,
+For test environments in R&D this - hopefully - is perfectly OK, 
 else eventual security issues has to be considered.
 
 """
@@ -20,7 +24,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.11'
+__version__ = '0.1.12'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -33,9 +37,9 @@ if version < '2.7': # pragma: no cover
 import subprocess
 
 # output enums
-_O_STD = 1
-_O_ERR = 2
-_O_STR = 3
+_O_STD = 1 #: output to STDOUT
+_O_ERR = 2 #: output to STDERR
+_O_STR = 3 #: output to STRING
 
 class SystemCallsException(Exception):
     """Common error within epyunit.SystemCalls. 
@@ -43,6 +47,7 @@ class SystemCallsException(Exception):
     pass
 
 #class SystemCallsExceptionSubprocessError(SystemCallsException):
+
 class SystemCallsExceptionSubprocessError(SystemExit):
     """Error from subprocess. 
     """
@@ -118,17 +123,21 @@ class SystemCalls(object):
         
         """
         # initial defaults
-        self.console = 'cli' # console type for output
-        self.bufsize = 16384 # size of cache for output received from subprocess 
+        self.console = 'cli' #: console type for output
+        self.bufsize = 16384 #: size of cache for output received from subprocess 
         #self.bufsize=-1
-        self.emptyiserr = False # the subprocess call for an empty string is 'success', 
-                                # thus this has to be checked independently for eventually erroneously missing call string
-        self.errasexcept = False # raises in case of errors an exception
-        self.myexe = self._mode_batch # preconfigured call back for actual execution
-        self.out = 'pass' # output format/stream
-        self.outtarget = 'stdout' # output format/stream
+        
+        self.emptyiserr = False 
+        """The subprocess call for an empty string is 'success', 
+        thus this has to be checked independently for eventually erroneously missing call string
+        """
+        
+        self.errasexcept = False #: raises in case of errors an exception
+        self.myexe = self._mode_batch #: preconfigured call back for actual execution
+        self.out = 'pass' #: output format/stream
+        self.outtarget = 'stdout' #: output format/stream
         self.passerr = False
-        self.proceed = 'doit' # what to do...
+        self.proceed = 'doit' #: what to do...
         self.raw = False
         self.useexit = True
         self.usestderr = False
@@ -508,14 +517,6 @@ class SystemCalls(object):
         self.p.poll()
 
         _errcond = False
-#         if self.errasexcept or self.passerr: 
-#             if self.useexit and self.usestderr:
-#                 if self.p.returncode or self.res[2]:
-#                     _errcond = True
-#             elif self.useexit and self.p.returncode:
-#                 _errcond = True
-#             elif self.usestderr and self.res[2]:
-#                 _errcond = True
         if self.useexit and self.usestderr:
             if self.p.returncode or self.res[1]:
                 _errcond = True

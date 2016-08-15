@@ -46,175 +46,232 @@ SYNOPSIS:
 
   subprocess debugging:
 
-    --pydev-remote-debug, --rdbg
+    --pydev-remote-debug, --rdbg, --rdbg-forward
   
   
 OPTIONS:
 
   --appname=<arbitrary-name-of-app>
+
     An arbitrary application name to be inserted into record 
     headers.
     
   --csv
+
     Prints complete test result CSV format including header.
 
   -d --debug
+
      Debug entries, does NOT work with 'python -O ...'.
      Developer output, aimed for filtering.
 
   --environment
+
     Include platform info into header.
 
   --exitign=(True|False)
+
     Ignore exit value. 
 
   --exittype=(True|False)
+
     Exit value 'True' indicates success for '0',
     'False' indicates success for '!=0'.
     
   --exit-unit-failed=<exit-value>
+
     Exit value to be emitted in case of failure of unittest.
     
     default := 1
     
   --exit-unit-ok=<exit-value>
+
     Exit value to be emitted in case of success of unittest.
     
     default := 0
 
   --exitval=<exit-value>
+
     Indicates success when exit value is equal to the provided 
     value.
 
   -h --help
+
      This help.
 
   --pass
+
     Pass through the testee results on STDOUT and STDERR.
     The exit value is interpreted by rules, else the
     execution state of the framework defines the exit 
     value.
     
   --passall
+
     Pass through the testee result on STDOUT and STDERR
     including transparently the received exit value.
 
   --priotype
+
     In case of present failure and success conditions,
+    
       TRUE:  the success condition dominates.
+    
       FALSE: the failure condition dominates.
 
   --pydev-remote-debug[=host[:port]]
+
     Activates remote debugging with PyDev plugin of Eclipse.
 
   --raw 
+
     Same as '--passall'
 
   --rdbg[=host[:port]]
+
     Activate remode debug, optionally the host and port number
     of the server process could be changed. 
 
     default:=localhost:5678
 
+  --rdbg-forward=(<forwarding-levels>|all|label)
+
+    Forward the '--rdbg' option to subprocesses for nested debugging
+    of process chains. 
+
+        <forwarding-levels>: Number of levels to be forwarded, 0==None.
+    
+        all: all nested subprocesses
+    
+        label: An arbitrary label defined at initialization of the
+        debug instance. Debugging is enabled when these match.
+    
+    default:=0: No forwarding.
+
   --redebug 
+
     Enables 're.DEBUG'
 
   --redotall: 
+
     Enables 're.DOTALL'
   
   --reignorecase: 
+
     Enables 're.IGNORECASE'.
   
   --remultiline: 
+
     Enables 're.MULTILINE'.
   
   --repr
+
     Prints complete test result by Python call of 'repr()'.
 
   --result=#total-results
+
     The treshold of the total matched results for changing
     the overall state to success. 
 
   --resultnok=#total-failure-results
+
     The treshold of the total matched failure results for
     changing the overall state to success. 
 
   --resultok=#total-success-results
+
     The treshold of the total matched success results for
     changing the overall state to success. 
 
   --reunicode: 
+
     Enables 're.UNICODE'.
   
   --selftest
+
      Performs a basic functional selftest by executing the 
      basic examples based on 'myscript.sh'.
 
   --stderrnok=<nok-string>
+
     Error string on stderr indicates success.
 
   --stderrok=<ok-string>
+
     OK string on stderr indicates success.
 
   --stdoutnok=<nok-string>
+
     Error string on stdout indicates success.
 
   --stdoutok=<ok-string>
+
     OK string on stdout indicates success.
 
   --str
+
     Prints complete test result by Python call of 'str()'.
 
   --subproc
-    Starts the subprocess by:
-       'epyunit.SystemCalls'
+
+    Starts the subprocess by: 'epyunit.SystemCalls'
     This mode also switches the output to '--passall' by 
     default, when another output mode is required, set 
     the required option after the '--subproc' option. 
 
   --subunit
-    Starts the subprocess by the default:
-       'epyunit.SubprocessUnit'
+
+    Starts the subprocess by the default: 'epyunit.SubprocessUnit'
 
   --test-id=<arbitrary-identifier-for-record-header>
+
     Prints the test-id with the formats 'csv', and 'xml'.
     Too be applied in case of multiple test case calls.
 
   --timestamp
+
     Includes date and time into record header.
 
   -Version --Version
+
      Current version - detailed.
 
   -v --verbose
+
      Verbose, some relevant states for basic analysis.
      When '--selftest' is set, repetition raises the display 
      level.
 
   -version --version
+
      Current version - terse.
 
   --xml
+
     Prints complete test result XML format.
 
 
 ARGUMENTS:
 
-  [--] 
+  [--]
+
      The double hyphen terminates the options of the call, 
      thus the remaining part of the call is treated as the 
      subcall of the testee.
 
   <testee> 
+
      The wrapped testee.
 
   [<testee-options>]
+
      Options of the testee.
 
 
 ENVIRONMENT:
 
   * PYTHON OPTIONS:
+
     -O, -OO: Eliminates '__debug__' code.
  
 
@@ -252,30 +309,44 @@ __docformat__ = "restructuredtext en"
 #
 #--- fetch options
 #
-import sys
+import getopt, os, sys, platform
+
+# name of application, used for several filenames as default
+if '--appname' in sys.argv:
+    _ai = sys.argv.index('--appname')
+    _APPNAME = sys.argv[_ai]
+else:
+    _APPNAME = "epyunit"
+
+# runtime environment 
+_host = platform.node()
+_user = "testuser"
+_osu = platform.os.uname()
+_os = _osu[0]
+_osver = _osu[2]
+_arch = _osu[-1]
+_dist, _distver,_x = platform.dist()
+
 
 #
-# activate remote debug stub call
+# Remote debugging
 #
-_rdbg = None
-_rdbg_default = "localhost:5678" # the defaults as defined by PyDev
-if "--rdbg" in sys.argv:
-    _ai = sys.argv.index("--rdbg")
-    _a = sys.argv.pop(_ai) #--rdbg
-    if _ai < len(sys.argv) and sys.argv[_ai][:1] != '-':
-        _rdbg = sys.argv.pop(_ai) #value
-    else:
-        _rdbg = _rdbg_default
-
+from epyunit.checkRDbg import checkAndInitRDbg
+_rdbgthis,_rdbg,_rdbgfwd = checkAndInitRDbg(**{'label':_APPNAME,})
+"""
+pydev remote debug options:
+  _rdbgthis: requested debugging status for this process instance
+  _rdbg: the remote debugging peer for this instance
+  _rdbgfwd: requested state forwarding to nested subprocess levels
+"""
+if _rdbgthis:
+    # activate remote debug stub call
     import epyunit.PyDevERDbg
     epyunit.PyDevERDbg.PYDEVD.startDebug() # start debugging here...
     #
     # remote breakpoints could be set from here on...
     #
 
-
-import getopt, os
-import platform
 
 # just to assure PYTHONPATH...
 try:
@@ -288,17 +359,6 @@ except Exception as e:
 class  EPyUnitException(Exception):
     pass
 
-# name of application, used for several filenames as default
-_APPNAME = "epyunit"
-
-# runtime environment 
-_host = platform.node()
-_user = "testuser"
-_osu = platform.os.uname()
-_os = _osu[0]
-_osver = _osu[2]
-_arch = _osu[-1]
-_dist, _distver,_x = platform.dist()
 
 def usage():
     if __name__ == '__main__':
@@ -330,9 +390,6 @@ _longopts = [
     "subproc", "subunit",
 
     "exit-unit-failed", "exit-unit-ok",
-
-    # debug
-    "rdbg=",
 
     # misc
     "help","debug","verbose","version","Version","selftest",
@@ -459,9 +516,6 @@ _O_XML    = 1
 _O_CSV    = 2
 _O_PASS   = 3
 _O_PASSA  = 4
-
-# pydev remote debug
-_rdbg = None
 
 #
 # start wrapper for subprocess
@@ -625,15 +679,6 @@ for _o,_a in _opts:
         _verbose += 1
 
     #
-    # remote debug stub call
-    #
-    elif _o in ("--rdbg",):
-        if _a:
-            _rdbg = _a
-        else:
-            _rdbg = _rdbg_default
-        
-    #
     # help and info
     #
     elif _o in ("-h",):
@@ -660,13 +705,6 @@ for _o,_a in _opts:
     else:
         assert False, "unhandled option"+str(_o)
 
-
-# if _rdbg:
-#     import epyunit.PyDevERDbg
-#     epyunit.PyDevERDbg.PYDEVD.startDebug()
-#     #
-#     # remote breakpoints could be set from here on...
-#     #
 
 #
 # assembled collections for rules
@@ -702,6 +740,10 @@ if _selftest: # do predefined selftest only
         _myargs['verbose'] = _verbose
     if _debug:
         _myargs['debug'] = _debug
+
+    if _rdbgfwd: # forward debugging status
+        _myargs['rdbgforward'] = _rdbgfwd
+        _myargs['rdbg'] = _rdbg
     
     epyunit.selftest.selftest(**_myargs)
     sys.exit(0)

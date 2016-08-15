@@ -31,33 +31,6 @@ The following parameters modify the control flow:
           px = os.path.dirname(px)
           px = os.path.normpath(px)
 
-* Test options and flags:
-
-    * **--pderd_inTestMode_suppress_init**:
-        Control initialization of the preconfigured debug stub.
-        It is foreseen to be the only instance under normal
-        circumstances.
-
-    * **--pderd_debug_self**:
-        Enabled debugging messages for debug, this also includes
-        the pre-debug initialization of the remote debug server.
-
-    * **--pderd_unit_self**:
-        Enabled log messages for unittests.
-
-    * **testflags**:
-        Flags to force specific behaviour - mostly faulty -
-        in order to test the module itself. So, **do not use**
-        these if you do not know what these actually do. 
-        
-        * ignorePydevd: Ignores present loaded debug support.
-            For debugging the debug support.
-
-        * ignorePydevdSysPath: Ignores load by current 'sys.path'.
-            For debugging the debug support.
-
-        * ignorePydevdCallParam: Ignores current parameter for load.
-            For debugging the debug support.
 
 """
 from __future__ import absolute_import
@@ -83,24 +56,10 @@ import glob
 
 from filesysobjects.FileSysObjects import findRelPathInSearchPath,clearPath,addPathToSearchPath
 
+from epyunit.checkRDbg import _pderd_inTestMode_suppress_init, _dbg_self, _dbg_unit
+
 PYDEVD = None
 
-if '--pderd_inTestMode_suppress_init' in sys.argv:
-    pderd_inTestMode_suppress_init = True
-    for px in sys.argv:
-        sys.argv.pop(sys.argv.index(px))
-else:
-    pderd_inTestMode_suppress_init = False
-if '--pderd_debug_self' in sys.argv:
-    _dbg_self = True
-    sys.argv.pop(sys.argv.index('--pderd_debug_self'))
-else:
-    _dbg_self = False
-if '--pderd_unit_self' in sys.argv:
-    _dbg_unit = True
-    sys.argv.pop(sys.argv.index('--pderd_unit_self'))
-else:
-    _dbg_unit = False
 
 
 class PyDevERDbgException(Exception):
@@ -181,6 +140,9 @@ class PyDevERDbg(object):
         
         Args:
             **kargs:
+                label=<name>: An optional label for identifying the currrent instance.
+                    The label could be provided as debugging flag.
+
                 remotedebug: Switches remote debugging support On/Off.
                     Dependent of this parameter an internal 
                     call of startRemoteDebugExt is performed 
@@ -190,20 +152,28 @@ class PyDevERDbg(object):
                     'pydevd.py', else defaults of 
                     'scanEclipseForPydevd'.
 
-                testflags: Some flags in order to ease the debug 
-                    of the package itself, not for application.
+                testflags: Flags to force specific behaviour
+                    - mostly faulty - in order to test the module
+                    itself. So, **do not use** these if you do not
+                    know what these actually do. 
                      
-                     These may partially fail, but provide a sufficient
-                     part of the control flow for the aspect of interest.
+                    These partially fail, but provide a sufficient
+                    part of the control flow for the aspect of interest.
                      
-                     ignorePydevd: Debugging the initial bootstrap
-                         of an simulated external process.
+                        ignorePydevd: Debugging the initial bootstrap
+                            of an simulated external process. Ignores 
+                            present loaded debug support. For debugging
+                            of the debug support.
 
-                     ignorePydevdSysPath: Debugging the initial
-                         bootstrap of an simulated external process.
+                        ignorePydevdSysPath: Debugging the initial
+                            bootstrap of an simulated external process.
+                            Ignores load by current 'sys.path'. For debugging
+                            of the debug support.
 
-                     ignorePydevdCallParam: Debugging the initial
-                         bootstrap of an simulated external process.
+                        ignorePydevdCallParam: Debugging the initial
+                            bootstrap of an simulated external process.
+                            Ignores current parameter for load. For debugging 
+                            of the debug support.
 
         Returns:
             Creates a proxy instance.
@@ -223,6 +193,8 @@ class PyDevERDbg(object):
                         self._itfs = True
                     elif tf == 'ignorePydevdCallParam':
                         self._itfcp = True
+            elif k == 'label':
+                self.label = v
 
         # check whether running in pydevd.py
         if not self._itfp and sys.modules.get('pydevd'): # already loaded
@@ -531,6 +503,13 @@ class PyDevERDbg(object):
         except Exception as e:
             raise PyDevERDbgException()
 
+    def setFork(self):
+        """Prepares debugging after fork.
+        """
+        if self.runningInPyDevDbg:
+            pydevd.settrace_forked()
+        pass
+
     def __str__(self):
         """Prints current remote debug parameters.
         """
@@ -561,7 +540,7 @@ class PyDevERDbg(object):
         return ret
 
 
-if not pderd_inTestMode_suppress_init:
+if not _pderd_inTestMode_suppress_init:
     if _dbg_self or _dbg_unit:
         print >>sys.stderr,"RDBG:init PYDEVD"
     if not PYDEVD or not PyDevERDbg._initok:
