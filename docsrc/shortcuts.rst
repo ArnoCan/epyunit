@@ -13,8 +13,8 @@ CLI Wrapper for filtered subprocess calls and streaming of results.
 
 * `epyunit <epyunit_cli.html#>`_
 
-epyunit.spUnittest
-^^^^^^^^^^^^^^^^^^
+epyunit.unittest.subprocess
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Classes derived from unittest for seamless integration of subprocess tests into PyUnit.
 
@@ -36,21 +36,21 @@ Classes derived from unittest for seamless integration of subprocess tests into 
   | `__str__ (0)`_                  | `TestExecutable.__str__`_                          |
   +---------------------------------+----------------------------------------------------+
 
-.. _TestExecutable.__init__: _modules/epyunit/spUnittest.html#TestExecutable.__init__
+.. _TestExecutable.__init__: _modules/epyunit/unittest.subprocess.html#TestExecutable.__init__
 .. _TestExecutable: spunittest.html#init
-.. _TestExecutable.callSubprocess: _modules/epyunit/spUnittest.html#TestExecutable.callSubprocess
+.. _TestExecutable.callSubprocess: _modules/epyunit/unittest.subprocess.html#TestExecutable.callSubprocess
 .. _callSubprocess: spunittest.html#callsubprocess
-.. _TestExecutable.assertExit: _modules/epyunit/spUnittest.html#TestExecutable.assertExit
+.. _TestExecutable.assertExit: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertExit
 .. _assertExit: spunittest.html#assertExit
-.. _TestExecutable.assertStdout: _modules/epyunit/spUnittest.html#TestExecutable.assertStdout
+.. _TestExecutable.assertStdout: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertStdout
 .. _assertStdout: spunittest.html#assertstdout
-.. _TestExecutable.assertStderr: _modules/epyunit/spUnittest.html#TestExecutable.assertStderr
+.. _TestExecutable.assertStderr: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertStderr
 .. _assertStderr: spunittest.html#assertstderr
-.. _TestExecutable.__str__: _modules/epyunit/spUnittest.html#TestExecutable.__str__
+.. _TestExecutable.__str__: _modules/epyunit/unittest.subprocess.html#TestExecutable.__str__
 .. _\__str__ (0): spunittest.html#str
 
 epyunit.SubprocUnit
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^
 Library for subprocesses as units.
 Based on 'epyunit.SystemCalls' for execution and fetch of results.
 Adds a state machine for decision on fuzzy results based on multiple sources.
@@ -114,6 +114,26 @@ Adds a state machine for decision on fuzzy results based on multiple sources.
 .. _setrules: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setrules
 
 
+epyunit.myscript
+^^^^^^^^^^^^^^^^
+Test data generators:
+
+* Data generators written in various languages for integration of heterogenous debugging into unit tests.
+
+  +---------------+-------------------+------------------------+--------------------------------+
+  | [prog-lang]   | debug-integration | [docs]                 | [source]                       | 
+  +===============+===================+========================+================================+
+  | bash          | --                | `myscript.sh`_         | `epyunit.myscript.sh`_         |
+  +---------------+-------------------+------------------------+--------------------------------+
+  | Python        | yes               | `myscript.py`_         | `epyunit.myscript.py`_         |
+  +---------------+-------------------+------------------------+--------------------------------+
+
+.. _epyunit.myscript.sh: myscript-sh.html#epyunit.myscript-sh
+.. _\myscript.sh: myscript-sh.html#epyunit.myscript-sh
+
+.. _epyunit.myscript.py: _modules/epyunit/myscript.html#
+.. _\myscript.py: myscript-py.html#epyunit.myscript-py
+
 epyunit.SystemCalls
 ^^^^^^^^^^^^^^^^^^^
 Wrapper library for subprocesses and caching of the results.
@@ -162,7 +182,7 @@ Wrapper library for subprocesses and caching of the results.
 
 
 
-epyunit.PyDevERDbg
+epyunit.debug
 ^^^^^^^^^^^^^^^^^^
 Automation of the seamless cross-process debugging of subprocesses by PyDev RemoteDebugServer.
 
@@ -179,30 +199,30 @@ Automation of the seamless cross-process debugging of subprocesses by PyDev Remo
 .. _checkRDbg.checkAndInitRDbg: _modules/epyunit/checkRDbg.html#checkAndInitRDbg
 .. _checkRDbg: checkrdbg.html#checkandinitrdbg
 
-* PyDevERDbg
+* PyDevRDC
 
   +------------------------------------+----------------------------------------------------+
   | [docs]                             | [source]                                           | 
   +====================================+====================================================+
-  | `PyDevERDbg`_                      | `PyDevERDbg.__init__`_                             |
+  | `PyDevRDC`_                        | `PyDevRDC.__init__`_                               |
   +------------------------------------+----------------------------------------------------+
-  | `scanEclipseForPydevd`_            | `PyDevERDbg.scanEclipseForPydevd`_                 |
+  | `scanEclipseForPydevd`_            | `PyDevRDC.scanEclipseForPydevd`_                   |
   +------------------------------------+----------------------------------------------------+
-  | `setDebugParams`_                  | `PyDevERDbg.setDebugParams`_                       |
+  | `setDebugParams`_                  | `PyDevRDC.setDebugParams`_                         |
   +------------------------------------+----------------------------------------------------+
-  | `startDebug`_                      | `PyDevERDbg.startDebug`_                           |
+  | `startDebug`_                      | `PyDevRDC.startDebug`_                             |
   +------------------------------------+----------------------------------------------------+
-  | `stopDebug`_                       | `PyDevERDbg.stopDebug`_                            |
+  | `stopDebug`_                       | `PyDevRDC.stopDebug`_                              |
   +------------------------------------+----------------------------------------------------+
 
-.. _PyDevERDbg.__init__: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.__init__
-.. _\PyDevERDbg: pydeverdbg.html#init
-.. _PyDevERDbg.scanEclipseForPydevd: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.scanEclipseForPydevd
+.. _PyDevRDC.__init__: _modules/epyunit.debug.html#PyDevRDC.__init__
+.. _\PyDevRDC: pydeverdbg.html#init
+.. _PyDevRDC.scanEclipseForPydevd: _modules/epyunit.debug.html#PyDevRDC.scanEclipseForPydevd
 .. _\scanEclipseForPydevd: pydeverdbg.html#scaneclipseforpydevd
-.. _PyDevERDbg.setDebugParams: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.setDebugParams
+.. _PyDevRDC.setDebugParams: _modules/epyunit.debug.html#PyDevRDC.setDebugParams
 .. _\setDebugParams: pydeverdbg.html#setdebugparams
-.. _PyDevERDbg.startDebug: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.startDebug
+.. _PyDevRDC.startDebug: _modules/epyunit.debug.html#PyDevRDC.startDebug
 .. _\startDebug: pydeverdbg.html#startdebug
-.. _PyDevERDbg.stopDebug: _modules/epyunit/PyDevERDbg.html#PyDevERDbg.stopDebug
+.. _PyDevRDC.stopDebug: _modules/epyunit.debug.html#PyDevRDC.stopDebug
 .. _\stopDebug: pydeverdbg.html#stopdebug
 

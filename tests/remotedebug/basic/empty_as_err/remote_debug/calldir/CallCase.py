@@ -60,29 +60,12 @@ class CallUnits(unittest.TestCase):
         ret = sx.callit(call)
         
         #
-        # Verify results here manually, thus requires the default tuple.
-        # In normal operations we should prefer one of the others for
-        # prepared error handling.
-        #
-#         if ret[0] != 1:
-#             #print 'Received custom:STDOUT:'
-#             if type([1]) is str:
-#                 print ret[1]
-#             else:
-#                 print '\n'.join(ret[1])
-#                  
-#             #print 'Received custom:STDERR:'
-#             if type([2]) is str:
-#                 print >>sys.stderr , ret[2] 
-#             else:
-#                 print >>sys.stderr , '\n'.join(ret[2]) 
-
-        #
-        # *** the default tuple - with demo-labels for stdout + stderr ***
-        #
-        assert ret[0] == 2
-        assert ret[1] == ["[]"] # for now literally from sub-sub-process
-        assert ret[2] == [ "['ERROR:MissingCallstr']"] # for now literally from sub-sub-process
+        retX = [ 
+            2, 
+            ["[]"], # for now literally from sub-sub-process
+            [ "['ERROR:MissingCallstr']"] # for now literally from sub-sub-process
+        ]
+        self.assertEqual(retX, ret) 
 
 #
 #######################

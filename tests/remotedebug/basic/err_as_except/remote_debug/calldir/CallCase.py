@@ -34,8 +34,12 @@ class CallUnits(unittest.TestCase):
         #
         # *** first level subprocess - call Python process and bring it under control of PyDev ***
         #
-        tstcall = os.path.abspath(os.path.dirname(__file__)+os.sep+'../subprocdir/bin/epyunit4RDbg.py')
-        tstcall = os.path.normpath(tstcall)
+        tstcall   = os.path.abspath(os.path.dirname(__file__)+os.sep+'../subprocdir/bin/epyunit4RDbg.py')
+        tstcall   = os.path.normpath(tstcall)
+        
+        tstcall  += " --rdbg "
+        tstcall  += " -- "
+        
         call  = 'python ' + tstcall  # call the wrapper 
 
         #
@@ -79,15 +83,24 @@ class CallUnits(unittest.TestCase):
             #print "Expected Exception received:"+str(e)
             # save the exception
             einfo = sys.exc_info()
+            if not einfo:
+                print >>sys.stderr,"Cannot fetch 'sys.exc_info()'"
+            elif type(einfo[0]) != SystemCallsExceptionSubprocessError or einfo[1].code != 8:
+                outval = stdoutbuf.getvalue()
+                errval = stderrbuf.getvalue()
+
+                sys.stdout = stdout
+                sys.stderr = stderr
+                # print >>sys.stderr,"STDOUT="+str(outval)
+                # print >>sys.stderr,"STDERR="+str(errval)
+
             pass
         except Exception as e:
             raise
 
-
         # assure it is actually the sys.exit
         self.assertIsNotNone(einfo)
-        assert einfo[0] == SystemCallsExceptionSubprocessError
-        assert einfo[1].code== 8
+        self.assertEqual( [einfo[0], einfo[1].code,], [SystemCallsExceptionSubprocessError, 8,] )
 
         stdval = stdoutbuf.getvalue()
         stdref = """['arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output']

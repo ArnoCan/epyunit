@@ -1,16 +1,18 @@
 # -*- coding: utf-8 -*-
+"""Basic classes and functions for unittests.
+"""
 from __future__ import absolute_import
 
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.12'
+__version__ = '0.1.14'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
 
 import sys,re
-from types import NoneType
+from types import NoneType,FunctionType
 
 version = '{0}.{1}'.format(*sys.version_info[:2])
 if version < '2.7': # pragma: no cover
@@ -27,20 +29,18 @@ static precompiled 're' for parent '__repr__'.
 # enums for priority type 
 #
 _P_OK = 0 
-"""
-hasSuccess
-"""
+"""hasSuccess"""
 
 _P_NOK = 1
-"""
-hasFailure
-"""
+"""hasFailure"""
 
 _P_WEIGHT = 3
-"""
-simple counter compare, bigger wins: (resultok, resultnok), else default
-"""
-_prioenums = {0:'_P_OK',1:'_P_NOK',3:'_P_WEIGHT', }
+"""simple counter compare, bigger wins: (resultok, resultnok), else default"""
+
+_P_CUSTOM = 4
+"""callback for custom function"""
+
+_prioenums = {_P_OK:'_P_OK',_P_NOK:'_P_NOK',_P_WEIGHT:'_P_WEIGHT',_P_CUSTOM:'_P_CUSTOM', }
 
 #
 # enums for exit type 
@@ -124,9 +124,7 @@ class SProcUnitRules(object):
         '_exitret': 0,
 
     }
-    """
-    The default rules for OK operations
-    """
+    """The default rules for OK operations."""
 
     def __init__(self,**kargs):
         """Initializes the ruleset and operational parameters.
@@ -136,16 +134,21 @@ class SProcUnitRules(object):
         #
         # the re pattern
         #
-        self.stderrnok = []; """list of 're' patterns indicating error on STDERR"""
-        self.stderrok = []; """list of 're' patterns indicating success on STDERR"""
-        self.stdoutnok = []; """list of 're' patterns indicating success on STDOUT"""
-        self.stdoutok = []; """list of 're' patterns indicating success on STDOUT"""
+        
+        #: list of 're' patterns indicating error on STDERR
+        self.stderrnok = []
+        
+        self.stderrok = [] 
+        """list of 're' patterns indicating success on STDERR"""
+        
+        self.stdoutnok = [] #: list of 're' patterns indicating success on STDOUT
+        self.stdoutok = [] #: list of 're' patterns indicating success on STDOUT
 
         #
         # the actual matched strings
         #
-        self.stderrnok_matched = []; """list of actually matched failure strings on STDERR"""
-        self.stderrok_matched = []; """list of actually matched success strings on STDERR"""
+        self.stderrnok_matched = []; #: list of actually matched failure strings on STDERR
+        self.stderrok_matched = []; #: list of actually matched success strings on STDERR
         self.stdoutnok_matched = []; """list of actually matched failure strings on STDOUT"""
         self.stdoutok_matched = []; """list of actually matched success strings on STDOUT"""
 
@@ -328,7 +331,15 @@ class SProcUnitRules(object):
                     True|'ok': One success state sets the whole case 
                         to success.
                     
-                    'weight': Choose larger values of counters.
+                    weight: Choose larger values of counters.
+
+                    <customcallback>: Custom callback with signature:
+                    
+                        customcallback(self,ret)
+                        
+                            self: Current instance.
+                            
+                            ret: Data provided to apply.
 
                 reset: A reset dictionary, see 'rules_reset'.
 
@@ -420,8 +431,12 @@ class SProcUnitRules(object):
                     self.priotype = _P_NOK
                 elif v.lower() in ('ok',) :
                     self.priotype = _P_OK
+                elif type(v) in (FunctionType,) :
+                    self.priotype = _P_CUSTOM
+                    self._pcustom = v
                 else:
                     self.priotype = _P_NOK
+
 
             #
             # required number of matches - first matching counter dominates
@@ -683,8 +698,33 @@ class SProcUnitRules(object):
         # weight the success and failures
         #
         elif self.priotype == _P_WEIGHT: # weight counters
-            pass
-        
+            _r = self._exitcond # default
+            
+            # prep weight, required in any case
+            if self.resultok and self.resultnok: # both, weight
+                if self.resultok > self.resultok_cnt or self.resultnok > self.resultnok_cnt:
+                    _r = False
+                else:
+                    _r = self.resultok > self.resultnok
+            
+            elif self.resultok: # ok only
+                _r = self.resultok > self.resultok_cnt
+            
+            elif self.resultnok: # failure only
+                _r = self.resultnok > self.resultnok_cnt
+
+            
+            if self.exitign: # weight counters only
+                return _r
+
+            return _r and self._exitcond # consider in addition exit value with priority
+
+        #
+        # custom callback
+        #
+        elif self.priotype == _P_CUSTOM: # weight counters
+            return self._pcustom(self,ret)
+
         return  _result
 
     def states(self):

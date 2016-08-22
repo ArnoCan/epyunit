@@ -1,43 +1,65 @@
 epyunit
 =======
 
-The 'epyunit' package provides extensions of the 
-PyUnit framework for unit and regression tests of executables written in
-arbitrary languages.
-In distinction to some more comprising and though complex frameworks the 
-'epyunit' provides a minimal but sufficient approach in particular for
-the low-effort test automation of scripts and tools.
+Abstract
+--------
 
-The reuse of the standard PyUnit in combination with PyDev 
-provides out-of-the-box integration into the Eclipse-IDE.
-Thus command line based regression tests as well as a graphical 
-frontend for test statistics provided by PyDev could be applied. 
+The **ePyUnit package** provides extensions for the integrated 
+**Testautomation and Debugging** of executables and scipts as subprocesses.
 
-The epyunit components call the wrapped process and read the execution results
-from STDOUT, STDERR, and the exit value. The values are read into Python 
+Technically **ePyUnit** provides extensions for the
+**PyUnit** and **PyDev**/**Eclipse**  frameworks for blackbox tests 
+and seamless integrated debugging of executables and scripts including nested  calls of subprocesses.
+The standard frameworks, libraries and IDEs provide components as presented
+by the following figure.::
+
+    .                                 :
+       +----------------+             :       +---------------------------+
+       |    unittest    |             :       |  scripts and executables  |
+       +---+------------+---+         :       +---+-----------------------+---+
+           |   automation   |         :           |       debugging           |
+           +----------------+         :           +---------------------------+
+    .                                 :
+
+
+These are extended by framework features for the
+seamless cross-process integration of scripts and programs.::
+
+    .
+    +------------------------------+       +-----------------------------+
+    |   automation and unittest    |       |   seamless cross-process    |
+    |        for arbitrary         | <---> |          debugging          |
+    |   scripts and executables    |       |                             |
+    +------------------------------+       +-----------------------------+
+
+    |<---                     seamless integration                   --->| 
+    .
+
+The included automation extension for the PyDev/Eclipse based debugging of 
+- local and remote - Python subprocesses provides simplified support of detailed error analysis
+in case of test failures.
+
+Blueprint
+---------
+
+The *'ePyUnit' package* provides a minimal but sufficient approach in particular for
+the low-effort test automation of scripts and tools suitable for operations of 
+large scale application tests as well as for daily and advanced DevOps tasks.
+
+* ePyUnit encapsulates processes and relies on PyUnit for commandline
+  based unit and regression tests. The main focus is general blackbox testing
+  of executables, for Python in addition the automation of PyDev debugging
+  is included , see 'https://pythonhosted.org/epyunit/call_integration.html'.
+
+* ePyUnit integrates into PyDev for the support of the graphical
+  Eclipse IDE of unit testing and integrated graphical debugging,
+  this is also supported for external processes started independently
+  from the commandline, see 'https://pythonhosted.org/epyunit/pydevd_integration.html'.
+
+
+The ePyUnit components call the wrapped process and read the execution results
+from STDOUT, STDERR, and the exit value. The values are cached by Python 
 variables either for further processing, or optional pass-through to the caller.
- 
-The 'epyunit' package provides in particular:
-
-* Support for unit tests of shell scripts - **bash** - from command line and Eclipse/PyDev
-
-* The simplified reuse of executables as test-dummies within multiple test cases.
-
-* The categorization of structures defined by the directory tree. 
-
-* The support of arbitrary intermixed implementation languages for executables.
-
-The implementation supports Python(>=2.7) and integrates into the Eclipse IDE 
-with PyDev, and PyUnit. 
-
-The package 'epyunit' is a spin off from the project 'UnifiedSessionsManager-2.0'.
- 
-The main interface classes are:
-
-* **FileSysObjectsMin** - A subset of the project PyFileSysObjects.
-
-* **SystemCalls** - Adaptation of sub-process calls for unit tests.
-
 
 The architecture is based on the packages 'PyUnit' and 'PyDev'::
 
@@ -51,7 +73,7 @@ The architecture is based on the packages 'PyUnit' and 'PyDev'::
                                    |                 stderr                |
                                    |                 exit                  V
                                    |                           +-----------------------+
-    PyDev Remote                   |                           |    PyDevRemoteDBG     |      Debug into subprocess
+    PyDev Remote                   |                           |    PyDevRDC     |      Debug into subprocess
     Debug Server                   |                           +-----------------------+
                                    |                                       |
                    . . . . . . . . | . . . . . . . . . . . . . . . . . . . | . . . . . . . . 
@@ -67,6 +89,44 @@ The architecture is based on the packages 'PyUnit' and 'PyDev'::
                      +-----------+   +-----------+ 
     
 
+The test components collect internally the data of multiple output sources and 
+decide based on the selection of the user parameters whether the test was successful or has failed.
+Therefore a similar approach to Fuzzy-Logic is applied on mixed results consisting of partial
+failures and success.
+The provided scenarios are single level subprocesses::
+
+    +----------------+      +------------+
+    | Python-Process | <--> | Subprocess |
+    +----------------+      +------------+
+
+and nested multilevel scripts and executables as subprocesses::
+
+    +----------------+      +------------+            +------------+
+    | Python-Process | <--> | Subprocess | <- ... --> | Subprocess |  
+    +----------------+      +------------+            +------------+
+
+Where each level of subprocesses could start an arbitrary number of local and remote
+subprocesses itself, and either correlate or pass-through the results.
+
+The provided package comprises functional atoms for various UseCases, as well
+as extension classes for the 'unittest' package to be used in combination
+with PyUnit and PyDev..
+
+The 'epyunit' package provides in particular:
+
+* Support for unit tests of shell scripts - **bash** - from command line and Eclipse/PyDev
+
+* The simplified reuse of executables as test-dummies within multiple test cases.
+
+* The categorization of structures defined by the directory tree. 
+
+* The support of arbitrary intermixed implementation languages for executables.
+
+The implementation supports Python(>=2.7) and integrates into the Eclipse IDE 
+with PyDev, and PyUnit. 
+
+The package 'epyunit' is a spin off from the project 'UnifiedSessionsManager-2.0'.
+ 
 For examples and patterns see subdirectories:
 
 * UseCases
@@ -81,13 +141,19 @@ For examples and patterns see subdirectories:
 
 **Online documentation**:
 
-* https://pypi.python.org/pypi/epyunit/
-* https://pythonhosted.org/epyunit/
+* Documentation: https://pythonhosted.org/epyunit/
 
-setup.py
---------
+* API: https://pythonhosted.org/epyunit/epydoc/
+
+* PyPi: https://pypi.python.org/pypi/epyunit/
+
+**setup.py**
 
 The installer adds a few options to the standard setuptools options.
+
+* *build_doc*: Creates the integrated documentation for runtime systems including API in 'epyunit/build/apidoc/epyunit'.
+
+* *install_doc*: Installs documents into source project 'epyunit/doc', and the 'HOME' or 'AppData'. 
 
 * *build_sphinx*: Creates documentation for runtime system by Sphinx, html only. Calls 'callDocSphinx.sh'.
 
@@ -140,7 +206,7 @@ Project Data
 
   *  licenses-amendments.txt - for amendments: Forced-Fairplay-Constraints
 
-VERSIONS and RELEASES
+Versions and Releases
 ---------------------
 
 **Planned Releases:**
@@ -157,46 +223,31 @@ VERSIONS and RELEASES
 
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
+* RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.01.012 - Alpha:**
-
-**REMARK:** This is an informal pre-work-release - tested on Linux only.
-  The content is a major advance, and the major part is stable, 
-  but overall still in work.
+**Current Release: 00.01.014 - Alpha:**
 
 Major Changes:
 
 * Fixes.
 
-* Provide first version of integrated documentation created by SPhinx+Epydoc
-
-* Migrated API creation by Epydoc to Windows7 and MacOS-SnowLeopard
-
-* Introduced match lists of regexpr. 
-
 * The most may already work on Mac-OS and MS-Windows and others too, but due to 
   priorities for now tested and released for Linux. Others are following soon.
 
-* The class 'epyunit.spUnittest.TestExecutable' is pre-alpha
-
 * The documents are mostly complete, but still in review.
 
-ToDo:
+* Adapted structure for debug and unit test of multiple programming languages.
 
-* Finish the class 'epyunit.spUnittest.TestExecutable'
+* Added tests.
  
-* Finish list of actual matches.
-
-* Correlator engine.
-   
 Current test status:
 
 **ATTENTION**: Some of the tests involve the remote debug feature of PyDev/Eclipse,
   thus require a running local RemoteDebugServer, see manuals.
 
-* UnitTests: >500
+* UnitTests: >590(CLI)/730(Eclipse)
 
-* Use-Cases as UnitTests: >29
+* Use-Cases as UnitTests: >45
 
-**Total**: >530
+**Total**: >770
 

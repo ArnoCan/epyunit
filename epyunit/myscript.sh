@@ -105,6 +105,7 @@ Provided test cases:
    EXIT:
     0
    STDOUT:
+    fromG
     -
    STDERR:
      NOK

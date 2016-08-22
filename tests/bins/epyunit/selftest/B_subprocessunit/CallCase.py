@@ -33,8 +33,8 @@ class CallUnits(unittest.TestCase):
         """Simple call, providing a return value only.
         """
         _call  = epyu + " --selftest "
-        _call  += " --rdbg "
-        _call  += " --rdbg-forward all "
+        #_call  += " --rdbg "
+        #_call  += " --rdbg-forward all "
         #_call  += " --pderd_debug_self "
 
         syskargs = {}

@@ -28,16 +28,19 @@ class CallUnits(unittest.TestCase):
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
         
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
-        
+    @classmethod
+    def setUpClass(cls):
+        cls.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
+
+        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+
+        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri = cls.scri
+
+    def setUp(self):
         syskargs = {}
         self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
-
-        # epyunit.SubprocessUnit
-        _repr = repr(self.sx)
-        _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False, 'rules': SProcUnitRules}"""
-        assert _repr == _reprX
 
         # epyunit.SProcUnitRules
         if self.sx.getruleset():
@@ -49,13 +52,7 @@ class CallUnits(unittest.TestCase):
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
-
-        self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
-
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
-        self.scri = self.scri
-
-    def testCase010(self):
+    def testCase010_OK(self):
         _call  = self.scri
         _call += " OK "
 
@@ -68,7 +65,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase011(self):
+    def testCase011_NOK(self):
         callkargs = {}
         _call = self.scri
         _call += " NOK "
@@ -80,7 +77,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase012(self):
+    def testCase012_PRIO(self):
         callkargs = {}
         _call = self.scri
         _call += " PRIO "
@@ -92,7 +89,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase013(self):
+    def testCase013_EXITOK(self):
         callkargs = {}
         _call = self.scri
         _call += " EXITOK "
@@ -104,7 +101,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase014(self):
+    def testCase014_EXITNOK(self):
         callkargs = {}
         _call = self.scri
         _call += " EXITNOK "
@@ -116,7 +113,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase015(self):
+    def testCase015_EXIT7(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT7 "
@@ -128,7 +125,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase016(self):
+    def testCase016_EXIT8(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT8 "
@@ -140,7 +137,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase017(self):
+    def testCase017_EXIT9OK3NOK2(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT9OK3NOK2 "
@@ -152,7 +149,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase018(self):
+    def testCase018_DEFAULT(self):
         callkargs = {}
         _call = self.scri
         _call += " DEFAULT "

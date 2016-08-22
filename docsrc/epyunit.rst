@@ -5,10 +5,10 @@
    :maxdepth: 4
 
 
-* **epyunit.spUnit**: 
-  `spUnittest <#class-spunitest>`_
+* **epyunit.unittest.subprocess**: 
+  `unittest.subprocess <#class-spunitest>`_
 
-  .. automodule:: epyunit.spUnittest
+  .. automodule:: epyunit.unittest.subprocess
 
 
 * **epyunit.SubprocUnit**: 
@@ -23,15 +23,15 @@
 
   .. automodule:: epyunit.SystemCalls
 
-* **epyunit.PyDevERDbg**:
-  `PyDevERDbg <#class-pydeverdbg>`_
+* **epyunit.debug**:
+  `PyDevRDC <#class-pydeverdbg>`_
 
-  .. automodule:: epyunit.PyDevERDbg
+  .. automodule:: epyunit.debug
 
 * **epyunit.checkRDbg**:
   `checkRDbg <#checkrdbg>`_
 
-  .. automodule:: epyunit.PyDevERDbg
+  .. automodule:: epyunit.debug
 
 * **epyunit.selftest**:
 
@@ -39,11 +39,11 @@
 
 **Sources**
 
-* epyunit.spUnittest `[source] <_modules/epyunit/spUnittest.html#>`_
+* epyunit.unittest.subprocess `[source] <_modules/epyunit/unittest.subprocess.html#>`_
 * epyunit.SubprocUnit `[source] <_modules/epyunit/SubprocUnit.html#>`_
 * epyunit.SystemCalls `[source] <_modules/epyunit/SystemCalls.html#>`_
 * epyunit.checkRDbg `[source] <_modules/epyunit/checkRDbg.html#>`_
-* epyunit.PyDevERDbg `[source] <_modules/epyunit/PyDevERDbg.html#>`_
+* epyunit.debug `[source] <_modules/epyunit.debug.html#>`_
 * epyunit.selftest `[source] <_modules/epyunit/selftest.html#>`_
 
 

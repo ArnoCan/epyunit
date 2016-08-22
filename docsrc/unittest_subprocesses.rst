@@ -28,7 +28,6 @@ reduce in a fuzzy based approach multiple criteria to the relevant:
 
 * result, resultok, resultnok
 
-
 The following exit criteria provide either for weighting the output, or
 as criteria itself.
 
@@ -151,9 +150,9 @@ Examples
 
 * Detailed examples in the subdirectories of the source package:
 
-  * tests + testdata 
+  * `UseCases <UseCases.html>`_ 
 
-  * UseCases
+  * `tests <tests.html>`_ 
 
 References
 ==========

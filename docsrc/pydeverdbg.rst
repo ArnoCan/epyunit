@@ -1,12 +1,12 @@
-'epyunit.PyDevERDbg' - Module
-*****************************
+'epyunit.debug.pydevrdc' - Module
+*********************************
 The PyDev plugin provides for the remote debugging of Python processes. This
 is also supported for processes started outside the control of the debugger. 
 Here stub code is required in the process started outside the control domain
-of 'pydevd.py'. The module 'epyunit.PyDevERDbg' supports the localization
+of 'pydevd.py'. The module 'epyunit.debug' supports the localization
 and load of 'pydevd.py' fromvarious versions and locations.
 
-.. automodule:: epyunit.PyDevERDbg
+.. automodule:: epyunit.debug.pydevrdc
 
 
 Module Variables
@@ -49,49 +49,49 @@ Function: checkRDbg
 .. autofunction:: checkRDbg
 
 
-Class: PyDevERDbg
------------------
+Class: PyDevRDC
+---------------
 
-.. autoclass:: PyDevERDbg
+.. autoclass:: PyDevRDC
 
 Methods
 ^^^^^^^
 
 __init__
 """"""""
-.. automethod:: PyDevERDbg.__init__
+.. automethod:: PyDevRDC.__init__
 
 scanEclipseForPydevd
 """"""""""""""""""""
-.. automethod:: PyDevERDbg.scanEclipseForPydevd
+.. automethod:: PyDevRDC.scanEclipseForPydevd
 
 setDebugParams
 """"""""""""""
-.. automethod:: PyDevERDbg.setDebugParams
+.. automethod:: PyDevRDC.setDebugParams
 
 startDebug
 """"""""""
-.. automethod:: PyDevERDbg.startDebug
+.. automethod:: PyDevRDC.startDebug
 
 stopDebug
 """""""""
-.. automethod:: PyDevERDbg.stopDebug
+.. automethod:: PyDevRDC.stopDebug
 
 __str__
 """""""
-.. automethod:: PyDevERDbg.__str__
+.. automethod:: PyDevRDC.__str__
 
 __repr__
 """"""""
-.. automethod:: PyDevERDbg.__repr__
+.. automethod:: PyDevRDC.__repr__
 
 
 Exceptions
 ^^^^^^^^^^
 
-.. autoexception:: PyDevERDbgException
+.. autoexception:: PyDevRDCException
 
-.. autoexception:: PyDevERDbgLoadException
+.. autoexception:: PyDevRDCLoadException
 
-.. autoexception:: PyDevERDbgServerException
+.. autoexception:: PyDevRDCServerException
 

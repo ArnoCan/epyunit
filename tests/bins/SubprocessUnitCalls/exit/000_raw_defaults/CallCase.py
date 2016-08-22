@@ -69,7 +69,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -110,7 +110,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [0, ['fromB', 'arbitrary output', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -151,7 +151,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -192,7 +192,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -233,7 +233,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [1, ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -274,7 +274,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [7, ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -315,7 +315,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [8, ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -356,7 +356,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [9, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -397,7 +397,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [123, ['arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules

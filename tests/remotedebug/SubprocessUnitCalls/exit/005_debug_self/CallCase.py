@@ -47,14 +47,16 @@ class CallUnits(unittest.TestCase):
     def testCase010(self):
         callkargs = {}
         _call  = self._call
-        #_call += " --pderd_debug_self "
         _call += self.scri
         _call += " OK "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  0
-        assert ret[1] ==  ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started']
-
+        retX = [
+            0,
+            ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started'],
+        ]
+        self.assertEqual(ret, retX)
+        
         state = self.sx.apply(ret)
         assert state
         pass
@@ -65,10 +67,13 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " NOK "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  0
-        assert ret[1] ==  ['fromB', 'arbitrary output', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'arbitrary signalling ERROR string']
-
+        retX = [
+            0,
+            ['fromB', 'arbitrary output', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'arbitrary signalling ERROR string'],
+        ]
+        self.assertEqual(ret, retX)
+        
         state = self.sx.apply(ret)
         assert state
         pass
@@ -79,9 +84,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " PRIO "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  0
-        assert ret[1] ==  ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'arbitrary signalling ERROR string']
+        retX =  [
+            0,
+            ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'arbitrary signalling ERROR string'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert state
@@ -93,9 +101,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " EXITOK "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  0
-        assert ret[1] ==  ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started']
+        retX = [
+            0,
+            ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert state
@@ -107,9 +118,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " EXITNOK "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  1
-        assert ret[1] ==  ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started']
+        retX = [
+            1,
+            ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert not state
@@ -121,9 +135,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " EXIT7 "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  7
-        assert ret[1] ==  ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started']
+        retX = [
+            7,
+            ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert not state
@@ -135,9 +152,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " EXIT8 "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  8
-        assert ret[1] ==  ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started','arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']
+        retX = [
+            8,
+            ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started','arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert not state
@@ -149,9 +169,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " EXIT9OK3NOK2 "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  9
-        assert ret[1] ==  ['fromH', 'OK', 'OK', 'OK']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'NOK', 'NOK']
+        retX = [
+            9,
+            ['fromH', 'OK', 'OK', 'OK'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started', 'NOK', 'NOK'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert not state
@@ -163,9 +186,12 @@ class CallUnits(unittest.TestCase):
         _call += self.scri
         _call += " DEFAULT "
         ret = self.sx.callit(_call,**callkargs)
-        assert ret[0] ==  123
-        assert ret[1] ==  ['arbitrary output']
-        assert ret[2] ==  ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started']
+        retX = [
+            123,
+            ['arbitrary output'],
+            ['RDBG:init PYDEVD', 'RDBG:found pydevd.py', 'RDBG:debug started'],
+        ]
+        self.assertEqual(ret, retX)
 
         state = self.sx.apply(ret)
         assert not state

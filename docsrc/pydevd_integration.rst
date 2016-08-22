@@ -20,12 +20,12 @@ Application Basics
 ==================
 Remote Debugging with PyDev within Eclipse in the raw form requires the frequent
 modification of code for clear distinction of development and production systems.
-The *PyDevERDbg* utilities provide an approach designed to
+The *PyDevRDC* utilities provide an approach designed to
 be kept in code from development to production systems.  
 
 The feature comprise in more detailed view:
 
-* PyDevERDbg - PyDev Eclipse Remote Debugging
+* PyDevRDC - PyDev Eclipse Remote Debugging
 
   The main class for integration into the called subprocesses
   and their simplified setup for debugging based on pydevd.py.
@@ -122,11 +122,11 @@ manually from the commandline and attaches itself to the PyDev plugin of Eclipse
    'pydevd.py'::
 
      # load debug stub-wrapper
-     import epyunit.PyDevERDbg
+     import epyunit.debug
 
    For the default initial debug controller stub refer to::
 
-     epyunit.PyDevERDbg.PYDEVD
+     epyunit.debug.PYDEVD
 
    The main action is here to detect and/or find and load the module 'pydevd.py' provided by PyDev.
    This depends of whether the process is started under the control of the PyDev debugger, or as a
@@ -143,12 +143,12 @@ manually from the commandline and attaches itself to the PyDev plugin of Eclipse
    based path search 
    ::
 
-     epyunit.PyDevERDbg.PYDEVD
+     epyunit.debug.PYDEVD
 
 
    For additional information on search options refer to 'scanEclipseForPydevd'
    `[doc] <pydeverdbg.html#scaneclipseforpydevd>`_ 
-   `[source] <_modules/epyunit/PyDevERDbg.html#PyDevERDbg.scanEclipseForPydevd>`_
+   `[source] <_modules/epyunit.debug.html#PyDevRDC.scanEclipseForPydevd>`_
    .
 
 #. **Subprocess: startDebug**
@@ -156,7 +156,7 @@ manually from the commandline and attaches itself to the PyDev plugin of Eclipse
    The debug session is started by the execution of the statement::
 
      # start debug session
-     epyunit.PyDevERDbg.PYDEVD.startDebug()
+     epyunit.debug.PYDEVD.startDebug()
 
 #. **User Dialogue: start interactive session**
 
@@ -178,7 +178,7 @@ Another example with **Basic Control**.
   #. Include the following statements in the executable to be 
      started by another process::
 
-       from epyunit.PyDevERDbg import PYDEVD
+       from epyunit.debug import PYDEVD
        
        _pydevdpath=/path/to/your/eclipse/directory
        _ignore=True

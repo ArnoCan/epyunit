@@ -17,9 +17,11 @@ case. Therefore correlation of stdout, stderr, and exit
 values is provided. 
 
 
-SYNOPSIS:
+**SYNOPSIS**:
 
   epyunit [OPTIONS] [--] <testee> [<testee-options>]
+
+The following categories of options are provided: 
 
   rulesets:
 
@@ -49,7 +51,8 @@ SYNOPSIS:
     --pydev-remote-debug, --rdbg, --rdbg-forward
   
   
-OPTIONS:
+**OPTIONS**:
+.
 
   --appname=<arbitrary-name-of-app>
 
@@ -251,7 +254,7 @@ OPTIONS:
     Prints complete test result XML format.
 
 
-ARGUMENTS:
+**ARGUMENTS**:
 
   [--]
 
@@ -268,14 +271,14 @@ ARGUMENTS:
      Options of the testee.
 
 
-ENVIRONMENT:
+**ENVIRONMENT**:
 
   * PYTHON OPTIONS:
 
     -O, -OO: Eliminates '__debug__' code.
  
 
-EXAMPLES:
+**EXAMPLES**:
 
   Basic call examples are provided:
 
@@ -290,7 +293,7 @@ EXAMPLES:
 
   * UseCases
   
-COPYRIGHT:
+**COPYRIGHT**:
   Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez
   Copyright (C)2015-2016 Arno-Can Uestuensoez
 
@@ -301,15 +304,16 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.10'
+__version__ = '0.1.13'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
 
-#
-#--- fetch options
-#
 import getopt, os, sys, platform
+
+#
+#--- early fetch of CLI options
+#
 
 # name of application, used for several filenames as default
 if '--appname' in sys.argv:
@@ -331,8 +335,9 @@ _dist, _distver,_x = platform.dist()
 #
 # Remote debugging
 #
-from epyunit.checkRDbg import checkAndInitRDbg
-_rdbgthis,_rdbg,_rdbgfwd = checkAndInitRDbg(**{'label':_APPNAME,})
+#from epyunit.debug.checkRDbg import checkAndInitRDbg
+import epyunit.debug.checkRDbg
+_rdbgthis,_rdbg,_rdbgfwd = epyunit.debug.checkRDbg.checkAndInitRDbg(**{'label':_APPNAME,})
 """
 pydev remote debug options:
   _rdbgthis: requested debugging status for this process instance
@@ -341,12 +346,12 @@ pydev remote debug options:
 """
 if _rdbgthis:
     # activate remote debug stub call
-    import epyunit.PyDevERDbg
-    epyunit.PyDevERDbg.PYDEVD.startDebug() # start debugging here...
+    import epyunit.debug.pydevrdc
+    epyunit.debug.pydevrdc.PYDEVD.startDebug() # start debugging here...
     #
     # remote breakpoints could be set from here on...
     #
-
+    pass
 
 # just to assure PYTHONPATH...
 try:
@@ -358,7 +363,6 @@ except Exception as e:
 
 class  EPyUnitException(Exception):
     pass
-
 
 def usage():
     if __name__ == '__main__':
@@ -498,7 +502,6 @@ _chk_stdout = False
 _CHK_STDOUT_OK = [] # list of provided strings: OK condition
 _CHK_STDOUT_NOK = [] # list of provided strings: NOK condition
 
-
 # counter values for occured matches
 _result = 0 # overall
 
@@ -607,7 +610,6 @@ for _o,_a in _opts:
         _myRulesMap['multiline'] = True 
     elif _o in ("--reunicode",):
         _myRulesMap['unicode'] = True 
-        
 
     #-------------------------------------------------------------
     #

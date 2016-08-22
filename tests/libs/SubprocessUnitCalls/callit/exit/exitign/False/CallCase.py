@@ -23,70 +23,73 @@ class CallUnits(unittest.TestCase):
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
         
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
+    @classmethod
+    def setUpClass(cls):
+        cls.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
-        self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
+        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
 
+        cls._call = cls.scri
+        
+        cls.callkargs = {}
+        cls.callkargs['exitign'] = False # default
+        cls.callkargs['exittype'] = False
+
+    def setUp(self):
         syskargs = {}
         self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
 
-        self._call = self.scri
-        
-        self.callkargs = {}
-        self.callkargs['exitign'] = False # default
-        self.callkargs['exittype'] = False
-
-    def testCase010(self):
+    def testCase010_OK(self):
         self._call += " OK "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
         pass
 
-    def testCase011(self):
+    def testCase011_NOK(self):
         self._call += " NOK "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromB', 'arbitrary output', 'arbitrary output'], ['arbitrary signalling ERROR string']]
         pass
 
-    def testCase012(self):
+    def testCase012_PRIO(self):
         self._call += " PRIO "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [0, ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], ['arbitrary signalling ERROR string']]
         pass
 
-    def testCase013(self):
+    def testCase013_EXITOK(self):
         self._call += " EXITOK "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
         pass
 
-    def testCase014(self):
+    def testCase014_EXITNOK(self):
         self._call += " EXITNOK "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [1, ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
         pass
 
-    def testCase015(self):
+    def testCase015_EXIT7(self):
         self._call += " EXIT7 "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [7, ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], []]
         pass
 
-    def testCase016(self):
+    def testCase016_EXIT8(self):
         self._call += " EXIT8 "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [8, ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
         pass
 
-    def testCase017(self):
+    def testCase017_EXIT9OK3NOK2(self):
         self._call += " EXIT9OK3NOK2 "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [9, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
         pass
 
-    def testCase018(self):
+    def testCase018_DEFAULT(self):
         self._call += " DEFAULT "
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [123, ['arbitrary output'], []]

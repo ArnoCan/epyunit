@@ -28,28 +28,31 @@ class CallUnits(unittest.TestCase):
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
         
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
+    @classmethod
+    def setUpClass(cls):
+        cls.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
+        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls._call  = cls.epyu
+        #cls._call += " --rdbg "
+        cls._call += " --raw "
+        cls._call += " --priotype=True "
+        cls._call += " --exittype=False "
+
+        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri = " -- " + cls.scri
+
+    def setUp(self):
         syskargs = {}
         self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
 
-        self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
-        self._call  = self.epyu
-        #self._call += " --rdbg "
-        self._call += " --raw "
-        self._call += " --priotype=True "
-        self._call += " --exittype=False "
-
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
-        self.scri = " -- " + self.scri
 
     def testCase010(self):
         callkargs = {}
         _call  = self._call
         
-        #4TEST:
-        _call += " --rdbg "
+        # _call += " --rdbg "
 
         _call += self.scri
         _call += " OK "
@@ -65,7 +68,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -73,7 +76,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -82,7 +85,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': True, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -106,7 +109,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -114,7 +117,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [0, ['fromB', 'arbitrary output', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -123,7 +126,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': True, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -147,7 +150,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -155,7 +158,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -164,7 +167,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': True, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -188,7 +191,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -196,7 +199,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [0, ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert state
 
         # epyunit.SProcUnitRules
@@ -205,7 +208,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': True, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -229,7 +232,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -237,7 +240,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [1, ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -246,7 +249,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 1, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -270,7 +273,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -278,7 +281,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==  [7, ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -287,7 +290,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 7, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -311,7 +314,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -319,7 +322,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [8, ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -328,7 +331,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 8, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -352,7 +355,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -360,7 +363,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [9, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -369,7 +372,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 9, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 
@@ -393,7 +396,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s0 = self.sx.getruleset().states()
+            _s0 = self.sx.getruleset().states() # For debug
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
@@ -401,7 +404,7 @@ class CallUnits(unittest.TestCase):
         assert ret ==   [123, ['arbitrary output'], []]
 
         state = self.sx.apply(ret)
-        _s1 = self.sx.getruleset().states()
+        _s1 = self.sx.getruleset().states() # For debug
         assert not state
 
         # epyunit.SProcUnitRules
@@ -410,7 +413,7 @@ class CallUnits(unittest.TestCase):
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
              
-            _s = self.sx.getruleset().states()
+            _s = self.sx.getruleset().states() # For debug
             _sX = {'resultok': 0, 'stdoutok': [], 'exit': 123, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s == _sX
 

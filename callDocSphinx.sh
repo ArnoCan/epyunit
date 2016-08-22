@@ -1,11 +1,11 @@
 PROJECT='epyunit'
-VERSION="0.1.12"
-RELEASE="0.1.12"
+VERSION="0.1.14"
+RELEASE="0.1.14"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
 LICENSE='Artistic-License-2.0 + Forced-Fairplay-Constraints'
-STATUS='pre-alpha'
+STATUS='alpha'
 MISSION='Support extensions for executables as Units of PyUnit.'
 
 # the absolute pathname for this source

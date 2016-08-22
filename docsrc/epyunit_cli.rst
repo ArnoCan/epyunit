@@ -117,11 +117,11 @@ SYNOPSIS:
 * subprocess debugging:
   ::
 
-    --pydev-remote-debug, --rdbg
+    --rdbg, --rdbg-forward
 
   Goto:
-  :ref:`pydev-remote-debug <pydev-remote-debug>`,
-  :ref:`rdbg <pydev-remote-debug>`
+  :ref:`rdbg <rdbg>`
+  :ref:`rdbg-forward <rdbgforward>`
 
 OPTIONS:
 ^^^^^^^^
@@ -285,21 +285,47 @@ OPTIONS:
 
 
 .. index::
-   single: options; --pydev-remote-debug
+   single: options; --rdbg
 
-.. _pydev-remote-debug:
+.. _rdbg:
 
-* **pydev-remote-debug**
+* **rdbg**
 
   Activates remote debugging with PyDev plugin of Eclipse.
+  Optionally the host and port number
+  of the server process could be changed. 
     ::
 
-       --pydev-remote-debug[=host[:port]]
+       --rdbg[=host[:port]]
 
          host := (ip-add|dns-name)
          port := (port-number)       
           
          default := localhost:5678
+
+
+.. index::
+   single: options; --rdbg-forward
+
+.. _rdbgforward:
+
+* **rdbg-forward**
+
+  Forward the '--rdbg' option to subprocesses for nested debugging
+  of process chains. 
+    ::
+
+       --rdbg-forward=(<forwarding-levels>|all|label)
+
+         <forwarding-levels>: Number of levels to be forwarded, 0==None.
+        
+         all: all nested subprocesses
+    
+         label: An arbitrary label defined at initialization of the
+             debug instance. Debugging is enabled when these match.
+         
+         default:=0: No forwarding.
+
 
 .. index::
    single: options; --raw
@@ -693,14 +719,13 @@ The following categories of parameter are provided:
   .. hlist::
      :columns: 4
 
-     * --exitign
-     * --exittype
-     * --exitval
-     * --stderrnok
-     * --stdoutnok
-     * --stderrok
-     * --stdoutok
-
+     * :ref:`--exitign <exitign>`,
+     * :ref:`--exittype <exittype>`,
+     * :ref:`--exitval <exitval>`,
+     * :ref:`--stderrnok <stderrnok>`,
+     * :ref:`--stdoutnok <stdoutnok>`,
+     * :ref:`--stderrok <stderrok>`
+     * :ref:`--stdoutok <stdoutok>`,
   .
 .. index::
    single: decision
@@ -713,7 +738,7 @@ The following categories of parameter are provided:
     .. hlist::
        :columns: 4
 
-       * --priotype
+       * :ref:`--priotype <priotype>`,
 
     .
 .. index::
@@ -725,9 +750,9 @@ The following categories of parameter are provided:
     .. hlist::
        :columns: 4
 
-       * --result
-       * --resultnok
-       * --resultok
+       * :ref:`--result <result>`,
+       * :ref:`--resultnok <resultnok>`,
+       * :ref:`--resultok <resultok>`
 
     .
 .. index::
@@ -740,11 +765,11 @@ The following categories of parameter are provided:
     .. hlist::
        :columns: 4
 
-       * --redebug
-       * --redotall
-       * --reignorecase
-       * --remultiline
-       * --reunicode
+       * :ref:`--redebug <redebug>`,
+       * :ref:`--redotall <redotall>`,
+       * :ref:`--reignorecase <reignorecase>`,
+       * :ref:`--remultiline <remultiline>`,
+       * :ref:`--reunicode <reunicode>`
 
     .
 .. index::
@@ -757,8 +782,11 @@ The following categories of parameter are provided:
     .. hlist::
        :columns: 4
 
-       * --subproc
-       * --subunit
+       * :ref:`--subproc <subproc>`,
+       * :ref:`--subunit <subunit>`
+
+
+
 
     .
 .. index::
@@ -769,7 +797,8 @@ The following categories of parameter are provided:
   .. hlist::
      :columns: 4
 
-     * --pydev-remote-debug
+     * :ref:`--rdbg <rdbg>`
+     * :ref:`--rdbg-forward <rdbgforward>`
 
   .
 .. index::
@@ -780,34 +809,35 @@ The following categories of parameter are provided:
   .. hlist::
      :columns: 4
 
-     * --csv
-     * --pass
-     * --passall
-     * --repr
-     * --str
-     * --xml
+     * :ref:`--csv <csv>`,
+     * :ref:`--pass <pass>`,
+     * :ref:`--passall <passall>`,
+     * :ref:`--raw <raw>`,
+     * :ref:`--repr <repr>`,
+     * :ref:`--str <str>`,
+     * :ref:`--xml <xml>`
 
   .
 * **Miscellaneous**:
 
   .. hlist::
      :columns: 4
-
-     * -d
-     * --debug
+     * :ref:`-d <debug>`,
+     * :ref:`--debug <debug>`,
      * --appname
-     * --environment
-     * -h 
-     * --help
-     * --selftest
+     * :ref:`--environment <environment>`,
+     * :ref:`-h <help>`,
+     * :ref:`--help <help>`,
+     * :ref:`--selftest <selftest>`,
      * --test-id
      * --timestamp
      * -Version 
-     * --Version
-     * -v 
-     * --verbose
-     * -version
-     * --version
+     * :ref:`--Version <Versionu>`,
+     * :ref:`-v <verbose>`,
+     * :ref:`--verbose <verbose>`,
+     * :ref:`-version <versionl>`,
+     * :ref:`--version <versionl>`,
+
 
 ENVIRONMENT:
 ^^^^^^^^^^^^

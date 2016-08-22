@@ -23,24 +23,26 @@ class CallUnits(unittest.TestCase):
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
         
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
+    @classmethod
+    def setUpClass(cls):
+        cls.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
+        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri = cls.scri
+
+        cls.callkargs = {}
+        cls.displayargs = {} 
+
+        cls.displayargs['out'] = 'xml' 
+        cls.displayargs['outtarget'] = 'str' 
+
+    def setUp(self):
         syskargs = {}
         self.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
 
-        self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
-        self.scri = self.scri
-
-        self.callkargs = {}
-        self.displayargs = {} 
-
-        self.displayargs['out'] = 'xml' 
-        self.displayargs['outtarget'] = 'str' 
-
-
-    def testCase010(self):
+    def testCase010_OK(self):
         _call  = self.scri
         _call += " OK "
 
@@ -63,7 +65,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase011(self):
+    def testCase011_NOK(self):
         _call  = self.scri
         _call += " NOK "
 
@@ -86,7 +88,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase012(self):
+    def testCase012_PRIO(self):
         _call  = self.scri
         _call += " PRIO "
 
@@ -110,7 +112,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase013(self):
+    def testCase013_EXITOK(self):
         _call  = self.scri
         _call += " EXITOK "
 
@@ -133,7 +135,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase014(self):
+    def testCase014_EXITNOK(self):
         _call  = self.scri
         _call += " EXITNOK "
 
@@ -156,7 +158,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase015(self):
+    def testCase015_EXIT7(self):
         _call  = self.scri
         _call += " EXIT7 "
 
@@ -179,7 +181,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase016(self):
+    def testCase016_EXIT8(self):
         _call  = self.scri
         _call += " EXIT8 "
 
@@ -205,7 +207,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase017(self):
+    def testCase017_EXIT9OK3NOK2(self):
         _call  = self.scri
         _call += " EXIT9OK3NOK2 "
 
@@ -230,7 +232,7 @@ class CallUnits(unittest.TestCase):
         assert d == dX
         pass
 
-    def testCase018(self):
+    def testCase018_DEFAULT(self):
         _call  = self.scri
         _call += " DEFAULT "
 

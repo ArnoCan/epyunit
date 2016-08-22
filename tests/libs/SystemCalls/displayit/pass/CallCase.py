@@ -23,21 +23,24 @@ class CallUnits(unittest.TestCase):
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
         
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
+    @classmethod
+    def setUpClass(cls):
+        cls.slst = []
+        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
+        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri = cls.scri
+
+        cls.callkargs = {}
+        cls.displayargs = {} 
+
+        cls.displayargs['out'] = 'pass' 
+        cls.displayargs['outtarget'] = 'str' 
+
+    def setUp(self):
         syskargs = {}
         self.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
-
-        self.epyu = findRelPathInSearchPath('bin/epyunit',self.slst,matchidx=0)
-        self.scri = findRelPathInSearchPath('epyunit/myscript.sh',self.slst,matchidx=0)
-        self.scri = self.scri
-
-        self.callkargs = {}
-        self.displayargs = {} 
-
-        self.displayargs['out'] = 'pass' 
-        self.displayargs['outtarget'] = 'str' 
 
 
     def testCase010(self):

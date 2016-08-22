@@ -53,7 +53,7 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.12'
+__version__ = '0.1.14'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 _NAME = 'epyunit'
@@ -203,14 +203,14 @@ if 'build_doc' in sys.argv:
     _sed(fn, pt, rp, re.MULTILINE)
 
     pt = '<h4>Next topic</h4>'
-    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface - Epydoc</a></p>'
+    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>'
     rp += pt
 
     fn = dst0+'/index.html'
     _sed(fn, pt, rp, re.MULTILINE)
 
     pt = '<h4>Previous topic</h4>'
-    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface - Epydoc</a></p>'
+    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>'
     rp += pt
 
 
@@ -341,12 +341,22 @@ if 'tests' in sys.argv or 'test' in sys.argv:
     print "#"
     print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
     print "#"
-    print "# Check 'inspect' paths - call in: tests"
-    exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
-    print "# Check 'inspect' paths - call in: tests.libs"
+    print "# Test LIBRARIES - call in: tests.libs"
     exit_code += os.system('python -m unittest discover -s tests.libs -p CallCase.py') # traverse tree
-    print "# Check 'inspect' paths - call in: tests.libs.SystemCalls"
-    exit_code += os.system('python -m unittest discover -s tests.libs.SystemCalls -p CallCase.py') # traverse tree
+    print "#"
+    print "# Tests BINARIES - call in: tests.bins"
+    exit_code += os.system('python -m unittest discover -s tests.bins -p CallCase.py') # traverse tree
+    print "#"
+    print "# Test REMOTEDEBUG - call in: tests.remotedebug"
+    print "#"
+    print "# ***"
+    print "# *** ATTENTION: The following tests.remotedebug - **NOW MANDATORY** - require a running PyDev/Eclipse RemoteDebugServer"
+    print "# ***"
+    print "#"
+    exit_code += os.system('python -m unittest discover -s tests.remotedebug -p CallCase.py') # traverse tree
+#     print "#"
+#     print "# Check 'inspect' paths - call in: tests"
+#     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
@@ -471,7 +481,7 @@ _keywords  = ' Python PyUnit PyDev Eclipse CLI command line'
 _keywords += ' test unit unittest regression regressiontest fileobjects commandline'
 _keywords += ' debug pydevd.py automation'
 
-_packages = ["epyunit"]
+_packages = ["epyunit","epyunit/debug","epyunit/unittest",]
 _scripts = ["bin/epyunit", ]
 
 _package_data = {

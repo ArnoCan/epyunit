@@ -29,7 +29,7 @@ components could be reused for other projects.
     collector                                  +----------------------------------+
                                                   |                |       
                                         +------------------+       |
-    Seamless debugger                   |    PyDevERDbg    |       |
+    Seamless debugger                   |    PyDevRDC    |       |
     integration for PyDev               +------------------+       |
     collector                                     |                |
                                                   V                V
@@ -43,13 +43,13 @@ Components and Interfaces:
 
 * `epyunit <epyunit_cli.html>`_  : Command line and batch interface.
 
-* `spUnittest <spunittest.html>`_ : Provide unit tests for sub-processes as blackbox system calls, contains 'TestExecutable'.
+* `unittest.subprocess <spunittest.html>`_ : Provide unit tests for sub-processes as blackbox system calls, contains 'TestExecutable'.
 
 * `SubprocUnit <subprocessunit.html>`_ : Provide unit tests for sub-processes as blackbox system calls, contains 'SubprocessUnit'.
 
 * `SystemCalls <systemcalls.html>`_ : Python class, wraps start of subprocesses by system calls, contains 'SystemCalls'.
 
-* `PyDev remote debugging <pydeverdbg.html>`_  : Python class, automation of subprocess debugging by PyDev, contains PyDevERDbg.
+* `PyDev remote debugging <pydeverdbg.html>`_  : Python class, automation of subprocess debugging by PyDev, contains PyDevRDC.
 
 
 PyUnit Integration

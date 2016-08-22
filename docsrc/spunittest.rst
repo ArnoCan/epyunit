@@ -1,7 +1,7 @@
-'epyunit.spUnittest' - Module
-******************************
+'epyunit.unittest.subprocess' - Module
+**************************************
 
-.. automodule:: epyunit.spUnittest
+.. automodule:: epyunit.unittest.subprocess
 
 Class: TestExecutable
 ---------------------
@@ -15,21 +15,37 @@ __init__
 """"""""
 .. automethod:: TestExecutable.__init__
 
-callSubprocess
-""""""""""""""
-.. automethod:: TestExecutable.callSubprocess
+__str__
+""""""""
+.. automethod:: TestExecutable.__str__
+
+assertEqual
+"""""""""""
+.. automethod:: TestExecutable.assertEqual
 
 assertExit
 """"""""""
 .. automethod:: TestExecutable.assertExit
 
-assertStdout
+assertExists
 """"""""""""
-.. automethod:: TestExecutable.assertStdout
+.. automethod:: TestExecutable.assertExists
 
 assertStderr
 """"""""""""
 .. automethod:: TestExecutable.assertStderr
+
+assertStdout
+""""""""""""
+.. automethod:: TestExecutable.assertStdout
+
+callSubprocess
+""""""""""""""
+.. automethod:: TestExecutable.callSubprocess
+
+setkargs
+""""""""
+.. automethod:: TestExecutable.setkargs
 
 Exceptions
 ^^^^^^^^^^
