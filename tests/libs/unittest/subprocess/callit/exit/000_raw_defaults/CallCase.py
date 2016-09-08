@@ -20,6 +20,7 @@ import os
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SubprocUnit
 from epyunit.unittest.subprocess import TestExecutable 
+from testdata import call_scripy,call_scrish,epyu
 
 #
 #######################
@@ -31,26 +32,18 @@ class CallUnits(TestExecutable):
 
     @classmethod
     def setUpClass(cls):
-        # set search path for test components
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
-
         # fetch path for executable 'epyunit'
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls.epyu = epyu
 
         # fetch path for executable 'myscript.sh'
-        cls.scri_sh = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri_sh = call_scrish
 
         # fetch path for executable 'myscript.py'
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
+        cls.scri = call_scripy
 
     def setUp(self):
         syskargs = {}
         self.spunit = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
-
-        _repr = repr(self.spunit)
-        _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False, 'rules': SProcUnitRules}"""
-        assert _repr == _reprX
 
         if self.spunit.getruleset():
             _repr = repr(self.spunit.getruleset())

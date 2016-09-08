@@ -4,11 +4,11 @@ epyunit
 Abstract
 --------
 
-The **ePyUnit package** provides extensions for the integrated 
+The **ePyUnit package** provides extensions for the integrated
 **Testautomation and Debugging** of executables and scipts as subprocesses.
 
 Technically **ePyUnit** provides extensions for the
-**PyUnit** and **PyDev**/**Eclipse**  frameworks for blackbox tests 
+**PyUnit** and **PyDev**/**Eclipse**  frameworks for blackbox tests
 and seamless integrated debugging of executables and scripts including nested  calls of subprocesses.
 The standard frameworks, libraries and IDEs provide components as presented
 by the following figure.::
@@ -32,18 +32,18 @@ seamless cross-process integration of scripts and programs.::
     |   scripts and executables    |       |                             |
     +------------------------------+       +-----------------------------+
 
-    |<---                     seamless integration                   --->| 
+    |<---                     seamless integration                   --->|
     .
 
-The included automation extension for the PyDev/Eclipse based debugging of 
-- local and remote - Python subprocesses provides simplified support of detailed error analysis
+The included automation extension for the PyDev/Eclipse based debugging
+of -- local and remote -- Python subprocesses provides simplified support of detailed error analysis
 in case of test failures.
 
 Blueprint
 ---------
 
 The *'ePyUnit' package* provides a minimal but sufficient approach in particular for
-the low-effort test automation of scripts and tools suitable for operations of 
+the low-effort test automation of scripts and tools suitable for operations of
 large scale application tests as well as for daily and advanced DevOps tasks.
 
 * ePyUnit encapsulates processes and relies on PyUnit for commandline
@@ -54,42 +54,42 @@ large scale application tests as well as for daily and advanced DevOps tasks.
 * ePyUnit integrates into PyDev for the support of the graphical
   Eclipse IDE of unit testing and integrated graphical debugging,
   this is also supported for external processes started independently
-  from the commandline, see 'https://pythonhosted.org/epyunit/pydevd_integration.html'.
+  from the commandline, see 'https://pythonhosted.org/epyu.pydevd_integration.html'.
 
 
 The ePyUnit components call the wrapped process and read the execution results
-from STDOUT, STDERR, and the exit value. The values are cached by Python 
+from STDOUT, STDERR, and the exit value. The values are cached by Python
 variables either for further processing, or optional pass-through to the caller.
 
 The architecture is based on the packages 'PyUnit' and 'PyDev'::
 
 
-    
+
                        +-----------------------+     call      +-----------------------+
-                       |                       |    ------>    |                       | 
-    Subprocess         |        ePyUnit        |               |  Wrapped-Executable   | 
+                       |                       |    ------>    |                       |
+    Subprocess         |        ePyUnit        |               |  Wrapped-Executable   |
                        |                       |    <-----     |                       |
                        +-----------------------+     stdin     +-----------------------+
                                    |                 stderr                |
                                    |                 exit                  V
                                    |                           +-----------------------+
-    PyDev Remote                   |                           |    PyDevRDC     |      Debug into subprocess
-    Debug Server                   |                           +-----------------------+
+    PyDev Remote                   |                           |        PyDevRDC       |   Debug into
+    Debug Server                   |                           +-----------------------+   subprocess
                                    |                                       |
-                   . . . . . . . . | . . . . . . . . . . . . . . . . . . . | . . . . . . . . 
+                   . . . . . . . . | . . . . . . . . . . . . . . . . . . . | . . . . . . . .
                                    |                                       |
                                    V                                       V
                        +-----------------------+               +-----------------------+
     Python Units       |         PyUnit        |     <--->     |         PyDev         |
                        +-----------------------+               +-----------------------+
                            |               |                              |
-                           V               V                             /         
+                           V               V                             /
                      +-----------+   +-----------+                      /
-    IDE              |    CLI    |   |  Eclipse  |<--------------------/  
-                     +-----------+   +-----------+ 
-    
+    IDE              |    CLI    |   |  Eclipse  |<--------------------/
+                     +-----------+   +-----------+
 
-The test components collect internally the data of multiple output sources and 
+
+The test components collect internally the data of multiple output sources and
 decide based on the selection of the user parameters whether the test was successful or has failed.
 Therefore a similar approach to Fuzzy-Logic is applied on mixed results consisting of partial
 failures and success.
@@ -102,7 +102,7 @@ The provided scenarios are single level subprocesses::
 and nested multilevel scripts and executables as subprocesses::
 
     +----------------+      +------------+            +------------+
-    | Python-Process | <--> | Subprocess | <- ... --> | Subprocess |  
+    | Python-Process | <--> | Subprocess | <- ... --> | Subprocess |
     +----------------+      +------------+            +------------+
 
 Where each level of subprocesses could start an arbitrary number of local and remote
@@ -118,21 +118,21 @@ The 'epyunit' package provides in particular:
 
 * The simplified reuse of executables as test-dummies within multiple test cases.
 
-* The categorization of structures defined by the directory tree. 
+* The categorization of structures defined by the directory tree.
 
 * The support of arbitrary intermixed implementation languages for executables.
 
-The implementation supports Python(>=2.7) and integrates into the Eclipse IDE 
-with PyDev, and PyUnit. 
+The implementation supports Python(>=2.7) and integrates into the Eclipse IDE
+with PyDev, and PyUnit.
 
 The package 'epyunit' is a spin off from the project 'UnifiedSessionsManager-2.0'.
- 
+
 For examples and patterns see subdirectories:
 
 * UseCases
 
 * tests
- 
+
 **Downloads**:
 
 * Sourceforge.net: https://sourceforge.net/projects/epyunit/files/
@@ -153,7 +153,7 @@ The installer adds a few options to the standard setuptools options.
 
 * *build_doc*: Creates the integrated documentation for runtime systems including API in 'epyunit/build/apidoc/epyunit'.
 
-* *install_doc*: Installs documents into source project 'epyunit/doc', and the 'HOME' or 'AppData'. 
+* *install_doc*: Installs documents into source project 'epyunit/doc', and the 'HOME' or 'AppData'.
 
 * *build_sphinx*: Creates documentation for runtime system by Sphinx, html only. Calls 'callDocSphinx.sh'.
 
@@ -178,7 +178,7 @@ with the exit value '0' when OK.
 The option '-v' raises the degree of verbosity for inspection
 
   *epyunit --selftest -v -v -v -v*
- 
+
 
 Project Data
 ------------
@@ -187,9 +187,9 @@ Project Data
 
 * MISSION: Extend the standard PyUnit package for arbitrary ExecUnits.
 
-* VERSION: 00.01
+* VERSION: 00.02
 
-* RELEASE: 00.01
+* RELEASE: 00.02
 
 * NICKNAME: 'Dromi'
 
@@ -201,8 +201,8 @@ Project Data
 
 * LICENSE: Artistic-License-2.0 + Forced-Fairplay-Constraints
   Refer to enclose documents:
-  
-  *  ArtisticLicense20.html - for base license: Artistic-License-2.0 
+
+  *  ArtisticLicense20.html - for base license: Artistic-License-2.0
 
   *  licenses-amendments.txt - for amendments: Forced-Fairplay-Constraints
 
@@ -213,41 +213,43 @@ Versions and Releases
 
 * RELEASE: 00.00.00x - Pre-Alpha: Extraction of the features from hard-coded application into a reusable package.
 
-* RELEASE: 00.01.00x - Alpha: Completion of basic features. 
+* RELEASE: 00.01.00x - Alpha: Completion of basic features.
 
-* RELEASE: 00.02.00x - Alpha: Completion of features, stable interface. 
+* RELEASE: 00.02.00x - Alpha: Completion of features, stable interface.
 
 * RELEASE: 00.03.00x - Beta: Accomplish test cases for medium to high complexity.
 
-* RELEASE: 00.04.00x - Production: First production release. Estimated number of UnitTests := 100.
+* RELEASE: 00.04.00x - Production: First production release. Estimated number of UnitTests := 1000.
 
 * RELEASE: 00.05.00x - Production: Various performance enhancements.
 
+* RELEASE: 00.06.00x - Production: Security review.
+
 * RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.01.014 - Alpha:**
+**Current Release: 00.02.000 - Alpha:**
+
+First release where contained parts are pre-beta after finally passing intense testing - >590(CLI) / >730(Eclipse).
+Still a few basic interfaces to be added to the API.
 
 Major Changes:
 
-* Fixes.
+* Common bug fixes.
 
-* The most may already work on Mac-OS and MS-Windows and others too, but due to 
-  priorities for now tested and released for Linux. Others are following soon.
+* Tested now and released on: Linux(Fedora), Mac-OS(SnowLeopard), Cygwin, and Windows7, but for now still alpha.
 
 * The documents are mostly complete, but still in review.
 
-* Adapted structure for debug and unit test of multiple programming languages.
-
 * Added tests.
- 
+
 Current test status:
 
 **ATTENTION**: Some of the tests involve the remote debug feature of PyDev/Eclipse,
   thus require a running local RemoteDebugServer, see manuals.
 
-* UnitTests: >590(CLI)/730(Eclipse)
+* UnitTests: >600(CLI)/700(Eclipse)
 
-* Use-Cases as UnitTests: >45
+* Use-Cases as UnitTests: >140
 
-**Total**: >770
+**Total**: >800
 

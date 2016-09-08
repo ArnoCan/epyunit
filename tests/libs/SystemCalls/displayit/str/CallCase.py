@@ -28,8 +28,8 @@ class CallUnits(unittest.TestCase):
         cls.slst = []
         setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
+        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
         cls.scri = cls.scri
 
         cls.callkargs = {}
@@ -42,7 +42,7 @@ class CallUnits(unittest.TestCase):
         syskargs = {}
         self.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
 
-    def testCase010_OK(self):
+    def testCaseOK(self):
         _call  = self.scri
         _call += " OK "
 
@@ -57,7 +57,7 @@ stderr: []
         assert d == dX
         pass
 
-    def testCase011_NOK(self):
+    def testCaseNOK(self):
         _call  = self.scri
         _call += " NOK "
 
@@ -72,7 +72,7 @@ stderr: ['arbitrary signalling ERROR string']
         assert d == dX
         pass
 
-    def testCase012_PRIO(self):
+    def testCasePRIO(self):
         _call  = self.scri
         _call += " PRIO "
 
@@ -87,7 +87,7 @@ stderr: ['arbitrary signalling ERROR string']
         assert d == dX
         pass
 
-    def testCase013_EXITOK(self):
+    def testCaseEXITOK(self):
         _call  = self.scri
         _call += " EXITOK "
 
@@ -102,7 +102,7 @@ stderr: []
         assert d == dX
         pass
 
-    def testCase014_EXITNOK(self):
+    def testCaseEXITNOK(self):
         _call  = self.scri
         _call += " EXITNOK "
 
@@ -117,7 +117,7 @@ stderr: []
         assert d == dX
         pass
 
-    def testCase015_EXIT7(self):
+    def testCaseEXIT7(self):
         _call  = self.scri
         _call += " EXIT7 "
 
@@ -132,7 +132,7 @@ stderr: []
         assert d == dX
         pass
 
-    def testCase016_EXIT8(self):
+    def testCaseEXIT8(self):
         _call  = self.scri
         _call += " EXIT8 "
 
@@ -147,7 +147,7 @@ stderr: ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitra
         assert d == dX
         pass
 
-    def testCase017_EXIT9OK3NOK2(self):
+    def testCaseEXIT9OK3NOK2(self):
         _call  = self.scri
         _call += " EXIT9OK3NOK2 "
 

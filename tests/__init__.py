@@ -19,4 +19,3 @@ __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Ar
 __version__ = '0.1.0'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
-__package__ = 'epyunit_pyunit'

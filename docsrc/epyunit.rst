@@ -1,5 +1,5 @@
 'epyunit' - package
-####################
+###################
 
 .. toctree::
    :maxdepth: 4
@@ -23,27 +23,31 @@
 
   .. automodule:: epyunit.SystemCalls
 
-* **epyunit.debug**:
-  `PyDevRDC <#class-pydeverdbg>`_
+* **epyunit.debug.pydevrdc**:
+  `PyDevRDC <#class-pydeverdbc>`_
 
-  .. automodule:: epyunit.debug
+  .. automodule:: epyunit.debug.pydevrdc
 
 * **epyunit.checkRDbg**:
-  `checkRDbg <#checkrdbg>`_
+  `checkRDbg <#function-checkandinitrdbg>`_
 
-  .. automodule:: epyunit.debug
+  .. automodule:: epyunit.debug.checkRDbg
 
 * **epyunit.selftest**:
 
   .. automodule:: epyunit.selftest
+
+* **epyunit**:
+
+  .. automodule:: bin.epyunit
 
 **Sources**
 
 * epyunit.unittest.subprocess `[source] <_modules/epyunit/unittest.subprocess.html#>`_
 * epyunit.SubprocUnit `[source] <_modules/epyunit/SubprocUnit.html#>`_
 * epyunit.SystemCalls `[source] <_modules/epyunit/SystemCalls.html#>`_
-* epyunit.checkRDbg `[source] <_modules/epyunit/checkRDbg.html#>`_
-* epyunit.debug `[source] <_modules/epyunit.debug.html#>`_
+* epyunit.debug.checkRDbg `[source] <_modules/epyunit/debug/checkRDbg.html#>`_
+* epyunit.debug.pydevrdc `[source] <_modules/epyunit/debug/pydevrdc.html#>`_
 * epyunit.selftest `[source] <_modules/epyunit/selftest.html#>`_
 
 
@@ -51,7 +55,7 @@
 .. include:: subprocessunit.rst
 .. include:: systemcalls.rst
 .. include:: pydeverdbg.rst
-.. include:: checkRDbg.rst
+.. include:: checkrdbg.rst
 .. include:: selftest.rst
 .. include:: commandline_tools.rst
 

@@ -49,7 +49,7 @@ test case by provided command line interface 'epyunit'::
           """Call first selftest part.
           """
           sx = SystemCalls(**{"proceed":"trace"})
-          epy = findRelPathInUpperTree("bin/epyunit")
+          epy = findRelPathInUpperTree("bin/epyu.py")
           mys = findRelPathInUpperTree("myscript.sh")
 
           ret = sx.callit(epy+" "+mys+" xOK")

@@ -5,90 +5,72 @@ Verifies basic facilities for remote debugging by starting a subprocess with '--
 from __future__ import absolute_import
 
 import unittest
-import os,sys
- 
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-from epyunit.SystemCalls import SystemCalls  
+
+from testdata import epyu,call_scripy
+import epyunit.SubprocUnit
+from epyunit.unittest.subprocess import TestExecutable
+
 
 #
 #######################
 #
-slst = []
-setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst)
-
-epyu = findRelPathInSearchPath('bin/epyunit',slst,matchidx=0)
-
 class CallUnits(unittest.TestCase):
-    def testCallTwoLevelsOfSubprocesses(self):
-        """Selftest of the remote debugging feature.
-        """
-        _call  = epyu + " -v --rdbg --selftest "
 
-        _kargs = {}
-
+    @classmethod
+    def setUpClass(cls):
+        cls.syskargs = {}
         #
-        # *** some error passing options, refer to API ***        
+        # *** some error passing options, refer to API ***
         #
         # _kargs['passerr'] = True
         # _kargs['errasexcept'] = True
         # _kargs['useexit'] = True
         # _kargs['usestderr'] = True
-        # 
-        _kargs['emptyiserr'] = True
+        #
+        cls.syskargs['emptyiserr'] = True
+        cls.sx = epyunit.SubprocUnit.SubprocessUnit(**cls.syskargs)
 
-        sx = SystemCalls(**_kargs)
+        #
+        # wrapper call
+        cls._call  = epyu
+        cls._call += " -v "
+        cls._call += " --rdbg "
+        cls._call += " --selftest "
 
+    def testCallTwoLevelsOfSubprocesses(self):
+        """Selftest of the remote debugging feature.
+        """
         callkargs = {}
-        ret = sx.callit(_call,**callkargs)
-
-        #
-        # Verify results here manually, thus requires the default tuple.
-        # In normal operations we should prefer one of the others for
-        # prepared error handling.
-        #
-        if ret[0] != 0:
-            print 'Received custom:STDOUT:'
-            if type([1]) is str:
-                print ret[1]
-            else:
-                print '\n'.join(ret[1])
-                 
-            print 'Received custom:STDERR:'
-            if type([2]) is str:
-                print >>sys.stderr , ret[2] 
-            else:
-                print >>sys.stderr , '\n'.join(ret[2]) 
-
-        #
-        # *** the default tuple - with demo-labels for stdout + stderr ***
-        #
-        assert ret[0] == 0
         retX = [
-            0, 
+            0,
             [
-                '#*** epyunit/myscript.sh DEFAULT ***', 
-                '', 
-                '#*** epyunit/myscript.sh OK ***', 
-                '', 
-                '#*** epyunit/myscript.sh PRIO ***', 
-                '', 
-                '#*** epyunit/myscript.sh EXITOK ***', 
-                '', 
-                '#*** epyunit/myscript.sh EXITNOK ***', 
-                '', 
-                '#*** epyunit/myscript.sh EXIT7 ***', 
-                '', 
-                '#*** epyunit/myscript.sh EXIT8 ***', 
-                '', 
-                '#*** epyunit/myscript.sh DEFAULT ***'
-            ], 
+                '#*** epyunit/myscript.py DEFAULT ***',
+                '',
+                '#*** epyunit/myscript.py OK ***',
+                '',
+                '#*** epyunit/myscript.py PRIO ***',
+                '',
+                '#*** epyunit/myscript.py EXITOK ***',
+                '',
+                '#*** epyunit/myscript.py EXITNOK ***',
+                '',
+                '#*** epyunit/myscript.py EXIT7 ***',
+                '',
+                '#*** epyunit/myscript.py EXIT8 ***',
+                '',
+                '#*** epyunit/myscript.py EXIT9OK3NOK2 ***',
+                '',
+                '#*** epyunit/myscript.py STDERRONLY ***',
+                '',
+                '#*** epyunit/myscript.py DEFAULT ***'
+            ],
             []
         ]
-        retX[1] = [ x for x in retX[1] if x!='']
+        #retX[1] = [ x for x in retX[1] if x!='']
 
-        self.assertEqual(retX[1], retX[1])
-        self.assertEqual(retX[2], [])
-        
+        ret = self.sx.callit(self._call,**callkargs)
+        self.assertEqual(ret, retX)
+
 
 #
 #######################

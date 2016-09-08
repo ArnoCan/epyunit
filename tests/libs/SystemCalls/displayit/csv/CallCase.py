@@ -10,9 +10,9 @@ __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 __docformat__ = "restructuredtext en"
  
 import unittest
-import os,sys
  
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
+from testdata import call_scripy
+
 import epyunit.SystemCalls 
 
 #
@@ -25,12 +25,8 @@ class CallUnits(unittest.TestCase):
         
     @classmethod
     def setUpClass(cls):
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
-        
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
-        cls.scri = cls.scri
+        syskargs = {}
+        cls.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
 
         cls.callkargs = {}
         cls.displayargs = {} 
@@ -38,12 +34,9 @@ class CallUnits(unittest.TestCase):
         cls.displayargs['out'] = 'csv' 
         cls.displayargs['outtarget'] = 'str' 
 
-    def setUp(self):
-        syskargs = {}
-        self.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
 
-    def testCase010_OK(self):
-        _call  = self.scri
+    def testCaseOK(self):
+        _call  = call_scripy+" "
         _call += " OK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -56,11 +49,11 @@ class CallUnits(unittest.TestCase):
 0;3;2;arbitrary signalling OK string;;
 0;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase011_NOK(self):
-        _call  = self.scri
+    def testCaseNOK(self):
+        _call  = call_scripy+" "
         _call += " NOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -72,11 +65,11 @@ class CallUnits(unittest.TestCase):
 0;2;1;arbitrary output;;
 0;3;2;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase012_PRIO(self):
-        _call  = self.scri
+    def testCasePRIO(self):
+        _call  = call_scripy+" "
         _call += " PRIO "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -89,11 +82,11 @@ class CallUnits(unittest.TestCase):
 0;3;2;arbitrary signalling OK string;;
 0;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase013_EXITOK(self):
-        _call  = self.scri
+    def testCaseEXITOK(self):
+        _call  = call_scripy+" "
         _call += " EXITOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -106,11 +99,11 @@ class CallUnits(unittest.TestCase):
 0;3;2;arbitrary signalling OK string;;
 0;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase014_EXITNOK(self):
-        _call  = self.scri
+    def testCaseEXITNOK(self):
+        _call  = call_scripy+" "
         _call += " EXITNOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -123,11 +116,11 @@ class CallUnits(unittest.TestCase):
 1;3;2;arbitrary signalling OK string;;
 1;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase015_EXIT7(self):
-        _call  = self.scri
+    def testCaseEXIT7(self):
+        _call  = call_scripy+" "
         _call += " EXIT7 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -140,11 +133,11 @@ class CallUnits(unittest.TestCase):
 7;3;2;arbitrary signalling NOK string;;
 7;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase016_EXIT8(self):
-        _call  = self.scri
+    def testCaseEXIT8(self):
+        _call  = call_scripy+" "
         _call += " EXIT8 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -157,11 +150,11 @@ class CallUnits(unittest.TestCase):
 8;3;2;arbitrary signalling NOK string;2;arbitrary err output
 8;4;3;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
-    def testCase017_EXIT9OK3NOK2(self):
-        _call  = self.scri
+    def testCaseEXIT9OK3NOK2(self):
+        _call  = call_scripy+" "
         _call += " EXIT9OK3NOK2 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -174,11 +167,11 @@ class CallUnits(unittest.TestCase):
 9;3;2;OK;;
 9;4;3;OK;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
     def testCase018_STDERRONLY(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " STDERRONLY "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -190,11 +183,11 @@ class CallUnits(unittest.TestCase):
 0;2;;;1;NOK
 0;3;;;2;NOK
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
     def testCase100_DEFAULT(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " DEFAULT "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -204,7 +197,7 @@ class CallUnits(unittest.TestCase):
         dX = """exitcode;total-lines;stdout-line;stdout;stderr-line;stderr
 123;1;0;arbitrary output;;
 """
-        assert d == dX
+        self.assertEqual(d,dX)
         pass
 
 #

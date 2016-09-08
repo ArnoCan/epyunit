@@ -15,6 +15,7 @@ import os
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SubprocUnit 
 from epyunit.unittest.subprocess import TestExecutable 
+from testdata import call_scripy,call_scrish,epyu
 
 #
 #######################
@@ -26,14 +27,9 @@ class CallUnits(TestExecutable):
 
     @classmethod
     def setUpClass(cls):
-        
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
-        
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
-
-        cls._call = cls.scri
+        cls.epyu = epyu
+        cls.scri = call_scripy
+        cls._call = call_scripy
         
         cls.callkargs = {}
         cls.callkargs['exitign'] = False # default

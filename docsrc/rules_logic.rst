@@ -255,7 +255,7 @@ The 'ePyUnit' package contains in the current version the scripts
 * '`epyunit/myscript.sh <myscript-sh.html>`_ ' 
 * '`epyunit/myscript.py <myscript-py.html>`_ ' 
 
-for the siumulation of subprocess
+for the simulation of subprocess
 responses as examples and test results, located in the package directory.
 The following results are returned for the simulation of a testee.
 Each column represents one set of result data. Including the exit value, the STDOUT
@@ -672,12 +672,10 @@ The following output formats are available in current version.
   `[test-sources] <_modules/tests/libs/SystemCalls/displayit/csv/CallCase.html#>`_
 
 * **html**: Records in HTML format.
-  `[doc] <tests.libs.SystemCalls.displayit.html.html#>`_
-  `[test-sources] <_modules/tests/libs/SystemCalls/displayit/html/CallCase.html#>`_
+  a.s.a.p
 
 * **json**: Records in JSON format.
-  `[doc] <tests.libs.SystemCalls.displayit.json.html#>`_
-  `[test-sources] <_modules/tests/libs/SystemCalls/displayit/json/CallCase.html#>`_
+  a.s.a.p
 
 * **pass**: Pass STDOUT and STDERR transparently, set wrapper execution state as exit code.
   `[doc] <tests.libs.SystemCalls.displayit.pass.html#>`_
@@ -687,7 +685,7 @@ The following output formats are available in current version.
   `[doc] <tests.libs.SystemCalls.displayit.passall.html#>`_
   `[test-sources] <_modules/tests/libs/SystemCalls/displayit/passall/CallCase.html#>`_
 
-* **raw**: Saem as passall.
+* **raw**: Same as passall.
   `[doc] <tests.libs.SystemCalls.displayit.raw.html#>`_
   `[test-sources] <_modules/tests/libs/SystemCalls/displayit/raw/CallCase.html#>`_
 
@@ -696,8 +694,7 @@ The following output formats are available in current version.
   `[test-sources] <_modules/tests/libs/SystemCalls/displayit/repr/CallCase.html#>`_
 
 * **review**: Records in 'review' format for on-screen inspection.
-  `[doc] <tests.libs.SystemCalls.displayit.review.html#>`_
-  `[test-sources] <_modules/tests/libs/SystemCalls/displayit/review/CallCase.html#>`_
+  a.s.a.p
 
 * **str**: Python 'str' format.
   `[doc] <tests.libs.SystemCalls.displayit.str.html#>`_
@@ -706,3 +703,11 @@ The following output formats are available in current version.
 * **xml**: XML format
   `[doc] <tests.libs.SystemCalls.displayit.xml.html#>`_
   `[test-sources] <_modules/tests/libs/SystemCalls/displayit/xml/CallCase.html#>`_
+
+The provided 'outputtarget' streams are:
+
+* **str**: Cache into a stringbuffer
+
+* **stdout**: Print anything to STDOUT
+
+* **stderr**: Print anything to STDERR

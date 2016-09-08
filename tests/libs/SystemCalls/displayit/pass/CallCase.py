@@ -10,9 +10,9 @@ __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 __docformat__ = "restructuredtext en"
  
 import unittest
-import os
  
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
+from testdata import call_scripy
+
 import epyunit.SystemCalls 
 
 #
@@ -25,12 +25,8 @@ class CallUnits(unittest.TestCase):
         
     @classmethod
     def setUpClass(cls):
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
-        
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
-        cls.scri = cls.scri
+        syskargs = {}
+        cls.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
 
         cls.callkargs = {}
         cls.displayargs = {} 
@@ -44,7 +40,7 @@ class CallUnits(unittest.TestCase):
 
 
     def testCase010(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " OK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -60,7 +56,7 @@ arbitrary output
         pass
 
     def testCase011(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " NOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -76,7 +72,7 @@ arbitrary signalling ERROR string
         pass
 
     def testCase012(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " PRIO "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -93,7 +89,7 @@ arbitrary signalling ERROR string
         pass
 
     def testCase013(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " EXITOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -109,7 +105,7 @@ arbitrary output
         pass
 
     def testCase014(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " EXITNOK "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -125,7 +121,7 @@ arbitrary output
         pass
 
     def testCase015(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " EXIT7 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -141,7 +137,7 @@ arbitrary output
         pass
 
     def testCase016(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " EXIT8 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -160,7 +156,7 @@ arbitrary err output
         pass
 
     def testCase017(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " EXIT9OK3NOK2 "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -178,7 +174,7 @@ NOK
         pass
 
     def testCase018(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " STDERRONLY "
 
         ret = self.sx.callit(_call,**self.callkargs)
@@ -193,7 +189,7 @@ NOK
         pass
 
     def testCase100(self):
-        _call  = self.scri
+        _call  = call_scripy+" "
         _call += " DEFAULT "
 
         ret = self.sx.callit(_call,**self.callkargs)

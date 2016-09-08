@@ -39,6 +39,12 @@ The included automation extension for the PyDev/Eclipse based debugging of
 in case of test failures.
 
 
+REMARK - Release
+================
+
+Current release seems to be quite good and stable on Linux, Windows too with a few required enhancements.
+Mac-OS may work too, wil be tested soon together with BSD and Solaris.
+
 Blueprint
 =========
 The *'ePyUnit' package* provides a minimal but sufficient approach in particular for
@@ -182,6 +188,127 @@ Application examples for ePyUnit see the multiplatform bash extensions:
    * `bash-core-extmods <https://sourceforge.net/projects/bash-core-extmods/>`_ 
    * `bash-core-lang <https://sourceforge.net/projects/bash-core-lang/>`_ 
 
+Install - HowTo - FAQ - Help
+============================
+
+* **Supported Platforms**:
+
+  The following platforms are in general fully supported, see remarks for some exceptions.
+
+  * OS:
+
+    * Linux: Fedora, CentOS, RHEL, Debian
+
+      Any other should work too!
+      Try - same for generic by sources on all:
+        ::
+
+          python setup.py install --user
+          python setup.py install --user --offline
+          python setup.py install --help-epyunit
+
+      Distribution: source, tar.gz, rpm
+
+    * MS-Windows: Windows7 
+
+      Bash is deactivated by default, document creation not yet supported, requires Linux and bash.
+
+      Distribution: source, tar.gz, MSI
+
+    * CygWin
+
+      Defaults are adapted to MS-Windows mode.
+
+      Distribution: source, tar.gz
+
+    * Apple-MacOS: SnowLeopard(10.6.2)
+
+      Requires Python(>=2.7) and bash(>4.1) update
+  
+      Distribution: source, tar.gz
+
+    * OpenBSD
+
+      Distribution: source
+
+    * Solaris
+
+      Distribution: source
+
+  * bash: Requires bash for document creation >= 4.1
+
+  * Perl: Currently basics only, recommended Perl5
+
+  * Python: Requires Python 2 >= 2.7
+
+  * Test simulators:
+
+    These require an appropriate simulation with minimal common language standard.
+
+      bash, Perl, Python, 
+
+* **Install**:
+
+  Required packages:
+
+  * pysourceinfo >=0.1.9 - `<https://pypi.python.org/pypi/pysourceinfo>`_
+
+  * pyfilesysobjects >= 0.1.11 - `<https://pypi.python.org/pypi/pyfilesysobjects>`_
+
+  Standard procedure online local install by sources::
+
+    python setup.py install --user
+
+  Custom procedure offline by::
+
+    python setup.py install --user --offline
+
+  Documents, requires Sphinx and Epydoc::
+
+    python setup.py build_doc install_doc
+
+* **Introduction**:
+
+  For now refer to the listed API and subdocument collection in section 
+  :ref:`'Shortcuts' <shortcuts>`
+
+* **Help**:
+
+  The following path variables are required for automated detection of the module 'pydevd.py'
+  in case of an arbitrary but standard Eclipse-Installation:
+    ::
+
+       PATH
+       PYTHONPATH
+
+  For example:
+
+  * Windows:
+    ::
+
+       set PYTHONPATH=C:\temp\eclipse\epyunit;%PYTHONPATH%
+       set PATH=C:\ide\eclipse\eclipse-cpp-mars-R-win32-x86_64;C:\Python27;C:\Python27\Scripts;C:\Python27\bin;%PATH%
+
+  * POSIX:
+    ::
+
+       export PYTHONPATH=<project-dir>:$PYTHONPATH
+       export PATH=$HOME/eclipse  # see default search of epyunit
+
+  * CYGWIN:
+    ::
+
+       export PYTHONPATH=<project-dir>:$PYTHONPATH
+       export PATH=/cygdrive/c/ide/eclipse/eclipse-modeling-luna-SR1-win32-x86_64/:$PATH
+       # see default search of epyunit
+
+  For alternative parameters of the search algorithm - e.g. ENVVAR - refer to 'checkRDbg' module.
+  Some tests for nested subprocesses require in PATH to be inherited, so put these for
+  Windows into the environment, or export them on POSIX compatible systems.
+
+  The UseCases and tests related to cross-process debugging or RemoteDebugServer with pydevd.py
+  require a running server instance within Eclipse/PyDev - see `<http://www.pydev.org/manual_adv_remote_debugger.html>`_
+
 `Shortcuts <shortcuts.html>`_
 =============================
 
@@ -191,14 +318,24 @@ Concepts and workflows:
   `[details] <rules_logic.html>`_
 
 * Integration of PyDev Remote Debug Server 'pydevd.py'
-  `[shortcuts] <shortcuts.html#epyunit-pydeverdbg>`_
+  `[shortcuts] <shortcuts.html#epyunit.pydeverdbg>`_
   `[example] <UseCases.remote_debug.html>`_
   `[details] <pydevd_integration.html>`_
   `[PyDev-Online-Manual] <http://pydev.org/manual_adv_remote_debugger.html>`_
 
-* Selected Common UsesCases `[examples] <usecases.html>`_
+Use-Cases `[usecases] <usecases.html>`_
 
-Common Interfaces:
+* Types of Call Interfaces `[usecases] <usecases.html#binaries-and-selftest>`_
+* Selected Use-Cases `[usecases] <usecases.html#selected-use-cases>`_
+
+  * Types of Simulator Responses `[usecases] <usecases.html#types-of-simulator-responses>`_
+  * Types of Expected Test Results `[usecases] <usecases.html#types-of-expected-test-results>`_
+
+* Subprocess Debugging `[usecases] <usecases.html#subprocess-debugging>`_
+* Project Applications¶ `[usecases] <usecases.html#project-applications>`_
+
+
+Interfaces:
 
 * Commandline Interface `[call-interface] <shortcuts.html#epyunit-cli>`_
 
@@ -206,7 +343,7 @@ Common Interfaces:
 
 * Test data generators `[myscript.<prog-language>] <shortcuts.html#epyunit-myscript>`_
 
-Complete technical API:
+Technical API:
 
 * Interface in javadoc-style `[API] <epydoc/index.html>`_
 
@@ -221,13 +358,16 @@ Table of Contents
 
    call_integration
    pydevd_integration
+   eclipse_integration
 
+   epyunit_cli
    epyunit
    rules_logic
    rules_shortcuts
    subprocessunit
    systemcalls
    selftest
+   pydeverdbgchk
    pydeverdbg
    myscript-py
    UseCases
@@ -235,11 +375,9 @@ Table of Contents
    testdata
    clioptutils_syntax
    commandline_tools
-   epyunit_cli
    epyunit_example_cli
    epyunit_example_eclipse_executable
    epyunit_example_eclipse_python
-   eclipse_integration
    commandline_scripting
 
    software_design

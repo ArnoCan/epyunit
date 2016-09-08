@@ -28,8 +28,8 @@ class CallUnits(unittest.TestCase):
         cls.slst = []
         setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
+        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
 
         cls._call = cls.scri
         
@@ -41,10 +41,9 @@ class CallUnits(unittest.TestCase):
         syskargs = {}
         self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
 
-    def testCase010_OK(self):
+    def testCaseOK(self):
         self._call += " OK "
         
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
@@ -57,10 +56,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase011_NOK(self):
+    def testCaseNOK(self):
         self._call += " NOK "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromB', 'arbitrary output', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
@@ -73,10 +71,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase012_PRIO(self):
+    def testCasePRIO(self):
         self._call += " PRIO "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [0, ['fromC', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], ['arbitrary signalling ERROR string']]
 
@@ -89,10 +86,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase013_EXITOK(self):
+    def testCaseEXITOK(self):
         self._call += " EXITOK "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [0, ['fromD', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
@@ -105,10 +101,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase014_EXITNOK(self):
+    def testCaseEXITNOK(self):
         self._call += " EXITNOK "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [1, ['fromE', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
@@ -121,10 +116,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase015_EXIT7(self):
+    def testCaseEXIT7(self):
         self._call += " EXIT7 "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [7, ['fromF', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], []]
 
@@ -137,10 +131,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase016_EXIT8(self):
+    def testCaseEXIT8(self):
         self._call += " EXIT8 "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [8, ['fromG', 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'], ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output']]
 
@@ -153,10 +146,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase017_EXIT9OK3NOK2(self):
+    def testCaseEXIT9OK3NOK2(self):
         self._call += " EXIT9OK3NOK2 "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==  [9, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK']]
 
@@ -169,10 +161,9 @@ class CallUnits(unittest.TestCase):
         assert status
         pass
 
-    def testCase018_DEFAULT(self):
+    def testCaseDEFAULT(self):
         self._call += " DEFAULT "
 
-        # call subprocess
         ret = self.sx.callit(self._call,**self.callkargs)
         assert ret ==   [123, ['arbitrary output'], []]
 

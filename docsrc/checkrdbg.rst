@@ -15,9 +15,9 @@ the connection paraeters for the configured peer server:
 .. automodule:: epyunit.checkRDbg
 
 
-Function: checkAndInitRDbg
+Function: checkAndRemoveRDbgOptions
 --------------------------
 
-.. autofunction:: checkAndInitRDbg
+.. autofunction:: checkAndRemoveRDbgOptions
 
 

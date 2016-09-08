@@ -25,7 +25,8 @@ SYNOPSIS:
 ^^^^^^^^^
   ::
 
-    epyunit [OPTIONS] [--] <testee> [<testee-options>]
+    epyu    [OPTIONS] [--] <testee> [<testee-options>]   # prefered on Linux,BSD,UNIX,MacOS
+    epyu.py [OPTIONS] [--] <testee> [<testee-options>]   # prefered on Windows
 
 * rulesets for testcase evaluation
   `[syntax-tree] <rules_logic.html#the-data-correlator-status-decision>`_ 
@@ -98,12 +99,17 @@ SYNOPSIS:
 * process wrapper:
   ::
 
-    --debug,    --environment, --help,   -Version,
-    --Version,  --verbose,     -version, --version
+    --cp, --cp-prepend, --cp-append
     
-    --selftest, --subproc,     --subunit, 
+    --debug,    --environment, --help,     -Version,
+    --Version,  --verbose,     -version,   --version
+    
+    --selftest, --slang,       --subproc,  --subunit, 
 
   Goto:
+  :ref:`cp <cp>`,
+  :ref:`cp-prepend <cpprepend>`,
+  :ref:`cp-append <cpappend>`,
   :ref:`debug <debug>`,
   :ref:`environment <environment>`,
   :ref:`help <help>`,
@@ -111,6 +117,7 @@ SYNOPSIS:
   :ref:`verbose <verbose>`,
   :ref:`version <versionl>`,
   :ref:`selftest <selftest>`,
+  :ref:`slang <slang>`,
   :ref:`subproc <subproc>`,
   :ref:`subunit <subunit>`
 
@@ -138,6 +145,43 @@ OPTIONS:
     ::
 
        --appname=<arbitrary-name-of-app>
+
+.. index::
+   single: options; --cp
+
+.. _cp:
+
+* **cp**
+
+  Classpath for module search, replaces sys.path.
+    ::
+
+       --cp
+
+.. index::
+   single: options; --cp-append
+
+.. _cpappend:
+
+* **cp-append**
+
+  Classpath for module search, appended at the end of sys.path.
+    ::
+
+       --cp-append
+
+
+.. index::
+   single: options; --cp-prepend
+
+.. _cpprepend:
+
+* **cp-prepend**
+
+  Classpath for module search, inserted at the beginning of sys.path.
+    ::
+
+       --cp-prepend
 
 .. index::
    single: options; --csv
@@ -467,10 +511,49 @@ OPTIONS:
 * **selftest**
 
   Performs a basic functional selftest by executing the 
-  basic examples based on 'myscript.sh'.
-    ::
+  basic examples based on 'myscript.<slang>' or 
+  <custom-simulator>.
+   ::
 
        --selftest
+
+  For the possible resource simulator calls see '--slang'.
+
+.. index::
+   single: options; --slang
+
+.. _slang:
+
+* **slang**
+
+  Defines the resource simulatorPerforms a basic functional selftest by executing the 
+  basic examples based on 'myscript.sh'.
+  All options and arguments are applied during the tests.
+    ::
+
+       --slang[=(bash|perl|python|<custom-simulator>)]
+
+  The following platform dependent defaults are applied by default:
+    ::
+
+	   BSD:     python
+	   Cygwin:  python
+	   Linux:   python
+	   MacOS:   python
+	   Windows: python
+
+  Where the following scripts are assigned to the following provided language tags:
+    ::
+
+       bash:    epyunit/myscript.sh
+       perl:    epyunit/myscript.pl
+       python:  epyunit/myscript.py
+ 
+  Additional are going to follow.
+  In addition any executable compliant to the options of the predefined could be called by:
+    ::
+
+       custom-simulator: "file path name to any compatible executable"
 
 .. index::
    single: options; --stderrnok

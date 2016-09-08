@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """The module 'epyunit.SystemCalls' provides the controlled execution of subprocesses as units.
 
-The features are foreseen to support easy setups for unit and regression 
-tests on complex command line options and their combinations. 
+The features are foreseen to support easy setups for unit and regression
+tests on complex command line options and their combinations.
 These are in designed to be used in conjunction with
 with PyUnit, either within Eclipse and PyDev, or from the command line.
+
+The provided feature set is supported on the platforms: Linux, MacOS, BSD, Solaris, and Windows.
 
 A quick example call is::
 
@@ -15,7 +17,7 @@ or::
   python -c 'from epyunit.SystemCalls import SystemCalls;x=SystemCalls(**{"proceed":"trace"});x.callit("myscript.py xOK")'
 
 **SECURITY REMARK**: Current version supports for subprocesses the ShellMode only.
-For test environments in R&D this - hopefully - is perfectly OK, 
+For test environments in R&D this - hopefully - is perfectly OK,
 else eventual security issues has to be considered.
 
 """
@@ -24,45 +26,83 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.14'
+__version__ = '0.2.0'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
 
-import sys,datetime
+import os,sys,datetime
 version = '{0}.{1}'.format(*sys.version_info[:2])
 if version < '2.7': # pragma: no cover
     raise Exception("Requires Python-2.7.* or higher")
 
-import subprocess
+import subprocess,platform
+import shlex,re
 
 # output enums
 _O_STD = 1 #: output to STDOUT
 _O_ERR = 2 #: output to STDERR
 _O_STR = 3 #: output to STRING
+_outdefault = _O_STR
+
+
+_CSPLTL = re.compile(ur'\r*\n')
+"""Split lines on Windows too including with contained multiple(???) '\r' """
+
+def output(s,_o=None):
+    """Directs the output stream
+    Args:
+        s: String for output
+        _o: Output channel:
+            _O_STD, _O_ERR, _O_STR
+
+    Returns:
+        _o == _O_STD: string
+        _o == _O_ERR: prints to STDERR, returns True
+        _o == _O_STR: prints to STDOUT, returns True
+        else:         returns False
+
+    Raises:
+        pass/through
+    """
+    global _outdefault
+    if not _o:
+        _o = _outdefault
+    if _o == _O_STR:
+        return s
+    elif _o == _O_ERR:
+        sys.stderr.write(s)
+    else:
+        sys.stdout.write(s)
+    return True
 
 class SystemCallsException(Exception):
-    """Common error within epyunit.SystemCalls. 
+    """Common error within epyunit.SystemCalls.
+    """
+    pass
+
+class SystemCallsTimeout(SystemCallsException):
+    """Timeout of subprocess epyunit.SystemCalls.
     """
     pass
 
 #class SystemCallsExceptionSubprocessError(SystemCallsException):
 
 class SystemCallsExceptionSubprocessError(SystemExit):
-    """Error from subprocess. 
+    """Error from subprocess.
     """
     def __init__(self,*args,**kargs):
         """Calls the 'exceptions.SystemExit' with pass through of parameters.
-    
+
         Args:
-            **kargs: Additional parameters specific for ePyUnit 
+            **kargs: Additional parameters specific for ePyUnit
                 where the interface is not actually clear.
                 These are removed before the pass-through call.
 
                 exitval: Replaces 'exceptions.SystemExit.code', the
                     first param value when of type 'int'. The default
                     is defined as '1'.
-                    
+
                     REMARK: Did not found an official interface for
                         'exceptions.SystemExit.__init__', thus opted
                         to temporary injection.
@@ -74,7 +114,7 @@ class SystemCallsExceptionSubprocessError(SystemExit):
 
         Raises:
             itself
-        
+
         """
         _code = kargs.get('exitval')
         if _code:
@@ -90,20 +130,20 @@ class SystemCallsExceptionSubprocessError(SystemExit):
         pass
 
 class SystemCalls(object):
-    """Wraps system calls for subprocesses.
-    
+    """Wraps system calls for the execution of subprocesses.
     For supported parameters refer to 'epyunit.SystemCalls.setkargs()'.
-    
+
     """
     def __init__(self,**kargs):
         """Prepares the interface for subprocess calls with output cache.
-        
-        The initial setup includes the preparation of the result 
+        The initial setup includes the preparation of the result
         cache for the response data from stdout and stderr.
 
         Args:
-            **kargs: Parameters specific for the operations,
-                passed through to **setkargs**.
+            **kargs:
+                Parameters specific for the operations,
+                passed through to **SystemCalls.setkargs**
+                `[see setkargs] <#setkargs>`_.
 
         Returns:
             When successful returns 'True', else returns either 'False', or
@@ -115,25 +155,30 @@ class SystemCalls(object):
                 When errors occur in buffered mode the
                 output from the called process is possibly
                 not completely cached. In that case
-                switch to 'dialogue' mode in order to get an 
+                switch to 'dialogue' mode in order to get an
                 unbuffered console display.
 
         Raises:
             passed through exceptions:
-        
+
         """
         # initial defaults
         self.console = 'cli' #: console type for output
-        self.bufsize = 16384 #: size of cache for output received from subprocess 
+        self.bufsize = 16384 #: size of cache for output received from subprocess
         #self.bufsize=-1
-        
-        self.emptyiserr = False 
-        """The subprocess call for an empty string is 'success', 
+
+        self.emptyiserr = False
+        """The subprocess call for an empty string is 'success',
         thus this has to be checked independently for eventually erroneously missing call string
         """
-        
+
         self.errasexcept = False #: raises in case of errors an exception
-        self.myexe = self._mode_batch #: preconfigured call back for actual execution
+
+        if sys.platform == 'win32':
+            self.myexe = self._mode_batch_win
+        else:
+            self.myexe = self._mode_batch_posix
+
         self.out = 'pass' #: output format/stream
         self.outtarget = 'stdout' #: output format/stream
         self.passerr = False
@@ -143,55 +188,73 @@ class SystemCalls(object):
         self.usestderr = False
         self.verbose = 0
 
-        self._appname = None 
-        self._testid = None 
-        self._timestamp = None 
-        self._environment = None 
+        self.exectype = 'inproc' #: Type of execution
+        self.synctype = 'async' #: Type of synchronization
+        self.forcecmdcall = 'list' #: Force type of option passing
+        self.tsig = 'TERM' #: Termination signal
+        self.tmax = 15 #: timeout until tsig emission
+
+
+        self._appname = None
+        self._testid = None
+        self._timestamp = None
+        self._environment = None
 
         self.setkargs(**kargs)
         pass
 
-    def callit(self,callstr,**kargs):
-        """Executes a prepared callstr by the preset function pointer 'self.myexe'.
-        
+    def callit(self,cmdcall,**kargs):
+        """Executes a prepared 'cmdcall' synchronous by the a preset function pointer 'self.myexe'.
+        For the full scope of call parameters including multiple subprocesses use the method
+        `[see create] <#create>`_.
+
         Args:
-            callstr: a prepared shell-style call.
-        
-            **kargs: kargs is passed through, for values refer
-                to **setkargs**.
+            cmdcall:
+                A prepared call, either shell-style call-string,
+                or a list in accordance to the call convention of
+                'subprocess' package. The 'shell' parameter is
+                by default set in accordance to the provided type.
 
-                debug: Sets debug for rule data flow.
+            **kargs:
+                Parameters specific for the operations,
+                passed through to **SystemCalls.setkargs**
+                `[see setkargs] <#setkargs>`_.
 
-                env: Passed through.
+                The following are also evaluated instantly within
+                the call prologue:
 
-                proceed: Changes predefined value and
-                    dispatches to the subcall.
+                proceed:
+                    Changes predefined value and dispatches to the subcall.
 
-                raw: Suppress the split of lines for
+                raw:
+                    Suppress the split of lines for
                     stdout and stderr.
 
-                verbose: Sets verbose for rule data flow.
 
         Returns:
             Result of call, the format is:
-            
+
                 ret[0]::= exit value
-                
+
                 ret[1]::= STDOUT as non-processed string.
-                
+
                 ret[2]::= STDERR as non-processed string.
 
             *REMARK*
                 When errors occur in buffered mode the
                 output from the called process is possibly
-                not completely cached, e.g. in case of exeptions. 
+                not completely cached, e.g. in case of exeptions.
                 In that case try switching to 'dialogue' mode in order
                 to get an unbuffered console display. This will deliver
                 - hopefully - the complete output.
 
         Raises:
+            SystemCallsTimeout:
+                Rised in case of timeout by tmax/tsig.
+                Terminates also the outstanding subprocess.
+
             passed through exceptions:
-            
+
         """
         proceed = self.proceed
         _raw = False
@@ -203,55 +266,74 @@ class SystemCalls(object):
                 _raw=True
                 kargs.pop('raw')
         self.setkargs(**kargs)
-               
+
         ret=[1,]
         if proceed=="print":
-            print str(callstr)
+            print str(cmdcall)
             return [0,[],[]]
 
         elif proceed=="trace":
-            print >>sys.stderr, "TRACE:"+str(callstr)
-            ret=self.myexe(callstr,**kargs)
+            print >>sys.stderr, "TRACE:"+str(cmdcall)
+            ret=self.myexe(cmdcall,**kargs)
 
         elif proceed=="doit":
-            ret=self.myexe(callstr,**kargs)
+            ret=self.myexe(cmdcall,**kargs)
 
         if ret[0] not in (0,5):
             if self.verbose>0:
-                print "ret:"+str(ret)+" =>call:"+str(callstr)
+                print "ret:"+str(ret)+" =>call:"+str(cmdcall)
 
         if not _raw and not self.raw:
             ret = self.splitLines(ret)
         return ret
 
+    def cancel(self,proc=None):
+        """Cancels a running process.
+        """
+        if not proc:
+            proc = self.p
+
+        pass
+
+    def create(self,proc=None):
+        """Executes a prepared 'cmdcall' with a variety of parameters.
+
+        For now a placeholder only - implementation is going to follow soon.
+
+        """
+        if not proc:
+            proc = self.p
+
+        pass
+
     def displayit(self,ret,**kargs):
-        """Displays result list ret in selected format.
+        """Streams result list 'ret' in selected format to selected outtarget.
 
         Args:
             ret: Data to be displayed.
-            
+
             **kargs:
 
                 outtarget: The target of display:
-                
+
                     str: return as formatted string
-                
+
                     stdout: print to sys.stdout
-                
+
                     stderr: print to sys.stderr
-                
+
                 out: Output for display, valid:
-                    
+
                     csv   : CSV with sparse records
-                    
+
                     pass  : pass through STDOUT and STDERR from subprocess
 
                     repr  : Python 'repr()'
-                    
+
                     str   : Python 'str()'
-                    
+
                     xml   : XML
-                
+
                 default:=self.out
 
         Returns:
@@ -259,7 +341,7 @@ class SystemCalls(object):
 
                 outtarget=='str': returns a printable formatted string
 
-                outtarget in ('stdout', 'stderr',): 
+                outtarget in ('stdout', 'stderr',):
 
                     'True':  for success
 
@@ -267,7 +349,7 @@ class SystemCalls(object):
 
         Raises:
             passed through exceptions:
-        
+
         """
         _target = kargs.get('outtarget',self.outtarget)
         if _target == 'str':
@@ -279,18 +361,18 @@ class SystemCalls(object):
         self._oc = ""
 
         _out = kargs.get('out',self.out)
- 
+
         def _output(s,_o=None):
             if not _o:
-                _o = _t 
+                _o = _t
             if _o == _O_STR:
                 self._oc += s
             elif _o == _O_ERR:
                 sys.stderr.write(s)
             else:
                 sys.stdout.write(s)
-             
-            
+
+
         if _out in ("pass","passall","raw",): # pass through STDOUT and STDERR from subprocess
             if ret[1]:
                 if type(ret[1]) == list:
@@ -309,16 +391,16 @@ class SystemCalls(object):
 
         elif _out == "repr": # Python 'repr()'
             _output(repr(ret))
-        
+
         elif _out == "str": # Python 'str()'
             _output("exit:   "+str(ret[0])+'\n')
             _output("stdout: "+str(ret[1])+'\n')
             _output("stderr: "+str(ret[2])+'\n')
-    
+
         elif _out == "xml": # XML
             _output("""<?xml version="1.0" encoding="UTF-8"?>\n""")
-    
-            # take timestamp        
+
+            # take timestamp
             _dn = datetime.datetime.now()
             _date=str(_dn.year)+'-'+str(_dn.month)+'-'+str(_dn.day)
             _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
@@ -338,12 +420,12 @@ class SystemCalls(object):
                 _head +=  " dist='"+str(self._dist)+"'"
                 _head +=  " distver='"+str(self._distver)+"'"
             _head += ">"
-    
+
             _output(str(_head)+'\n')
-    
+
             # exit code
             _output("    <exit-code>"+str(ret[0])+"</exit-code>\n")
-            
+
             # STDOUT
             _output("    <stdout>\n")
             lx = 0
@@ -351,7 +433,7 @@ class SystemCalls(object):
                 _output("        <line cnt="+str(lx)+">"+str(l)+"</line>\n")
                 lx += 1
             _output("    </stdout>\n")
-            
+
             # STDERR
             _output("    <stderr>\n")
             lx = 0
@@ -359,52 +441,52 @@ class SystemCalls(object):
                 _output("        <line cnt="+str(lx)+">"+str(l)+"</line>\n")
                 lx += 1
             _output("    </stderr>\n")
-    
+
             _output("""</test-result>""")
-    
+
         elif _out == "csv": # CSV with sparse records
             _head = None
-                
+
             if self._testid:
-                if _head: _head = ';' 
+                if _head: _head = ';'
                 _head += "testid"
             if self._appname:
-                if _head: _head = ';' 
+                if _head: _head = ';'
                 _head +=  ";appname"
             if self._timestamp:
-                if _head: _head = ';' 
+                if _head: _head = ';'
                 _head += ";date;time"
             if self._environment:
-                if _head: _head = ';' 
+                if _head: _head = ';'
                 _head += ";host;user;os;osver;dist;distver"
 
             if _head: _head = ';'
-            else: _head = "" 
+            else: _head = ""
             _head += "exitcode;total-lines;stdout-line;stdout;stderr-line;stderr"
-    
+
             _output(str(_head)+'\n')
-            
-            # take timestamp        
+
+            # take timestamp
             _dn = datetime.datetime.now()
             _date=str(_dn.year)+'-'+str(_dn.month)+'-'+str(_dn.day)
             _time=str(_dn.hour)+':'+str(_dn.minute)+':'+str(_dn.second)
-    
+
             _lxtot=0
 
             # output record prefix
             _recpre = None
 
             # common prefix
-            if self._testid: 
+            if self._testid:
                 if _recpre: _recpre += ';'
                 _recpre += str(self._testid)
-            if self._appname: 
+            if self._appname:
                 if _recpre: _recpre += ';'
                 _recpre +=  str(self._appname)
-            if self._timestamp: 
+            if self._timestamp:
                 if _recpre: _recpre += ';'
                 _recpre += str(_date)+";"+str(_time)
-            if self._environment: 
+            if self._environment:
                 if _recpre: _recpre += ';'
                 _recpre += str(self._host)+";"+str(self._user)+";"+str(self._os)+";"+str(self._osver)+";"+str(self._dist)+";"+str(self._distver)
 
@@ -417,16 +499,16 @@ class SystemCalls(object):
                 _rmax = _r1
             else:
                 _rmax = _r2
-            
+
             for _ri in range(_rmax):
                 _lxtot +=1
                 _rec = _recpre
                 if _rec: _rec += ';'
                 else: _rec = ''
                 _rec += str(ret[0])+";"+str(_lxtot)
-                
+
                 # STDOUT
-                if len(ret[1]) > _ri: 
+                if len(ret[1]) > _ri:
                     if _rec: _rec += ';'
                     else: _rec = ''
                     _rec += str(_lx1)+";"+str(ret[1][_ri])
@@ -434,9 +516,9 @@ class SystemCalls(object):
                 else:
                     if _rec: _rec += ';;'
                     else: _rec = ';'
-                    
+
                 # STDERR
-                if len(ret[2]) > _ri:    
+                if len(ret[2]) > _ri:
                     if _rec: _rec += ';'
                     else: _rec = ''
                     _rec += str(_lx2)+";"+str(ret[2][_ri])
@@ -444,33 +526,55 @@ class SystemCalls(object):
                 else:
                     if _rec: _rec += ';;'
                     else: _rec = ';'
-                
+
                 _output(str(_rec)+'\n')
 
         if _t == _O_STR:
-            return self._oc 
+            return self._oc
         return True
 
-    def get_proceed(self,s): 
+    def get_proceed(self,s):
         """Verifies valid proceed type."""
         if s in ('print','trace', 'doit'):
             return s
         else:
             raise Exception('STATE:ERROR:proceed not supported:'+str(s))
-    
-    def _mode_batch(self,callstr,**kargs):
-        """Internal call reference for processing a batch mode call. 
-        
-        The IO by stdout/stdin/stderr are redirected. Supports 
+
+    def _mode_batch_postproc(self,cmdcall,**kargs):
+        """Postprocess
+        """
+        pass
+
+    def _mode_batch_posix(self,cmdcall,**kargs):
+        """Creates and calls a process instance on POSIX based systems.
+
+        The IO by stdout/stdin/stderr are redirected. Supports
         shell-style parameters only.
 
         Args:
-            callstr: a prepared shell-style call.
-            
+            cmdcall:
+                A prepared shell-style call.
+
             **kargs:
 
-                env: Current environment.
-                    
+                mode:
+                    Execution mode for the created process instance.
+                    * batch:
+                        Proceeds headless, collects reponses from STDOUT
+                        and STDERR.
+
+                    * dialogue
+                        Proeceeds interactive.
+
+                env:
+                    Current environment.
+
+                tmax:
+                    Timeout in seconds.
+
+                tsig:
+                    Termination signal, default is KILL.
+
         Returns:
             When successful returns 'True', else returns either 'False', or
             raises an exception.
@@ -478,36 +582,38 @@ class SystemCalls(object):
         Raises:
             for parameter 'errasexcept': SystemCallsExceptionSubprocessError
             passed through exceptions:
-        
+
         For further information refer to 'console' option of constructor/setkargs.
 
         """
-        if self.emptyiserr and ( not callstr or callstr == ''):
+        if self.emptyiserr and ( not cmdcall or cmdcall.lstrip(' ') == ''):
             return [2,'', 'ERROR:MissingCallstr']
 
         ret=[1,]
-        _env = kargs.get('env')
-        if not _env:
-            self.p=subprocess.Popen(
-                    callstr,
-                    shell=True,
-                    bufsize=self.bufsize,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    close_fds=True
-                    )
-        else:
-            self.p=subprocess.Popen(
-                    callstr,
-                    shell=True,
-                    bufsize=self.bufsize,
-                    stdin=subprocess.PIPE,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE,
-                    close_fds=True,
-                    env=_env
-                    )
+        _env = kargs.get('env',None)
+        _mode = kargs.get('mode','batch')
+
+        if type(cmdcall) is str:
+            _shell = True
+        elif type(cmdcall) is list:
+            _shell = False
+
+        _close_fds = False
+        self.stdioIN = subprocess.PIPE
+        self.stdioOUT = subprocess.PIPE
+        self.stdioERR = subprocess.PIPE
+
+
+        self.p=subprocess.Popen(
+                cmdcall,
+                shell=_shell,
+                bufsize=self.bufsize,
+                stdin=self.stdioIN,
+                stdout=self.stdioOUT,
+                stderr=self.stdioERR,
+                close_fds=_close_fds,
+                env=_env
+                )
 
         # fetch the results from subprocess
         self.stdin=self.p.stdin
@@ -531,10 +637,10 @@ class SystemCalls(object):
                 sys.stdout.write(self.res[0])
             if self.res[1]:
                 sys.stderr.write(self.res[1])
-            # .. raise exception 
-            #raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(callstr) +"\n"+ str(self.res[1]),'exitval':self.p.returncode,})
-            raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(callstr) +"\n",})
-        
+            # .. raise exception
+            #raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(cmdcall) +"\n"+ str(self.res[1]),'exitval':self.p.returncode,})
+            raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(cmdcall) +"\n",})
+
         elif _errcond and self.passerr: # passes errors from subprocesses simply through as error exit
             # flush cache...
             if self.res[0]: # stdout
@@ -543,34 +649,176 @@ class SystemCalls(object):
                 sys.stderr.write(str(self.res[1]))
             # ..now exit
             sys.exit(self.p.returncode)
-        
+
         elif _errcond and not self.p.returncode and self.usestderr: # treats any presence of stderr as error
             ret[0] = 1
             ret.extend(self.res)
             return ret
 
-        else: # wraps result of subprocess call into a tuple 
+        else: # wraps result of subprocess call into a tuple
             ret[0]=self.p.returncode
             ret.extend(self.res)
             return ret
 
-    def _mode_dialogue(self,callstr,**kargs):
+    def _mode_batch_win(self,cmdcall,**kargs):
+        """Creates and calls a process instance on Windows based systems.
+
+        The IO by stdout/stdin/stderr are redirected. Supports
+        shell-style parameters only.
+
+        Args:
+            cmdcall:
+                A prepared shell-style call.
+
+            **kargs:
+
+                mode:
+                    Execution mode for the created process instance.
+                    * batch:
+                        Proceeds headless, collects reponses from STDOUT
+                        and STDERR.
+
+                    * dialogue
+                        Proeceeds interactive.
+
+                env:
+                    Current environment.
+
+                tmax:
+                    Timeout in seconds.
+
+                tsig:
+                    Termination signal, default is KILL.
+
+        Returns:
+            When successful returns 'True', else returns either 'False', or
+            raises an exception.
+
+        Raises:
+            for parameter 'errasexcept': SystemCallsExceptionSubprocessError
+            passed through exceptions:
+
+        For further information refer to 'console' option of constructor/setkargs.
+
+        """
+        if self.emptyiserr and ( not cmdcall or cmdcall.lstrip(' ') == ''):
+            return [2,'', 'ERROR:MissingCallstr']
+
+        ret=[1,]
+        _env = kargs.get('env',None)
+
+        _env = os.environ
+
+        _mode = kargs.get('mode','batch')
+
+        if type(cmdcall) is str:
+            _shell = True
+        elif type(cmdcall) is list:
+            _shell = False
+
+        si = subprocess.STARTUPINFO()
+        si.dwFlags  = subprocess.STARTF_USESHOWWINDOW
+        si.dwFlags |= subprocess.CREATE_NEW_PROCESS_GROUP
+#        si.dwFlags |= subprocess.CREATE_NEW_PROCESS_GROUP
+#        si.dwFlags |= subprocess.STARTF_USESTDHANDLES
+#        si.dwFlags |= subprocess.SW_HIDE
+#        si.dwFlags |= subprocess.CREATE_NEW_CONSOLE
+
+
+        self.stdio = subprocess.PIPE
+
+        _close_fds = False
+        self.p=subprocess.Popen(
+                cmdcall,
+                shell=_shell,
+                bufsize=self.bufsize,
+                stdin=self.stdio,
+                stdout=self.stdio,
+                stderr=self.stdio,
+                close_fds=_close_fds,
+                env=_env,
+                startupinfo=si,
+                )
+
+        # fetch the results from subprocess
+        self.stdin=self.p.stdin
+        self.stdout=self.p.stdout
+        self.stderr=self.p.stderr
+        self.res=self.p.communicate()
+
+        self.p.poll()
+
+        _errcond = False
+        if self.useexit and self.usestderr:
+            if self.p.returncode or self.res[1]:
+                _errcond = True
+        elif self.useexit and self.p.returncode:
+            _errcond = True
+        elif self.usestderr and self.res[1]:
+            _errcond = True
+
+        if _errcond and self.errasexcept: # transforms errors from subprocesses into Exceptions
+            # flush cache...
+            if self.res[0]:
+                sys.stdout.write(self.res[0])
+            if self.res[1]:
+                sys.stderr.write(self.res[1])
+            # .. raise exception
+            #raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(cmdcall) +"\n"+ str(self.res[1]),'exitval':self.p.returncode,})
+            raise SystemCallsExceptionSubprocessError(self.p.returncode,**{'exitmsg':"FROM:"+str(cmdcall) +"\n",})
+
+        elif _errcond and self.passerr: # passes errors from subprocesses simply through as error exit
+            # flush cache...
+            if self.res[0]: # stdout
+                sys.stdout.write(self.res[0])
+            if self.res[1]: # stderr
+                sys.stderr.write(str(self.res[1]))
+            # ..now exit
+            sys.exit(self.p.returncode)
+
+        elif _errcond and not self.p.returncode and self.usestderr: # treats any presence of stderr as error
+            ret[0] = 1
+            ret.extend(self.res)
+
+        else: # wraps result of subprocess call into a tuple
+            ret[0]=self.p.returncode
+            ret.extend(self.res)
+
+        #close the pipes
+        self.p.stderr.close()
+        self.p.stdout.close()
+
+#         _buf = "\n"
+#         _buf += "4TEST:_env="+str(_env)+"\n"
+#         _buf += "4TEST:si="+str(repr(si))+"\n"
+#         _buf += "4TEST:res="+str(self.res)+"\n"
+#         _buf += "4TEST:PATH="+str(os.environ["PATH"])+"\n"
+#         _buf += "4TEST:PYTHONPATH="+str(os.environ["PYTHONPATH"])+"\n"
+#         print "4TEST:-------------------------------------\n"
+#         print _buf
+#         print "4TEST:-------------------------------------\n"
+#         print ret
+#         print "4TEST:-------------------------------------\n"
+
+        return ret
+
+    def _mode_dialogue(self,cmdcall,**kargs):
         """Internal call reference for processing an interactive dialogue call.
-        
+
         Supports shell-style parameters only.
 
         For further information refer to 'console' option of constructor/setkargs.
 
         """
-        
+
         #FIXME: has to be tested
-        if self.emptyiserr and ( not callstr or callstr == ''):
+        if self.emptyiserr and ( not cmdcall or cmdcall == ''):
             return [2,'', 'ERROR:MissingCallstr']
-        
+
         ret=[0,]
         try:
             self.p=subprocess.check_call(
-                callstr,
+                cmdcall,
                 shell=True,
                 bufsize=self.bufsize
                 )
@@ -586,92 +834,145 @@ class SystemCalls(object):
 
     def setkargs(self,**kargs):
         """Sets provided parameters for the subprocess call context.
-        
-        Applicable for the initial call of self.__init__(), 
+
+        Applicable for the initial call of self.__init__(),
         and later modification. Called for each start of
-        a subprocess in order to update optional the specific 
+        a subprocess in order to update optional the specific
         call context modification.
-        
+
         Args:
             **kargs: Parameter specific for the operation,
 
-                bufsize: The size of the output buffer for the 
-                    called subprocess. Refer to **subprocess.Popen**.
+
+                bufsize:
+                    The size of the output buffer for the
+                    called subprocess, refer to **subprocess.Popen**.
                     Default value is -1.
 
                 console ('cli','dialogue')
                     ffs ('batch','ui','gtk', 'qt')
 
-                    cli: Works in batch mode, particularly the
+                    cli:
+                        Works in batch mode, particularly the
                         stdin, stdout, and stderr streams are
-                        caught into a string buffer by the 
+                        caught into a string buffer by the
                         calling process via a pipe. The content
-                        is passed after termination of the called 
+                        is passed after termination of the called
                         sub-process.
 
-                    dialogue: Works without buffered io streams.
+                    dialogue:
+                        Works without buffered io streams.
                         Thus allows for interaction, but not
                         post-processing.
 
-                    verbose: Verbose.
+                    verbose:
+                        Verbose.
 
-                debug: Sets debug for rule data flow.
+                debug:
+                    Sets debug for rule data flow.
 
-                emptyiserr: Treats passed empty call strings as error.
+                emptyiserr:
+                    Treats passed empty call strings as error.
                     The applied 'subprocess.Popen()' treats them as
                     success, which may cover errors in generated
                     call strings, particularly in loops.
 
                     default := False
- 
-                errasexcept: Passes errors as exceptions, transforms the resuls from
+
+                env:
+                    Passed through.
+
+                errasexcept:
+                    Passes errors as exceptions, transforms the resuls from
                     subprocesses into Exceptions data. Exits the process.
 
                     default := False
 
+                exectype:
+                    Type of execution.
+                    * inproc:
+                        Calls 'Popen' directly from within the process.
+
+                    * bythread:
+                        Starts an intermediate thread within current
+                        process and executes 'Popen'.
+
+                    * byfork
+                        Starts an intermediate process by fork and
+                        executes 'Popen'.
+
+                forcecmdcall:
+                    Forces type of the command call option passed to 'Popen'.
+                    * shell
+                    * list
+
                 out: Output for display. Supported types are:
-                
-                    csv: CSV seperated by ';', with sparse records
-                    
-                    pass: Pass through STDOUT and STDERR from 
+
+                    csv:
+                        CSV seperated by ';', with sparse records
+
+                    pass:
+                        Pass through STDOUT and STDERR from
                         subprocess
 
-                    repr: Python 'repr()'
-        
-                    str: Python 'str()'
+                    repr:
+                        Python 'repr()'
 
-                    xml: XML
+                    str:
+                        Python 'str()'
 
-                passerr: Passes errors from subprocesses transparently 
-                    through by stdout, stderr, and exit code. Exits 
+                    xml:
+                        XML
+
+                passerr:
+                    Passes errors from subprocesses transparently
+                    through by stdout, stderr, and exit code. Exits
                     the process.
 
                     default := False
- 
+
                 proceed ('print','trace', 'doit')
                     print - trace only
-                    
+
                     trace - execute and trace
-                    
-                    doit  - execute    
 
-                raw: Pass through STDOUT and STDERR.
+                    doit  - execute
 
-                rules: Sets the rules object.
+                raw:
+                    Pass through STDOUT and STDERR.
 
-                useexit: Use exit code for error detection of
-                    subprocess.
-                    
-                    default := True 
+                rules:
+                    Sets the rules object.
 
-                usestderr: Use 'sys.stderr' output for error 
-                    detection of subprocess. When set to 'True',
-                    the presence of a string is treated as error
+                synctype:
+                    Type of call synchronization.
+                    * async:
+                        Executes the subprocess asynchronously, this e.g. enables
+                        in current implementation for platform independent timeouts.
+
+                    * sync:
+                        Executes synchronously, thus blocks any other execution.
+
+                tsig:
+                    Termination signal, default is KILL.
+
+                tmax:
+                    Timeout in seconds.
+
+                useexit:
+                    Use exit code for error detection of subprocess.
+
+                    default := True
+
+                usestderr:
+                    Use 'sys.stderr' output for error detection of subprocess.
+                    When set to 'True', the presence of a string is treated as error
                     condition.
-                    
+
                     default := False
 
-                verbose: Sets verbose for rule data flow.
+                verbose:
+                    Sets verbose for rule data flow.
 
         Returns:
             When successful returns 'True', else returns either 'False', or
@@ -681,7 +982,7 @@ class SystemCalls(object):
 
         Raises:
             passed through exceptions:
-            
+
         """
         for k,v in kargs.iteritems():
             if k=='bufsize':
@@ -697,7 +998,7 @@ class SystemCalls(object):
                 elif v in ('ui','gtk', 'qt'):
                     pass
                 else:
-                    self.myexe=self._mode_batch
+                    self.myexe=self._mode_dialogue
             elif k=='debug':
                 self.debug=v
             elif k=='emptyiserr':
@@ -733,36 +1034,38 @@ class SystemCalls(object):
 
     def splitLines(self,oldres):
         """Converts the raw string fields including '\n' of a return value into line arrays.
-        
+
         Args:
             oldres: The raw result of a previous call.
-            
+
         Returns:
             Result of call, the format is:
-            
+
                 ret[0]::=exit value
-                
-                ret[1]::=list of lines from former stdout output, each as 
+
+                ret[1]::=list of lines from former stdout output, each as
                     a partial non-processed string.
-                
+
                 ret[2]::=list of lines from former stderr output, each as
                     a partial non-processed string.
 
         Raises:
             passed through exceptions:
-            
+
         """
         res = [oldres[0],[],[]]
-        
+
         if len(oldres) > 1:
-            res[1] = oldres[1].split('\n')
+#            res[1] = oldres[1].splitlines()
+            res[1] = _CSPLTL.split(oldres[1])
         if res[1] and res[1][-1] == '':
             res[1].pop()
         if res[1] and res[1][0] == '':
             res[1].pop(0)
 
         if len(oldres) > 2:
-            res[2] = oldres[2].split('\n')
+#            res[2] = oldres[2].splitlines()
+            res[2] = _CSPLTL.split(oldres[2])
         if res[2] and res[2][-1] == '':
             res[2].pop()
         if res[2] and res[2][0] == '':

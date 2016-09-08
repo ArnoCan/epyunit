@@ -1,6 +1,6 @@
-""" 
+"""
 Default case for a testee with result: succeed: OK
- 
+
   EXIT:
      0
   STDOUT:
@@ -13,48 +13,58 @@ Default case for a testee with result: succeed: OK
 """
 from __future__ import absolute_import
 from __future__ import print_function
- 
+
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.0.1'
+__version__ = '0.2.0'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
- 
+
 __docformat__ = "restructuredtext en"
- 
+
 import unittest
-import os,sys
- 
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-import epyunit.SystemCalls 
+
+from testdata import call_scripy
+
+import epyunit.SystemCalls
 
 #
 #######################
 #
- 
+
 class CallUnits(unittest.TestCase):
-    def testCase000(self):
 
-        slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst)
-        myscript = findRelPathInSearchPath('epyunit/myscript.sh',slst,matchidx=0)
-
-        sx = epyunit.SystemCalls.SystemCalls()
-        ret = sx.callit(myscript+" OK")
-        assert ret[0] == 0
-        assert ret[1] == ["fromA", 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output']
-        assert ret[2] == []
- 
-        _repr = repr(sx)
-        _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False}"""
-        assert _repr == _reprX 
+    @classmethod
+    def setUpClass(self):
+        self.sx = epyunit.SystemCalls.SystemCalls()
         pass
- 
- 
+
+    def testCase000(self):
+        _call  = call_scripy+" "
+        _call += "OK"
+        retX = [
+            0,
+            ["fromA", 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'],
+            []
+        ]
+
+        ret = self.sx.callit(_call)
+        self.assertEqual(ret, retX)
+
+        _repr = repr(self.sx)
+        import sys
+        if sys.platform in ('win32'):
+            _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch_win, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False}"""
+        else:
+            _reprX = """{'bufsize': 16384, 'console': cli, 'emptyiserr': False, 'errasexcept': False, 'myexe': _mode_batch_posix, 'passerr': False, 'proceed': doit, 'raw': False, 'useexit': True, 'usestderr': False}"""
+        self.assertEqual(_repr, _reprX)
+        pass
+
+
 #
 #######################
 #
- 
+
 if __name__ == '__main__':
     unittest.main()
 

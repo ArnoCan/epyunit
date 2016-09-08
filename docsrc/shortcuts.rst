@@ -10,8 +10,30 @@ Epydoc - Javadoc style API documentation for Python.
 epyunit - CLI
 ^^^^^^^^^^^^^
 CLI Wrapper for filtered subprocess calls and streaming of results.
+The call interface is provided by two flavours of names, where the executable is the same,
+but with different 'shebang lines'.
 
-* `epyunit <epyunit_cli.html#>`_
+* Main CLI interface
+
+  * `epyu <epyunit_cli.html#>`_ - Prefered call on Linux, BSD, Unix, and MacOS for use in cimnjunction with the 'shebang line'.
+
+  * `epyu.py <epyunit_cli.html#>`_ - Prefered call on MS-Windows for use in conjunction with PATHEXT.
+
+  .
+
+  +---------------------------------+----------------------------------------------------+
+  | [docs]                          | [source]                                           |
+  +=================================+====================================================+
+  | `epyu`_                         | `epyu - CLI call`_                                 |
+  +---------------------------------+----------------------------------------------------+
+  | `epyu.py`_                      | `epyu.py - CLI call`_                              |
+  +---------------------------------+----------------------------------------------------+
+
+.. _epyu - CLI call: _modules/bin/epyunit.html#
+.. _epyu: epyunit_cli.html#
+
+.. _epyu.py - CLI call: _modules/bin/epyunit.html#
+.. _epyu.py: epyunit_cli.html#
 
 epyunit.unittest.subprocess
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -21,32 +43,52 @@ Classes derived from unittest for seamless integration of subprocess tests into 
 * TestExecutable
 
   +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
+  | [docs]                          | [source]                                           |
   +=================================+====================================================+
   | `TestExecutable`_               | `TestExecutable.__init__`_                         |
   +---------------------------------+----------------------------------------------------+
-  | `callSubprocess`_               | `TestExecutable.callSubprocess`_                   |
+  | `assertEqual`_                  | `TestExecutable.assertEqual`_                      |
+  +---------------------------------+----------------------------------------------------+
+  | `assertExists`_                 | `TestExecutable.assertExists`_                     |
   +---------------------------------+----------------------------------------------------+
   | `assertExit`_                   | `TestExecutable.assertExit`_                       |
   +---------------------------------+----------------------------------------------------+
+  | `assertStderr`_                 | `TestExecutable.assertStderr`_                     |
+  +---------------------------------+----------------------------------------------------+
   | `assertStdout`_                 | `TestExecutable.assertStdout`_                     |
   +---------------------------------+----------------------------------------------------+
-  | `assertStderr`_                 | `TestExecutable.assertStderr`_                     |
+  | `callSubprocess`_               | `TestExecutable.callSubprocess`_                   |
+  +---------------------------------+----------------------------------------------------+
+  | `setkargs`_                     | `TestExecutable.setkargs`_                         |
   +---------------------------------+----------------------------------------------------+
   | `__str__ (0)`_                  | `TestExecutable.__str__`_                          |
   +---------------------------------+----------------------------------------------------+
 
-.. _TestExecutable.__init__: _modules/epyunit/unittest.subprocess.html#TestExecutable.__init__
+.. _TestExecutable.__init__: _modules/epyunit/unittest/subprocess.html#TestExecutable.__init__
 .. _TestExecutable: spunittest.html#init
-.. _TestExecutable.callSubprocess: _modules/epyunit/unittest.subprocess.html#TestExecutable.callSubprocess
-.. _callSubprocess: spunittest.html#callsubprocess
-.. _TestExecutable.assertExit: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertExit
+
+.. _TestExecutable.assertEqual: _modules/epyunit/unittest/subprocess.html#TestExecutable.assertEqual
+.. _assertEqual: spunittest.html#assertEqual
+
+.. _TestExecutable.assertExists: _modules/epyunit/unittest/subprocess.html#TestExecutable.assertExists
+.. _assertExists: spunittest.html#assertExists
+
+.. _TestExecutable.assertExit: _modules/epyunit/unittest/subprocess.html#TestExecutable.assertExit
 .. _assertExit: spunittest.html#assertExit
-.. _TestExecutable.assertStdout: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertStdout
-.. _assertStdout: spunittest.html#assertstdout
-.. _TestExecutable.assertStderr: _modules/epyunit/unittest.subprocess.html#TestExecutable.assertStderr
+
+.. _TestExecutable.assertStderr: _modules/epyunit/unittest/subprocess.html#TestExecutable.assertStderr
 .. _assertStderr: spunittest.html#assertstderr
-.. _TestExecutable.__str__: _modules/epyunit/unittest.subprocess.html#TestExecutable.__str__
+
+.. _TestExecutable.assertStdout: _modules/epyunit/unittest/subprocess.html#TestExecutable.assertStdout52
+.. _assertStdout: spunittest.html#assertstdout
+
+.. _TestExecutable.callSubprocess: _modules/epyunit/unittest/subprocess.html#TestExecutable.callSubprocess
+.. _callSubprocess: spunittest.html#callsubprocess
+
+.. _TestExecutable.setkargs: _modules/epyunit/unittest/subprocess.html#TestExecutable.setkargs
+.. _setkargs: spunittest.html#setkargs
+
+.. _TestExecutable.__str__: _modules/epyunit/unittest/subprocess.html#TestExecutable.__str__
 .. _\__str__ (0): spunittest.html#str
 
 epyunit.SubprocUnit
@@ -58,7 +100,7 @@ Adds a state machine for decision on fuzzy results based on multiple sources.
 * SubprocessUnit
 
   +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
+  | [docs]                          | [source]                                           |
   +=================================+====================================================+
   | `SubprocessUnit`_               | `SubprocessUnit.__init__`_                         |
   +---------------------------------+----------------------------------------------------+
@@ -66,7 +108,9 @@ Adds a state machine for decision on fuzzy results based on multiple sources.
   +---------------------------------+----------------------------------------------------+
   | `get_proceed (0)`_              | `SubprocessUnit.get_proceed`_                      |
   +---------------------------------+----------------------------------------------------+
-  | `setkargs (0)`_                 | `SubprocessUnit.setkargs`_                         |
+  | `setkargs (1)`_                 | `SubprocessUnit.setkargs`_                         |
+  +---------------------------------+----------------------------------------------------+
+  | `__repr__ (1)`_                 | `SubprocessUnit.__repr__`_                         |
   +---------------------------------+----------------------------------------------------+
   | `__str__ (1)`_                  | `SubprocessUnit.__str__`_                          |
   +---------------------------------+----------------------------------------------------+
@@ -76,24 +120,26 @@ Adds a state machine for decision on fuzzy results based on multiple sources.
 .. _SubprocessUnit.apply: _modules/epyunit/SubprocUnit.html#SubprocessUnit.apply
 .. _apply (0): subprocessunit.html#apply
 .. _SubprocessUnit.setkargs: _modules/epyunit/SubprocUnit.html#SubprocessUnit.setkargs
-.. _setkargs (0): subprocessunit.html#setkargs
+.. _setkargs (1): subprocessunit.html#setkargs
 .. _SubprocessUnit.get_proceed: _modules/epyunit/SubprocUnit.html#SubprocessUnit.get_proceed
 .. _get_proceed (0): subprocessunit.html#get-proceed
+.. _SubprocessUnit.__repr__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__repr__
+.. _\__repr__ (1): subprocessunit.html#repr
 .. _SubprocessUnit.__str__: _modules/epyunit/SubprocUnit.html#SubprocessUnit.__str__
 .. _\__str__ (1): subprocessunit.html#str
 
 * SProcUnitRules
 
   +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
+  | [docs]                          | [source]                                           |
   +=================================+====================================================+
   | `SProcUnitRules`_               | `SProcUnitRules.__init__`_                         |
   +---------------------------------+----------------------------------------------------+
-  | `apply (1)`_                    | `SProcUnitRules.apply`_                            |
+  | `apply (2)`_                    | `SProcUnitRules.apply`_                            |
   +---------------------------------+----------------------------------------------------+
   | `reset`_                        | `SProcUnitRules.reset`_                            |
   +---------------------------------+----------------------------------------------------+
-  | `setkargs (1)`_                 | `SProcUnitRules.setkargs`_                         |
+  | `setkargs (2)`_                 | `SProcUnitRules.setkargs`_                         |
   +---------------------------------+----------------------------------------------------+
   | `setrules`_                     | `SProcUnitRules.setrules`_                         |
   +---------------------------------+----------------------------------------------------+
@@ -102,13 +148,13 @@ Adds a state machine for decision on fuzzy results based on multiple sources.
 .. _\SProcUnitRules: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.__init__
 
 .. _SProcUnitRules.apply: _modules/epyunit/SubprocUnit.html#SProcUnitRules.apply
-.. _apply (1): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.apply
+.. _apply (2): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.apply
 
 .. _SProcUnitRules.reset: _modules/epyunit/SubprocUnit.html#SProcUnitRules.reset
 .. _reset: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.reset
 
 .. _SProcUnitRules.setkargs: _modules/epyunit/SubprocUnit.html#SProcUnitRules.setkargs
-.. _setkargs (1): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setkargs
+.. _setkargs (2): subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setkargs
 
 .. _SProcUnitRules.setrules: _modules/epyunit/SubprocUnit.html#SProcUnitRules.setrules
 .. _setrules: subprocessunit.html#epyunit.SubprocUnit.SProcUnitRules.setrules
@@ -120,19 +166,37 @@ Test data generators:
 
 * Data generators written in various languages for integration of heterogenous debugging into unit tests.
 
-  +---------------+-------------------+------------------------+--------------------------------+
-  | [prog-lang]   | debug-integration | [docs]                 | [source]                       | 
-  +===============+===================+========================+================================+
-  | bash          | --                | `myscript.sh`_         | `epyunit.myscript.sh`_         |
-  +---------------+-------------------+------------------------+--------------------------------+
-  | Python        | yes               | `myscript.py`_         | `epyunit.myscript.py`_         |
-  +---------------+-------------------+------------------------+--------------------------------+
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | [prog-lang]   | debug integration | remote host | [docs]                 | [source]                       |
+  +===============+===================+=============+========================+================================+
+  | bash          |                   |             | `myscript.sh`_         | `epyunit.myscript.sh`_         |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | C             |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | C++           |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | Java          |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | JavaScript    |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | Perl          |                   |             | `myscript.pl`_         | `epyunit.myscript.pl`_         |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | Python        | yes               | yes         | `myscript.py`_         | `epyunit.myscript.py`_         |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | Python/SWIG   |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
+  | Ruby          |                   |             |                        |                                |
+  +---------------+-------------------+-------------+------------------------+--------------------------------+
 
 .. _epyunit.myscript.sh: myscript-sh.html#epyunit.myscript-sh
 .. _\myscript.sh: myscript-sh.html#epyunit.myscript-sh
 
 .. _epyunit.myscript.py: _modules/epyunit/myscript.html#
 .. _\myscript.py: myscript-py.html#epyunit.myscript-py
+
+.. _epyunit.myscript.pl: myscript-pl.html#epyunit.myscript-pl
+.. _\myscript.pl: myscript-pl.html#epyunit.myscript-pl
+
 
 epyunit.SystemCalls
 ^^^^^^^^^^^^^^^^^^^
@@ -141,7 +205,7 @@ Wrapper library for subprocesses and caching of the results.
 * SystemCalls
 
   +---------------------------------+----------------------------------------------------+
-  | [docs]                          | [source]                                           | 
+  | [docs]                          | [source]                                           |
   +=================================+====================================================+
   | `SystemCalls`_                  | `SystemCalls.__init__`_                            |
   +---------------------------------+----------------------------------------------------+
@@ -155,7 +219,7 @@ Wrapper library for subprocesses and caching of the results.
   +---------------------------------+----------------------------------------------------+
   | `_mode_dialogue`_               | `SystemCalls._mode_dialogue`_                      |
   +---------------------------------+----------------------------------------------------+
-  | `setkargs`_                     | `SystemCalls.setkargs`_                            |
+  | `setkargs (3)`_                 | `SystemCalls.setkargs`_                            |
   +---------------------------------+----------------------------------------------------+
 
 .. _SystemCalls.__init__: _modules/epyunit/SystemCalls.html#SystemCalls.__init__
@@ -177,13 +241,13 @@ Wrapper library for subprocesses and caching of the results.
 .. _\_mode_dialogue: systemcalls.html#mode-dialogue
 
 .. _SystemCalls.setkargs: _modules/epyunit/SystemCalls.html#SystemCalls.setkargs
-.. _setkargs: systemcalls.html#setkargs
+.. _setkargs (3): systemcalls.html#setkargs
 
 
 
 
 epyunit.debug
-^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^
 Automation of the seamless cross-process debugging of subprocesses by PyDev RemoteDebugServer.
 
 * checkRDbg
@@ -191,18 +255,18 @@ Automation of the seamless cross-process debugging of subprocesses by PyDev Remo
   Helper function for initialization and bootstrap of debugging components.
 
   +------------------------------------+----------------------------------------------------+
-  | [docs]                             | [source]                                           | 
+  | [docs]                             | [source]                                           |
   +====================================+====================================================+
-  | `checkRDbg`_                       | `checkRDbg.checkAndInitRDbg`_                      |
+  | `checkRDbg`_                       | `checkRDbg.checkAndRemoveRDbgOptions`_             |
   +------------------------------------+----------------------------------------------------+
 
-.. _checkRDbg.checkAndInitRDbg: _modules/epyunit/checkRDbg.html#checkAndInitRDbg
-.. _checkRDbg: checkrdbg.html#checkandinitrdbg
+.. _checkRDbg.checkAndRemoveRDbgOptions: _modules/epyunit/debug/checkRDbg.html#checkAndRemoveRDbgOptions
+.. _checkRDbg: pydeverdbgchk.html#checkandinitrdbg
 
 * PyDevRDC
 
   +------------------------------------+----------------------------------------------------+
-  | [docs]                             | [source]                                           | 
+  | [docs]                             | [source]                                           |
   +====================================+====================================================+
   | `PyDevRDC`_                        | `PyDevRDC.__init__`_                               |
   +------------------------------------+----------------------------------------------------+
@@ -214,15 +278,27 @@ Automation of the seamless cross-process debugging of subprocesses by PyDev Remo
   +------------------------------------+----------------------------------------------------+
   | `stopDebug`_                       | `PyDevRDC.stopDebug`_                              |
   +------------------------------------+----------------------------------------------------+
+  | `setFork`_                         | `PyDevRDC.setFork`_                                |
+  +------------------------------------+----------------------------------------------------+
+  | `__str__`_                         | `PyDevRDC.__str__`_                                |
+  +------------------------------------+----------------------------------------------------+
+  | `__repr__`_                        | `PyDevRDC.__repr__`_                               |
+  +------------------------------------+----------------------------------------------------+
 
-.. _PyDevRDC.__init__: _modules/epyunit.debug.html#PyDevRDC.__init__
+.. _PyDevRDC.__init__: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.__init__
 .. _\PyDevRDC: pydeverdbg.html#init
-.. _PyDevRDC.scanEclipseForPydevd: _modules/epyunit.debug.html#PyDevRDC.scanEclipseForPydevd
-.. _\scanEclipseForPydevd: pydeverdbg.html#scaneclipseforpydevd
-.. _PyDevRDC.setDebugParams: _modules/epyunit.debug.html#PyDevRDC.setDebugParams
-.. _\setDebugParams: pydeverdbg.html#setdebugparams
-.. _PyDevRDC.startDebug: _modules/epyunit.debug.html#PyDevRDC.startDebug
-.. _\startDebug: pydeverdbg.html#startdebug
-.. _PyDevRDC.stopDebug: _modules/epyunit.debug.html#PyDevRDC.stopDebug
-.. _\stopDebug: pydeverdbg.html#stopdebug
+.. _PyDevRDC.__str__: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.__str__
+.. _\__str__: pydeverdbg.html#str
+.. _PyDevRDC.__repr__: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.__repr__
+.. _\__repr__: pydeverdbg.html#repr
+.. _PyDevRDC.setFork: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.setFork
+.. _setFork: pydeverdbg.html#setfork
+.. _PyDevRDC.scanEclipseForPydevd: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.scanEclipseForPydevd
+.. _scanEclipseForPydevd: pydeverdbg.html#scaneclipseforpydevd
+.. _PyDevRDC.setDebugParams: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.setDebugParams
+.. _setDebugParams: pydeverdbg.html#setdebugparams
+.. _PyDevRDC.startDebug: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.startDebug
+.. _startDebug: pydeverdbg.html#startdebug
+.. _PyDevRDC.stopDebug: _modules/epyunit/debug/pydevrdc.html#PyDevRDC.stopDebug
+.. _stopDebug: pydeverdbg.html#stopdebug
 

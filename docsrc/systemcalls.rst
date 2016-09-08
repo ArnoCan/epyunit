@@ -19,6 +19,10 @@ callit
 """"""
 .. automethod:: SystemCalls.callit
 
+cancel
+""""""
+.. automethod:: SystemCalls.cancel
+
 displayit
 """""""""
 .. automethod:: SystemCalls.displayit
@@ -39,9 +43,9 @@ setkargs
 """""""""
 .. automethod:: SystemCalls.setkargs
 
-splitlines
+splitLines
 """"""""""
-.. automethod:: SystemCalls.splitlines
+.. automethod:: SystemCalls.splitLines
 
 __str__
 """""""
@@ -57,5 +61,7 @@ Exceptions
 .. autoexception:: SystemCallsException
 
 .. autoexception:: SystemCallsExceptionSubprocessError
+
+.. autoexception:: SystemCallsTimeout
 
 

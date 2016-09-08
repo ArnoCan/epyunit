@@ -70,7 +70,7 @@ The commandline wrapper calls are:
       myscript.sh
 
 
-The complete source is contained in the module directory 'epyunit/myscript.sh'.
+The complete source is contained in the module directory 'epyunit/myscript.py'.
 
 For detailed examples refer to the subdirectories of the source package for:
 

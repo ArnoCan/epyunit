@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.1.14"
-RELEASE="0.1.14"
+VERSION="0.2.0"
+RELEASE="0.2.0"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -35,15 +35,11 @@ STATIC="${OUTDIR}/apidoc/sphinx/_static"
 
 # source entities
 FILEDIRS=""
-#FILEDIRS="${INDIR}epyunit"
-#FILEDIRS="$FILEDIRS ${INDIR}bin"
 FILEDIRS="$FILEDIRS ${INDIR}UseCases"
-
-#FILEDIRS="$FILEDIRS ${INDIR}UseCases/binaries/epyunit/epyunit4RDbg.py"
-
-
 FILEDIRS="$FILEDIRS ${INDIR}tests"
 FILEDIRS="$FILEDIRS ${INDIR}testdata"
+
+FILEDIRS="$FILEDIRS ${INDIR}bin"
 
 CALL=""
 CALL="$CALL export PYTHONPATH=$PWD:$MYPATH:$PYTHONPATH;"
@@ -57,9 +53,7 @@ CALL="$CALL -f -F "
 CALL="$CALL $@"
 
 #
-#build=patches
 bin_epyunit=bin/epyunit
-#cp $bin_epyunit  ${bin_epyunit}.py
 
 DOCHTMLDIR=${OUTDIR}apidoc/sphinx/_build/
 DOCHTML=${DOCHTMLDIR}html/index.html
@@ -186,14 +180,10 @@ EOF
 } >> ${OUTDIR}/apidoc/sphinx/index.rst 
 
 
-#CALL="SPHINXOPTS= "
 CALL=" "
-#CALL="SPHINXBUILD=sphinx-build PYTHONPATH=$PYTHONPATH "
 CALL="export SPHINXBUILD=sphinx-build; "
 CALL="$CALL cd ${OUTDIR}/apidoc/sphinx;"
-#CALL="$CALL export PYTHONPATH=$PYTHONPATH "
 CALL="$CALL export PYTHONPATH=$PWD:$MYPATH:$PYTHONPATH;"
-#CALL="$CALL export PYTHONPATH=$PYTHONPATH; "
 CALL="$CALL make html ;"
 CALL="$CALL cd - "
 cat <<EOF
@@ -208,10 +198,5 @@ DOCDIR="${DOCDIR:-doc/en/html/man3/$PROJECT}"
 if [ ! -e "${DOCDIR}" ];then
 	mkdir -p "${DOCDIR}"
 fi
-# #cp -a "${DOCHTMLDIR}"/html/* "${DOCDIR}"
-# echo
-# echo "display with: firefox -P preview.simple ${DOCHTML}"
-# echo "display with: firefox -P preview.simple ${DOCDIR}/index.html"
 echo
-#rm ${bin_epyunit}.py
 

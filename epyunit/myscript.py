@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 """Testee data simulator.
 
-Simulates hard-coded test results for the test of the tool chain itself, 
+Simulates hard-coded test results for the test of the tool chain itself,
 as reference probe for validation of the chain,
 and for test of base functions in case of derived classes.
 
@@ -10,6 +10,7 @@ the probe itself is required:
 
 * myscript.py - Python
 * myscript.sh - bash
+* myscript.pl - Perl
 * ffs.
 
 
@@ -34,20 +35,48 @@ if __name__ != '__main__':
     _doc_mode = True
 else:
     _doc_mode = False
-    
+
+# name of application, used for several filenames as default
+if '--appname' in sys.argv:
+    _ai = sys.argv.index('--appname')
+    _APPNAME = sys.argv[_ai]
+else:
+    _APPNAME = "myscript"
+
+# now check for cross-border debug
+# initial params
+_par = {'label':_APPNAME,}
+# initial params for debug
+#_par['debug'] = True
+#_par['verbose'] = True
+import epyunit.debug.checkRDbg
+_rdbgthis,_rdbg,_rdbgfwd,_rdbgroot,_rdbgsub = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(**_par)
+if _rdbgthis:
+    # activate remote debug stub call
+    import epyunit.debug.pydevrdc
+    # initial params for debug
+#     _par = { 'debug':True, 'verbose':True }
+#     epyunit.debug.pydevrdc.PYDEVD.startDebug(**_par) # start debugging here...
+    epyunit.debug.pydevrdc.PYDEVD.startDebug() # start debugging here...
+    #
+    # remote breakpoints could be set from here on...
+    #
+    pass
+
+
 def call_A_OK():
     """
     # A: succeed: OK
       EXIT:
         0
       STDOUT:
-        fromA
-        
-        arbitrary output
-        
-        arbitrary signalling OK string
-        
-        arbitrary output
+        ::
+
+          fromA
+          arbitrary output
+          arbitrary signalling OK string
+          arbitrary output
+
       STDERR:
         --
     """
@@ -62,15 +91,19 @@ def call_B_NOK():
     """
     # B: fail: NOK
        EXIT:
-         0
+          0
        STDOUT:
-         fromB
-         
-         arbitrary output
-         
-         arbitrary output
+        ::
+
+          fromB
+          arbitrary output
+          arbitrary output
+
        STDERR:
-         arbitrary signalling ERROR string
+        ::
+
+          arbitrary signalling ERROR string
+
     """
     print "fromB"
     print "arbitrary output"
@@ -85,15 +118,18 @@ def call_C_PRIO():
        EXIT:
          0
        STDOUT:
-         fromC
-         
-         arbitrary output
-         
-         arbitrary signalling OK string
-         
-         arbitrary output
+        ::
+
+          fromC
+          arbitrary output
+          arbitrary signalling OK string
+          arbitrary output
+
        STDERR:
-         arbitrary signalling ERROR string
+        ::
+
+          arbitrary signalling ERROR string
+
     """
     print "fromC"
     print "arbitrary output"
@@ -107,15 +143,15 @@ def call_D_EXITOK():
     """
     # D: exit value: EXITOK
        EXIT:
-         0
+          0
        STDOUT:
-         fromD
-         
-         arbitrary output
-         
-         arbitrary signalling OK string
-         
-         arbitrary output
+        ::
+
+          fromD
+          arbitrary output
+          arbitrary signalling OK string
+          arbitrary output
+
        STDERR:
          --
     """
@@ -132,15 +168,15 @@ def call_E_EXITNOK():
        EXIT:
          1
        STDOUT:
-         fromE
-         
-         arbitrary output
-         
-         arbitrary signalling OK string
-         
-         arbitrary output
+        ::
+
+          fromE
+          arbitrary output
+          arbitrary signalling OK string
+          arbitrary output
+
        STDERR:
-         --
+          --
     """
     print "fromE"
     print "arbitrary output"
@@ -155,15 +191,15 @@ def call_F_EXIT7():
        EXIT:
          7
        STDOUT:
-         fromF
-         
-         arbitrary output
-         
-         arbitrary signalling NOK string
-         
-         arbitrary output
+        ::
+
+          fromF
+          arbitrary output
+          arbitrary signalling NOK string
+          arbitrary output
+
        STDERR:
-         --
+          --
     """
     print "fromF"
     print "arbitrary output"
@@ -178,19 +214,20 @@ def call_G_EXIT8():
        EXIT:
          8
        STDOUT:
-         fromG
-         
-         arbitrary output
-         
-         arbitrary signalling NOK string
-         
-         arbitrary output
+        ::
+
+          fromG
+          arbitrary output
+          arbitrary signalling NOK string
+          arbitrary output
+
        STDERR:
-         arbitrary err output
-         
-         arbitrary err signalling NOK string
-         
-         arbitrary err output
+        ::
+
+          arbitrary err output
+          arbitrary err signalling NOK string
+          arbitrary err output
+
     """
     print "fromG"
     print "arbitrary output"
@@ -206,19 +243,21 @@ def call_H_EXIT9OK3NOK2():
     """
     # H: exit value: EXIT9OK3NOK2
        EXIT:
-         9
+          9
        STDOUT:
-         fromH
-         
-         OK
-         
-         OK
-         
-         OK
+        ::
+
+          fromH
+          OK
+          OK
+          OK
+
        STDERR:
-         NOK
-         
-         NOK
+        ::
+
+          NOK
+          NOK
+
     """
     print "fromH"
     print "OK"
@@ -235,13 +274,14 @@ def call_I_STDERRONLY():
        EXIT:
         0
        STDOUT:
-        --
+         --
        STDERR:
-         fromI
-         
-         NOK
-         
-         NOK
+        ::
+
+          fromI
+          NOK
+          NOK
+
     """
     print >> sys.stderr, "fromI"
     print >> sys.stderr, "NOK"
@@ -253,30 +293,18 @@ def call_DEFAULT():
     """
     # DEFAULT: define: here succeed '--default-ok': DEFAULT
        EXIT:
-         123
+          123
        STDOUT:
-         arbitrary output
+        ::
+
+          arbitrary output
+
        STDERR:
-         --
+          --
     """
     print >> sys.stdout, "arbitrary output"
     if not _doc_mode:
         sys.exit(123)
-
-    
-if "--rdbg" in sys.argv:
-    _ai = sys.argv.index("--rdbg")
-    _a = sys.argv.pop(_ai)  # --rdbg
-    if _ai < len(sys.argv) and sys.argv[_ai][:1] != '-':
-        _rdbg = sys.argv.pop(_ai)  # value
-    else:
-        _rdbg = _rdbg_default
-
-    import epyunit.debug.pydevrdc
-    epyunit.debug.pydevrdc.PYDEVD.startDebug()  # start debugging here...
-    #
-    # remote breakpoints could be set from here on...
-    #
 
 for ax in sys.argv[1:]:
     ax = ax.upper()
@@ -284,7 +312,7 @@ for ax in sys.argv[1:]:
 
         print """
             Provided test cases: ( OK, NOK, PRIO, EXITOK, EXITNOK, EXIT7, EXIT8, EXIT9OK3NOK2, STDERRONLY, DEFAULT )
-            
+
             # A: succeed: OK
               EXIT:
                 0
@@ -295,7 +323,7 @@ for ax in sys.argv[1:]:
                 arbitrary output
               STDERR:
                 -
-            
+
             # B: fail: NOK
                EXIT:
                  0
@@ -305,7 +333,7 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  arbitrary signalling ERROR string
-            
+
             # C: redundancy resolved by user defined priority: PRIO
                EXIT:
                  0
@@ -316,8 +344,8 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  arbitrary signalling ERROR string
-            
-            
+
+
             # D: exit value: EXITOK
                EXIT:
                  0
@@ -328,7 +356,7 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  -
-            
+
             # E: exit value: EXITNOK
                EXIT:
                  1
@@ -339,7 +367,7 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  -
-            
+
             # F: exit value: EXIT7
                EXIT:
                  7
@@ -350,7 +378,7 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  -
-            
+
             # G: exit value: EXIT8
                EXIT:
                  8
@@ -363,7 +391,7 @@ for ax in sys.argv[1:]:
                  arbitrary err output
                  arbitrary err signalling NOK string
                  arbitrary err output
-            
+
             # H: exit value: EXIT9OK3NOK2
                EXIT:
                  9
@@ -375,7 +403,7 @@ for ax in sys.argv[1:]:
                STDERR:
                  NOK
                  NOK
-            
+
             # I: exit value: STDERRONLY
                EXIT:
                 0
@@ -385,7 +413,7 @@ for ax in sys.argv[1:]:
                  fromI
                  NOK
                  NOK
-            
+
             # DEFAULT: define: here succeed '--default-ok': DEFAULT
                EXIT:
                  123
@@ -393,11 +421,11 @@ for ax in sys.argv[1:]:
                  arbitrary output
                STDERR:
                  -
-            	
+
         """
         sys.exit(0)
 
-    elif ax in ("OK",): 
+    elif ax in ("OK",):
         call_A_OK()
         if not _doc_mode:
             sys.exit(0)

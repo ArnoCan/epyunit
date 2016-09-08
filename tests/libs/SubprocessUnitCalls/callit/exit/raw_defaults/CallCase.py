@@ -1,41 +1,41 @@
 """Initial raw tests by SubprocessUnit with hard-coded defaults.
 
 Due to the basic character of the test these are done a little more than less.
- 
+
 """
 from __future__ import absolute_import
 from __future__ import print_function
- 
+
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
 __version__ = '0.1.10'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
- 
+
 __docformat__ = "restructuredtext en"
- 
+
 import unittest
 import os
- 
+
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-import epyunit.SubprocUnit 
+import epyunit.SubprocUnit
 
 #
 #######################
-# 
+#
 class CallUnits(unittest.TestCase):
 
     def __init__(self,*args,**kargs):
         super(CallUnits,self).__init__(*args,**kargs)
-        
+
     @classmethod
     def setUpClass(cls):
         cls.slst = []
         setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
 
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',cls.slst,matchidx=0)
+        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
 
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',cls.slst,matchidx=0)
+        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
         cls.scri = cls.scri
 
     def setUp(self):
@@ -47,17 +47,17 @@ class CallUnits(unittest.TestCase):
             _repr = repr(self.sx.getruleset())
             _reprX = """{'default': True, 'cflags': 0, 'multiline': 0, 'ignorecase': 0, 'unicode': 0, 'dotall': 0, 'debug': 0, 'priotype': 1, 'result': 0, 'resultok': 0, 'resultnok': 0, 'exitign': False, 'exittype': 8, 'exitval': 0, 'stderrchk': False, 'stderrnok': [], 'stderrok': [], 'stdoutchk': False, 'stdoutnok': [], 'stdoutok': []}"""
             assert _repr == _reprX
-             
+
             _s0 = self.sx.getruleset().states()
             _s0X = {'resultok': 0, 'stdoutok': [], 'exit': 0, '_exitcond': False, 'stdoutnok': [], 'resultnok': 0, 'stderrnok': [], 'stderrok': [], 'result': 0}
             assert _s0 == _s0X
 
-    def testCase010_OK(self):
+    def testCaseOK(self):
         _call  = self.scri
         _call += " OK "
 
         callkargs = {}
-        
+
         ret = self.sx.callit(_call,**callkargs)
         assert ret ==  [0, ['fromA', 'arbitrary output', 'arbitrary signalling OK string', 'arbitrary output'], []]
 
@@ -65,7 +65,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase011_NOK(self):
+    def testCaseNOK(self):
         callkargs = {}
         _call = self.scri
         _call += " NOK "
@@ -77,7 +77,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase012_PRIO(self):
+    def testCasePRIO(self):
         callkargs = {}
         _call = self.scri
         _call += " PRIO "
@@ -89,7 +89,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase013_EXITOK(self):
+    def testCaseEXITOK(self):
         callkargs = {}
         _call = self.scri
         _call += " EXITOK "
@@ -101,7 +101,7 @@ class CallUnits(unittest.TestCase):
         assert state
         pass
 
-    def testCase014_EXITNOK(self):
+    def testCaseEXITNOK(self):
         callkargs = {}
         _call = self.scri
         _call += " EXITNOK "
@@ -113,7 +113,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase015_EXIT7(self):
+    def testCaseEXIT7(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT7 "
@@ -125,7 +125,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase016_EXIT8(self):
+    def testCaseEXIT8(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT8 "
@@ -137,7 +137,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase017_EXIT9OK3NOK2(self):
+    def testCaseEXIT9OK3NOK2(self):
         callkargs = {}
         _call = self.scri
         _call += " EXIT9OK3NOK2 "
@@ -149,7 +149,7 @@ class CallUnits(unittest.TestCase):
         assert not state
         pass
 
-    def testCase018_DEFAULT(self):
+    def testCaseDEFAULT(self):
         callkargs = {}
         _call = self.scri
         _call += " DEFAULT "
@@ -164,7 +164,7 @@ class CallUnits(unittest.TestCase):
 #
 #######################
 #
- 
+
 if __name__ == '__main__':
     unittest.main()
 

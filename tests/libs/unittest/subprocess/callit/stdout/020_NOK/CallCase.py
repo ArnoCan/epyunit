@@ -26,23 +26,28 @@ import os
  
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SystemCalls 
- 
+from testdata import epyu,call_scripy
+
 #
 #######################
 #
- 
 class CallUnits(unittest.TestCase):
+
+    def setUp(self):
+        unittest.TestCase.setUp(self)
+        
+        syskargs = {}
+        self.sx = epyunit.SystemCalls.SystemCalls(**syskargs)
+
+        self.epyu = epyu
+        self.scri =  call_scripy
+
     def testCase000(self):
 
-        slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst)
-        myscript = findRelPathInSearchPath('epyunit/myscript.sh',slst,matchidx=0)
+        myscript = call_scripy
 
         sx = epyunit.SystemCalls.SystemCalls()
 
-#         _env = os.environ.copy()
-#         _env['PATH'] = os.pathsep.join(sys.path)
-          
         ret = sx.callit(myscript+" NOK")
 
         assert ret[0] == 0

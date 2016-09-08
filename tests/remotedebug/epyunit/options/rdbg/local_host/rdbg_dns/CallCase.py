@@ -30,9 +30,8 @@ __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 __docformat__ = "restructuredtext en"
  
 import unittest
-import os,sys
  
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
+from testdata import epyu,call_scripy
 from epyunit.unittest.subprocess import TestExecutable
  
 #
@@ -43,71 +42,63 @@ class CallUnits(TestExecutable):
 
     @classmethod
     def setUpClass(cls):
-        slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst)
-        
-        cls.epyu = findRelPathInSearchPath('bin/epyunit',slst,matchidx=0)
-        cls.scri = findRelPathInSearchPath('epyunit/myscript.sh',slst,matchidx=0)
-
         cls.cache = True
 
     def setUp(self):
-        self.call  = self.epyu
+        self.call  = epyu
         self.call += " --passall "
-        self.call += self.scri
+        self.call += call_scripy
 
         self.call += " EXIT9OK3NOK2 "
         self.retX = [9, ['fromH', 'OK', 'OK', 'OK'], ['NOK', 'NOK', ]]
 
     def testCase000(self):
-        self.callSubprocess(self.call)
-        self.assertEqual(self.retX)
+        ret = self.callSubprocess(self.call)
+        self.assertEqual(self.retX,ret)
         pass
  
     def testCase010(self):
-        self.call  = self.epyu
+        self.call  = epyu
         self.call += " --rdbg localhost "
         self.call += " --passall "
-        self.call += " -- "
-        self.call += self.scri
+        self.call += call_scripy
         self.call += " EXIT9OK3NOK2 "
 
-        self.callSubprocess(self.call)
-        self.assertEqual(self.retX)
+        ret = self.callSubprocess(self.call)
+        self.assertEqual(self.retX,ret)
         pass
  
     def testCase011(self):
-        self.call  = self.epyu
+        self.call  = epyu
         self.call += " --passall "
         self.call += " --rdbg localhost "
-        self.call += " -- "
-        self.call += self.scri
+        self.call += call_scripy
         self.call += " EXIT9OK3NOK2 "
 
-        self.callSubprocess(self.call)
-        self.assertEqual(self.retX)
+        ret = self.callSubprocess(self.call)
+        self.assertEqual(self.retX,ret)
         pass
  
     def testCase020(self):
-        self.call  = self.epyu
+        self.call  = epyu
         self.call += " --rdbg localhost "
         self.call += " --passall "
-        self.call += self.scri
+        self.call += call_scripy
         self.call += " EXIT9OK3NOK2 "
 
-        self.callSubprocess(self.call)
-        self.assertEqual(self.retX)
+        ret = self.callSubprocess(self.call)
+        self.assertEqual(self.retX,ret)
         pass
 
     def testCase021(self):
-        self.call  = self.epyu
+        self.call  = epyu
         self.call += " --passall "
         self.call += " --rdbg localhost "
-        self.call += self.scri
+        self.call += call_scripy
         self.call += " EXIT9OK3NOK2 "
 
-        self.callSubprocess(self.call)
-        self.assertEqual(self.retX)
+        ret =  self.callSubprocess(self.call)
+        self.assertEqual(self.retX,ret)
         pass
 
 #

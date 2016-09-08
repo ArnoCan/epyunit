@@ -27,7 +27,9 @@ import unittest
 import os
  
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-import epyunit.SystemCalls 
+import epyunit.SystemCalls
+from testdata import epyu,call_scripy
+
  
 #
 #######################
@@ -38,7 +40,7 @@ class CallUnits(unittest.TestCase):
 
         slst = []
         setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',slst)
-        myscript = findRelPathInSearchPath('epyunit/myscript.sh',slst,matchidx=0)
+        myscript = call_scripy
 
         sx = epyunit.SystemCalls.SystemCalls()
 

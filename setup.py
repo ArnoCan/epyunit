@@ -10,27 +10,35 @@
       build_sphinx: Creates documentation for runtime system by Sphinx, html only.
          Calls 'callDocSphinx.sh'.
 
-      build_epydoc: Creates standalone documentation for runtime system by Epydoc, 
+      build_epydoc: Creates standalone documentation for runtime system by Epydoc,
          html only.
 
       project_doc: Install a local copy into the doc directory of the project.
 
-      instal_doc: Install a local copy of the previously build documents in 
+      instal_doc: Install a local copy of the previously build documents in
           accordance to PEP-370.
 
-      test: Runs PyUnit tests by discovery.
+      test: Runs PyUnit tests by discovery. Runs the following
+          tests for libs, bins, and remotedebug. The latter requires
+          a running RemoteDebugServer in Eclipse/PyDev::
+
+            python -m unittest discover -p CallCase.py -s tests.libs
+            python -m unittest discover -p CallCase.py -s tests.bins
+            python -m unittest discover -p CallCase.py -s tests.remotedebug
 
       usecases: Runs PyUnit UseCases by discovery, a lightweight
-          set of unit tests.
+          set of unit tests::
 
-      --no-install-required: Suppresses installation dependency checks, 
+            python -m unittest discover -p CallCase.py -s UseCases
+
+      --no-install-required: Suppresses installation dependency checks,
           requires appropriate PYTHONPATH.
       --offline: Sets online dependencies to offline, or ignores online
           dependencies.
 
       --exit: Exit 'setup.py'.
 
-      --help-filesysobjects: Displays this help.
+      --help-epyunit: Displays this help.
 
    Returns:
       Results for success in installed 'epyunit'.
@@ -43,9 +51,6 @@
 # import ez_setup
 # ez_setup.use_setuptools()
 
-#import sys
-#from polybori.plot import THEN
-
 #
 #*** common source header
 #
@@ -53,14 +58,16 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.1.14'
+__version__ = '0.2.0'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 _NAME = 'epyunit'
 
 # some debug
 if __debug__:
-    __DEVELTEST__ = True
+    __DEVELTEST__ = False
+#     __DEVELTEST__ = True
+
 
 #
 #***
@@ -70,6 +77,14 @@ from setuptools import setup #, find_packages
 import fnmatch
 import re, shutil, tempfile
 
+
+version = '{0}.{1}'.format(*sys.version_info[:2])
+if version < '2.7': # pragma: no cover
+    raise Exception("Requires Python-2.7.* or higher")
+
+#
+# required for a lot for now, thus just do it
+sys.path.insert(0,os.path.abspath(os.path.dirname(__file__)))
 
 #
 #*** ===>>> setup.py helper
@@ -163,7 +178,7 @@ if 'build_sphinx' in sys.argv or 'build_doc' in sys.argv:
 
 # common locations
 src0 = os.path.normpath("build/apidoc/sphinx/_build/html")
-dst0 = os.path.normpath("build/apidoc/"+str(_NAME))    
+dst0 = os.path.normpath("build/apidoc/"+str(_NAME))
 
 # custom doc creation by sphinx-apidoc with embeded epydoc
 if 'build_doc' in sys.argv:
@@ -174,63 +189,81 @@ if 'build_doc' in sys.argv:
     if os.path.exists(dst0):
         shutil.rmtree(dst0)
     shutil.copytree(src0, dst0)
-    
+
     print "#---------------------------------------------------------"
     exit_code = os.system('epydoc --config docsrc/epydoc.conf') # create apidoc
     print "#---------------------------------------------------------"
     print "Called/Finished epydoc --config docsrc/epydoc.conf => exit="+str(exit_code)
 
+
     def _sed(filename, pattern, repl, flags=0):
+        _matched = False
         pattern_compiled = re.compile(pattern,flags)
         fname = os.path.normpath(filename)
         with tempfile.NamedTemporaryFile(mode='w', delete=False) as ftmp:
             with open(fname) as src_file:
                 for line in src_file:
-                    ftmp.write(pattern_compiled.sub(repl, line))
-    
+                    _cache = pattern_compiled.sub(repl, line) # required for checking alternatives in case of missing a variant
+                    if _cache != line:
+                        _matched = True
+                    ftmp.write(_cache)
         shutil.copystat(fname, ftmp.name)
         shutil.move(ftmp.name, fname)
+        return _matched
 
 
-    pt = '<a target="moduleFrame" href="toc-everything.html">Everything</a>'
-    rp  = r'<a href="../index.html" target="_top">Home</a>'
+    pt = """<a target="moduleFrame" href="toc-everything.html">Everything</a>"""
+    rp  = r"""<a href="../index.html" target="_top">Home</a>"""
     rp += r' - '
-    rp += r'<a href="./index.html" target="_top">Top</a>'
+    rp += r"""<a href="./index.html" target="_top">Top</a>"""
     rp += r' - '
     rp += pt
-
     fn = dst0+'/epydoc/toc.html'
     _sed(fn, pt, rp, re.MULTILINE)
 
-    pt = '<h4>Next topic</h4>'
-    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>'
+    pt = """<h4>Next topic</h4>"""
+    rp  = r"""<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>"""
     rp += pt
-
     fn = dst0+'/index.html'
     _sed(fn, pt, rp, re.MULTILINE)
 
-    pt = '<h4>Previous topic</h4>'
-    rp  = r'<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>'
+    patchlist = [
+        'epyunit.html',
+        'epyunit_cli.html',
+        'myscript-py.html',
+        'pydeverdbg.html',
+        'pydeverdbgchk.html',
+        'rules_logic.html',
+        'rules_shortcuts.html',
+        'shortcuts.html',
+        'software_design.html',
+        'spunittest.html',
+        'subprocessunit.html',
+        'systemcalls.html',
+        'usecases.html',
+    ]
+    pt = """<h4>Previous topic</h4>"""
+    rp  = r"""<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>"""
     rp += pt
 
+    pt1 = """<h4>Next topic</h4>"""
+    rp1  = r"""<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>"""
+    rp1 += pt1
 
-    patchlist = [
-        'usecases.html',
-        'rules_logic.html',
-        'shortcuts.html',
-        'rules_shortcuts.html',
-        'subprocessunit.html',
-        'epyunit.html',
-        'systemcalls.html',
-        'software_design.html',
-    ]
+#    pt2 = '<div role="note" aria-label="source link">[ \t]*\n[ \t]*<h4>This Page</h4>'
+    pt2 = r"""<div role="note" aria-label="source link">"""
+    rp2  = r"""<h4>API</h4><p class="topless"><a href="epydoc/index.html" title="API">Programming Interface</a></p>"""
+    rp2 += pt2
+
     for px in patchlist:
         fn = dst0+os.sep+px
-        _sed(fn, pt, rp, re.MULTILINE)
-    
+        if not _sed(fn, pt, rp, re.MULTILINE):
+            if not _sed(fn, pt1, rp1, re.MULTILINE):
+                _sed(fn, pt2, rp2, re.MULTILINE)
+
     sys.argv.remove('build_doc')
 
-  
+
 
 # custom doc creation by epydoc
 if 'build_epydoc' in sys.argv:
@@ -238,7 +271,7 @@ if 'build_epydoc' in sys.argv:
         os.makedirs('build'+os.sep+'apidoc'+os.sep+'epydoc')
     except:
         pass
-    
+
     print "#---------------------------------------------------------"
     exit_code = os.system('epydoc --config docsrc/epydoc-standalone.conf') # create apidoc
     print "#---------------------------------------------------------"
@@ -251,7 +284,7 @@ if 'project_doc' in sys.argv:
     print "# project_doc.sh..."
 
     dstroot = os.path.normpath("doc/en/html/man3/")+os.sep
-    
+
     try:
         os.makedirs(dstroot)
     except:
@@ -277,10 +310,10 @@ if 'project_doc' in sys.argv:
 
     print "#"
     idx = 0
-    for i in sys.argv: 
+    for i in sys.argv:
         if i == 'install_doc': break
         idx += 1
-    
+
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
@@ -296,7 +329,7 @@ if 'install_doc' in sys.argv:
     else:
         dstroot = os.path.expanduser("~/.local/doc/en/html/man3/")
     dstroot = os.path.normpath(dstroot)+os.sep
-    
+
     try:
         os.makedirs(dstroot)
     except:
@@ -322,30 +355,29 @@ if 'install_doc' in sys.argv:
 
     print "#"
     idx = 0
-    for i in sys.argv: 
+    for i in sys.argv:
         if i == 'install_doc': break
         idx += 1
-    
+
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
     sys.argv.remove('install_doc')
 
-# call of complete test suite by 'discover'
 if 'tests' in sys.argv or 'test' in sys.argv:
     if os.path.dirname(__file__)+os.pathsep not in os.environ['PATH']:
         p0 = os.path.dirname(__file__)
         os.putenv('PATH', p0+os.pathsep+os.getenv('PATH',''))
         print "# putenv:PATH[0]="+str(p0)
-    
+
     print "#"
     print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
     print "#"
     print "# Test LIBRARIES - call in: tests.libs"
-    exit_code += os.system('python -m unittest discover -s tests.libs -p CallCase.py') # traverse tree
+    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.libs') # traverse tree
     print "#"
     print "# Tests BINARIES - call in: tests.bins"
-    exit_code += os.system('python -m unittest discover -s tests.bins -p CallCase.py') # traverse tree
+    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.bins') # traverse tree
     print "#"
     print "# Test REMOTEDEBUG - call in: tests.remotedebug"
     print "#"
@@ -353,7 +385,7 @@ if 'tests' in sys.argv or 'test' in sys.argv:
     print "# *** ATTENTION: The following tests.remotedebug - **NOW MANDATORY** - require a running PyDev/Eclipse RemoteDebugServer"
     print "# ***"
     print "#"
-    exit_code += os.system('python -m unittest discover -s tests.remotedebug -p CallCase.py') # traverse tree
+    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.remotedebug') # traverse tree
 #     print "#"
 #     print "# Check 'inspect' paths - call in: tests"
 #     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
@@ -368,21 +400,20 @@ if 'tests' in sys.argv or 'test' in sys.argv:
         sys.argv.remove('tests')
     except:
         pass
-    
 
-# call of complete UseCases by 'discover'
-if 'usecases' in sys.argv or 'usecase' in sys.argv:
+
+if 'usecases' in sys.argv or 'usecase' in sys.argv or 'UseCases' in sys.argv:
     if os.path.dirname(__file__)+os.pathsep not in os.environ['PATH']:
         p0 = os.path.dirname(__file__)
         os.putenv('PATH', p0+os.pathsep+os.getenv('PATH',''))
         print "# putenv:PATH[0]="+str(p0)
-    
+
     print "#"
     print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
     print "#"
     print "#"
     print "# Check 'inspect' paths - call in: UseCases"
-    exit_code = os.system('python -m unittest discover -s UseCases -p CallCase.py') # traverse tree
+    exit_code = os.system('python -m unittest discover -p CallCase.py -s UseCases') # traverse tree
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
@@ -394,15 +425,10 @@ if 'usecases' in sys.argv or 'usecase' in sys.argv:
         sys.argv.remove('usecases')
     except:
         pass
-
-# # call of complete test suite by 'discover'
-# if 'test' in sys.argv:
-#     print "#"
-#     exit_code = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
-#     print "#"
-#     print "Called/Finished PyUnit tests => exit="+str(exit_code)
-#     print "exit setup.py now: exit="+str(exit_code)
-#     sys.argv.remove('test')
+    try:
+        sys.argv.remove('UseCases')
+    except:
+        pass
 
 # Intentional HACK: ignore (online) dependencies, mainly foreseen for developement
 __no_install_requires = False
@@ -444,7 +470,7 @@ if len(sys.argv)==1:
 #
 _name='epyunit'
 
-_description=("The 'epyunit' package provides a wrapper for unit tests of commandline interfaces, " 
+_description=("The 'epyunit' package provides a wrapper for unit tests of commandline interfaces, "
               "and the automation of debugging with PyDev for external processes. "
               "The package could be used either from the comandline, or integrated into Eclipse "
               "with PyDev."
@@ -470,8 +496,8 @@ _classifiers = [
     "Operating System :: POSIX",
     "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python",
-    "Programming Language :: Python :: 2",    
-    "Programming Language :: Python :: 2.7",    
+    "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.7",
     "Programming Language :: Unix Shell",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Topic :: Utilities",
@@ -479,14 +505,15 @@ _classifiers = [
 
 _keywords  = ' Python PyUnit PyDev Eclipse CLI command line'
 _keywords += ' test unit unittest regression regressiontest fileobjects commandline'
-_keywords += ' debug pydevd.py automation'
+_keywords += ' debug pydevd.py automation remote debug cross-process'
 
 _packages = ["epyunit","epyunit/debug","epyunit/unittest",]
-_scripts = ["bin/epyunit", ]
+_scripts = ["bin/epyu.py", "bin/epyu", ]
 
 _package_data = {
-    'epyunit': ['README','ArtisticLicense20.html', 'licenses-amendments.txt',
-                'myscript.sh',
+    'epyunit': ['README','README.md','ArtisticLicense20.html', 'licenses-amendments.txt',
+                'myscript.sh','myscript.py','myscript.pl', 
+                'testdata',
             ],
 }
 
@@ -500,8 +527,8 @@ _install_requires=[
     're',
     'glob',
     'subprocess',
-    'pyfilesysobjects',
-    'pysourceinfo',
+    'pyfilesysobjects >0.1.10',
+    'pysourceinfo >0.1.9',
 #    'termcolor'
 ]
 
@@ -537,7 +564,6 @@ if __no_install_requires:
 #*** <<<=== setup.py helper
 #
 
-
 #
 #*** do it now...
 #
@@ -558,3 +584,10 @@ setup(name=_name,
       packages=_packages,
       package_data=_package_data
 )
+
+if '--help' in sys.argv:
+    print
+    print "Help on usage extensions by "+str(_NAME)
+    print "   --help-"+str(_NAME)
+    print
+
