@@ -19,6 +19,7 @@ import os
 
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SubprocUnit
+from testdata import call_scripy,epyu
 
 #
 #######################
@@ -33,9 +34,9 @@ class CallUnits(unittest.TestCase):
         cls.slst = []
         setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
 
-        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
+        cls.epyu = epyu
 
-        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
+        cls.scri = call_scripy
         cls.scri = cls.scri
 
     def setUp(self):

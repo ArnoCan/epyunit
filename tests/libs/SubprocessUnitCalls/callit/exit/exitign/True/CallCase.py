@@ -12,26 +12,21 @@ __docformat__ = "restructuredtext en"
 import unittest
 import os
  
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SubprocUnit 
+
+from testdata import call_scripy,epyu
 
 #
 #######################
 # 
 class CallUnits(unittest.TestCase):
 
-    def __init__(self,*args,**kargs):
-        super(CallUnits,self).__init__(*args,**kargs)
-        
     @classmethod
     def setUpClass(cls):
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
         
-        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
-        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
+        cls.epyu = epyu
+        cls.scri = call_scripy
 
-        cls._call = cls.scri
         
         cls.callkargs = {}
         cls.applyargs = {}
@@ -42,6 +37,7 @@ class CallUnits(unittest.TestCase):
         self.sx = epyunit.SubprocUnit.SubprocessUnit(**syskargs)
 
     def testCaseOK(self):
+        self._call = self.scri
         self._call += " OK "
         
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -57,6 +53,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseNOK(self):
+        self._call = self.scri
         self._call += " NOK "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -72,6 +69,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCasePRIO(self):
+        self._call = self.scri
         self._call += " PRIO "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -87,6 +85,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseEXITOK(self):
+        self._call = self.scri
         self._call += " EXITOK "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -102,6 +101,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseEXITNOK(self):
+        self._call = self.scri
         self._call += " EXITNOK "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -117,6 +117,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseEXIT7(self):
+        self._call = self.scri
         self._call += " EXIT7 "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -132,6 +133,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseEXIT8(self):
+        self._call = self.scri
         self._call += " EXIT8 "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -147,6 +149,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseEXIT9OK3NOK2(self):
+        self._call = self.scri
         self._call += " EXIT9OK3NOK2 "
 
         ret = self.sx.callit(self._call,**self.callkargs)
@@ -162,6 +165,7 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCaseDEFAULT(self):
+        self._call = self.scri
         self._call += " DEFAULT "
 
         ret = self.sx.callit(self._call,**self.callkargs)

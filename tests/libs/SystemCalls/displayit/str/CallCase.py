@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 from __future__ import print_function
+from testdata import call_scripy
  
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
@@ -15,6 +16,8 @@ import os,sys
 from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
 import epyunit.SystemCalls 
 
+from testdata import call_scripy,epyu
+
 #
 #######################
 # 
@@ -25,12 +28,8 @@ class CallUnits(unittest.TestCase):
         
     @classmethod
     def setUpClass(cls):
-        cls.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',cls.slst)
-        
-        cls.epyu = findRelPathInSearchPath('bin/epyu.py',cls.slst,matchidx=0)
-        cls.scri = " python " + findRelPathInSearchPath('epyunit/myscript.py',cls.slst,matchidx=0)
-        cls.scri = cls.scri
+        cls.epyu = epyu
+        cls.scri = call_scripy
 
         cls.callkargs = {}
         cls.displayargs = {} 

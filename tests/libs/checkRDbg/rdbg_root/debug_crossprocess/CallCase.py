@@ -1,23 +1,14 @@
+# -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
 import unittest
 import os,sys
 
-from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSearchPath
-
+from testdata import epyu,call_scripy
 #
 #######################
 #
 class CallUnits(unittest.TestCase):
-
-    @classmethod
-    def setUpClass(self):
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
-
-        self.epyu = findRelPathInSearchPath('bin/epyu.py',self.slst,matchidx=0)
-        self.scri =  " -- python " + findRelPathInSearchPath('epyunit/myscript.py',self.slst,matchidx=0)
-
 
     def testCallTwoLevelsOfSubprocesses(self):
         """Selftest of the remote debugging feature.
@@ -31,8 +22,8 @@ class CallUnits(unittest.TestCase):
             print "\n#\n#*** Set 'PYTHONPATH' ("+str(e)+")\n#\n"
             sys.exit(1)
 
-        call  = " python " + self.epyu
-        call += ' ' + self.scri
+        call  = epyu
+        call += ' ' + call_scripy
         call += ' OK'
 
         _kargs = {}

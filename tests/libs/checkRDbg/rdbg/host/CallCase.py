@@ -9,23 +9,17 @@ from filesysobjects.FileSysObjects import setUpperTreeSearchPath,findRelPathInSe
 from epyunit.SystemCalls import SystemCalls,SystemCallsExceptionSubprocessError
 import filesysobjects
 
+from testdata import call_scripy,epyu
+
 #
 #######################
 #
 class CallUnits(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(self):
-        self.slst = []
-        setUpperTreeSearchPath(os.path.abspath(os.path.dirname(__file__)),'epyunit',self.slst)
-
-        self.epyu = findRelPathInSearchPath('bin/epyu.py',self.slst,matchidx=0)
-        self.scri =  " -- python " + findRelPathInSearchPath('epyunit/myscript.py',self.slst,matchidx=0)
-
     def testCall_host(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --rdbg host01 '
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -40,11 +34,11 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_surrounded(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --abc '
         _call += ' --rdbg host01'
         _call += ' --def '
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -59,10 +53,10 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_at_begin(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --rdbg host01'
         _call += ' --def '
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -77,10 +71,10 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_at_end(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --abc '
         _call += ' --rdbg host01'
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -95,9 +89,9 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_equal(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --rdbg=host01'
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -112,11 +106,11 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_surrounded_equal(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --abc '
         _call += ' --rdbg=host01'
         _call += ' --def '
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -131,10 +125,10 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_at_begin_equal(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --rdbg=host01'
         _call += ' --def '
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
@@ -149,10 +143,10 @@ class CallUnits(unittest.TestCase):
         pass
 
     def testCall_host_at_end_equal(self):
-        _call  = " python " + self.epyu
+        _call  = epyu
         _call += ' --abc '
         _call += ' --rdbg=host01'
-        _call += ' ' + self.scri
+        _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
