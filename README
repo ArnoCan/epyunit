@@ -54,7 +54,7 @@ large scale application tests as well as for daily and advanced DevOps tasks.
 * ePyUnit integrates into PyDev for the support of the graphical
   Eclipse IDE of unit testing and integrated graphical debugging,
   this is also supported for external processes started independently
-  from the commandline, see 'https://pythonhosted.org/epyu.pydevd_integration.html'.
+  from the commandline, see 'https://pythonhosted.org/epyunit/pydevd_integration.html'.
 
 
 The ePyUnit components call the wrapped process and read the execution results
@@ -227,20 +227,11 @@ Versions and Releases
 
 * RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.02.000 - Alpha:**
-
-First release where contained parts are pre-beta after finally passing intense testing - >590(CLI) / >730(Eclipse).
-Still a few basic interfaces to be added to the API.
+**Current Release: 00.02.001 - Alpha:**
 
 Major Changes:
 
-* Common bug fixes.
-
-* Tested now and released on: Linux(Fedora), Mac-OS(SnowLeopard), Cygwin, and Windows7, but for now still alpha.
-
-* The documents are mostly complete, but still in review.
-
-* Added tests.
+* Minor document fixes.
 
 Current test status:
 
