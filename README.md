@@ -229,20 +229,12 @@ Versions and Releases
 
 * RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.02.005 - Alpha:**
+**Current Release: 00.02.006 - Alpha:**
 
 This is a nightly-build, next following soon.
 Major Changes:
 
-* Document fixes.
-
-* Fixed option processing of selftest.
-
-* Additions to *epyunit.Systemcalls* for *Subprocess* class, fixes 'virtualenv' in subprocess.
-
-* Added optional support for *subprocess32*.
-
-* Added non-blocking read of STDOUT and STDERR of subprocess.
+* minor fixes
 
 Current test status:
 
