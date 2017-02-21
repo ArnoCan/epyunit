@@ -101,7 +101,7 @@ def _subcall_myscript(slang,**kargs):
         else:
             if not findRelPathInSearchPath('python',os.environ['PATH'],subsplit=True):
                 raise Exception("\nPATH="+str(os.environ['PATH'])+"\nMissing:python")
-            cx = ' python ' + cx
+            cx = ' python ' + cx # + " --rdbg "
 
     elif slang.lower() == 'perl':
         _sx = "myscript.pl"
@@ -137,7 +137,7 @@ def _subcall_myscript(slang,**kargs):
     #
 
     #
-    #*******
+    #*** DEFAULT ***
     #
     _myParams = {'exitval':123,'stdoutok':["arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'exitign': False, 'exitval': 123, 'exittype':'VAL',}
@@ -145,7 +145,7 @@ def _subcall_myscript(slang,**kargs):
     _myRules.setkargs(**_myParams)
     if _verbose >1:
         print _myRules
-    sx.setkargs(**{'rules':_myRules,})
+    sx.setkargs(**{'rules':_myRules, 'env': os.environ})
     ret = sx.callit(cx)
     if ret[0] == 126:
         print >>sys.stderr ,"check exec permissions of 'myscript.*'"
@@ -168,7 +168,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** A-OK ***
     #
     _myParams = {'exitval':0,'stdoutok':["fromA", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'exitign': False, 'exitval': 0, 'exittype':'OK', 'stdoutok_val':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
@@ -177,7 +177,7 @@ def _subcall_myscript(slang,**kargs):
     if _verbose>1:
         print _myRules
     sx.setkargs(**{'rules':_myRules,})
-    ret = sx.callit(cx+' OK')
+    ret = sx.callit(cx+' -- OK')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" OK ***"
@@ -197,7 +197,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** C-OK ***
     #
     _myParams = {'exitval':0,'stdoutok':["fromC", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'OK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
@@ -206,7 +206,7 @@ def _subcall_myscript(slang,**kargs):
     if _verbose>1:
         print _myRules
     sx.setkargs(**{'rules':_myRules,})
-    ret = sx.callit(cx+' PRIO')
+    ret = sx.callit(cx+' -- PRIO')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" PRIO ***"
@@ -226,7 +226,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** D-OK ***
     #
     _myParams = {'exitval':0,'stdoutok':["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'OK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
@@ -235,7 +235,7 @@ def _subcall_myscript(slang,**kargs):
     if _verbose>1:
         print _myRules
     sx.setkargs(**{'rules':_myRules,})
-    ret = sx.callit(cx+' EXITOK')
+    ret = sx.callit(cx+' -- EXITOK')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" EXITOK ***"
@@ -255,16 +255,16 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** E-NOK ***
     #
-    _myParams = {'exitval':1,'stdoutok':["fromD", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
+    _myParams = {'exitval':1,'stdoutok':["fromE", "arbitrary output","arbitrary signalling OK string","arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'multiline':True, 'exitign': False, 'exittype':'NOK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
     _myRules.setrules(**_myrx)
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules
     sx.setkargs(**{'rules':_myRules,})
-    ret = sx.callit(cx+' EXITNOK')
+    ret = sx.callit(cx+' -- EXITNOK')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" EXITNOK ***"
@@ -284,7 +284,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** F-NOK7 ***
     #
     _myParams = {'exitval':7,'stdoutok':["fromF", "arbitrary output","arbitrary signalling NOK string","arbitrary output"],'stderrok':[],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':7,'stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
@@ -293,7 +293,7 @@ def _subcall_myscript(slang,**kargs):
     if _verbose>1:
         print _myRules
     sx.setkargs(**{'rules':_myRules,})
-    ret = sx.callit(cx+' EXIT7')
+    ret = sx.callit(cx+' -- EXIT7')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" EXIT7 ***"
@@ -313,7 +313,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** G-NOK8 ***
     #
     _myParams = {'exitval':8,'stdoutok':["fromG", 'arbitrary output', 'arbitrary signalling NOK string', 'arbitrary output'],'stderrok': ['arbitrary err output', 'arbitrary err signalling NOK string', 'arbitrary err output'],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':8,'stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}
@@ -321,7 +321,7 @@ def _subcall_myscript(slang,**kargs):
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules
-    ret = sx.callit(cx+' EXIT8')
+    ret = sx.callit(cx+' -- EXIT8')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" EXIT8 ***"
@@ -340,7 +340,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #***H-NOK9 ***
     #
     _myParams = {'exitval':9,'stdoutok':["fromH", 'OK', 'OK', 'OK'],'stderrok': ['NOK', 'NOK',],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':9,'stdoutok':["NOK","NOK","NOK"]}
@@ -348,7 +348,7 @@ def _subcall_myscript(slang,**kargs):
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules
-    ret = sx.callit(cx+' EXIT9OK3NOK2')
+    ret = sx.callit(cx+' -- EXIT9OK3NOK2')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" EXIT9OK3NOK2 ***"
@@ -367,7 +367,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** I-OK0 ***
     #
     _myParams = {'exitval':0,'stdoutok':[],'stderrok': ['fromI', 'NOK', 'NOK'],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'VAL','exitval':0,'stdoutok':[]}
@@ -375,7 +375,7 @@ def _subcall_myscript(slang,**kargs):
     _myRules.setkargs(**_myParams)
     if _verbose>1:
         print _myRules
-    ret = sx.callit(cx+' STDERRONLY')
+    ret = sx.callit(cx+' -- STDERRONLY')
     if _out:
         if _verbose:
             print "\n#*** epyunit/"+str(_sx)+" STDERRONLY ***"
@@ -394,7 +394,7 @@ def _subcall_myscript(slang,**kargs):
 
 
     #
-    #*******
+    #*** DEFAULT-123 ***
     #
     _myParams = {'exitval':123,'stdoutok':["arbitrary output"],'stderrok': [],}
     _myrx = {'reset':True, 'exitign': False, 'exittype':'NOK','stdoutok':["arbitrary output","arbitrary signalling OK string","arbitrary output"]}

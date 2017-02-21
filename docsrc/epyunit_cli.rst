@@ -1,7 +1,5 @@
-
-===================================
- 'epyunit' - Command line interface
-===================================
+'epyunit' - Command line interface
+----------------------------------
 
 The *epyunit* commandline interface provides a call wrapper
 for unit and regression tests of arbitrary executables.

@@ -1,6 +1,6 @@
 PROJECT='epyunit'
-VERSION="0.2.0"
-RELEASE="0.2.0"
+VERSION="0.2.5"
+RELEASE="0.2.5"
 NICKNAME="Dromi"
 AUTHOR='Arno-Can Uestuensoez'
 COPYRIGHT='Copyright (C) 2010,2011,2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez'
@@ -89,6 +89,10 @@ for d in docsrc/*.txt;do cp $d "${STATIC}"; done
 
 # css
 for d in docsrc/*.css;do cp $d "${STATIC}"; done
+
+# sh
+for d in bin/*.sh bin/*.py;do cp $d "${STATIC}"; done
+#for d in utils/*.sh;do cp $d "${STATIC}"; done
 
 cp ArtisticLicense20.html "${STATIC}"
 cp licenses-amendments.txt "${STATIC}"

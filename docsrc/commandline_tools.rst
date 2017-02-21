@@ -2,15 +2,28 @@
 Commandline tools
 #################
  
-* **API-Wrapper** : `epyu <epyunit_cli.html>`_ : commandline interface
-   
-   For help on the command line tools call e.g.:: 
+* **API-Wrapper** - **epyunit.py**: `[doc] <epyunit_cli.html>`_ `[source] <epyu_src.html>`_
 
-     epyunit --help
+  Commandline interface, for help on the *epyunit* call e.g.:: 
 
-   For quick verification of the setup and basic features call:: 
+    epyunit.py --help
 
-     epyunit --selftest
+  For quick verification of the setup and basic features call:: 
+
+    epyunit.py --selftest
+
+* **PyDev debug support**: `[doc] <epyd_cli.html>`_ `[source] <epyd_src.html>`_
+
+  'pydevd.py' utilities for Eclipse/PyDev, for help on the *epyd* call e.g.:: 
+
+    epyd --help
+
+* **epyunit.unittest.subprocess**: 
+  `unittest.subprocess <#class-spunitest>`_
+
+  .. automodule:: epyunit.unittest.subprocess
+
+
 
 * **bash** - `myscript.sh <myscript-sh.html>`_ : test response simulator dummy
    
@@ -29,5 +42,7 @@ Commandline tools
 .. include:: myscript-py.rst
 
 .. include:: epyunit_cli.rst
+
+.. include:: epyd_cli.rst
 
 

@@ -252,8 +252,9 @@ Test Norm and Reference Cases
 """""""""""""""""""""""""""""
 The 'ePyUnit' package contains in the current version the scripts
 
-* '`epyunit/myscript.sh <myscript-sh.html>`_ ' 
+* '`epyunit/myscripl.pl <myscript-pl.html>`_ ' 
 * '`epyunit/myscript.py <myscript-py.html>`_ ' 
+* '`epyunit/myscript.sh <myscript-sh.html>`_ ' 
 
 for the simulation of subprocess
 responses as examples and test results, located in the package directory.

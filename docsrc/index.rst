@@ -188,8 +188,8 @@ Application examples for ePyUnit see the multiplatform bash extensions:
    * `bash-core-extmods <https://sourceforge.net/projects/bash-core-extmods/>`_ 
    * `bash-core-lang <https://sourceforge.net/projects/bash-core-lang/>`_ 
 
-Install - HowTo - FAQ - Help
-============================
+Install
+=======
 
 * **Supported Platforms**:
 
@@ -272,42 +272,10 @@ Install - HowTo - FAQ - Help
   For now refer to the listed API and subdocument collection in section 
   :ref:`'Shortcuts' <shortcuts>`
 
-* **Help**:
+HowTo
+=====
 
-  The following path variables are required for automated detection of the module 'pydevd.py'
-  in case of an arbitrary but standard Eclipse-Installation:
-    ::
-
-       PATH
-       PYTHONPATH
-
-  For example:
-
-  * Windows:
-    ::
-
-       set PYTHONPATH=C:\temp\eclipse\epyunit;%PYTHONPATH%
-       set PATH=C:\ide\eclipse\eclipse-cpp-mars-R-win32-x86_64;C:\Python27;C:\Python27\Scripts;C:\Python27\bin;%PATH%
-
-  * POSIX:
-    ::
-
-       export PYTHONPATH=<project-dir>:$PYTHONPATH
-       export PATH=$HOME/eclipse  # see default search of epyunit
-
-  * CYGWIN:
-    ::
-
-       export PYTHONPATH=<project-dir>:$PYTHONPATH
-       export PATH=/cygdrive/c/ide/eclipse/eclipse-modeling-luna-SR1-win32-x86_64/:$PATH
-       # see default search of epyunit
-
-  For alternative parameters of the search algorithm - e.g. ENVVAR - refer to 'checkRDbg' module.
-  Some tests for nested subprocesses require in PATH to be inherited, so put these for
-  Windows into the environment, or export them on POSIX compatible systems.
-
-  The UseCases and tests related to cross-process debugging or RemoteDebugServer with pydevd.py
-  require a running server instance within Eclipse/PyDev - see `<http://www.pydev.org/manual_adv_remote_debugger.html>`_
+* `Remote Debug <howtodebug.html>`_
 
 `Shortcuts <shortcuts.html>`_
 =============================
@@ -361,6 +329,7 @@ Table of Contents
    eclipse_integration
 
    epyunit_cli
+   epyd_cli
    epyunit
    rules_logic
    rules_shortcuts

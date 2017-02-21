@@ -6,7 +6,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.2.0'
+__version__ = '0.2.2'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -15,8 +15,8 @@ import sys,re
 from types import NoneType,FunctionType
 
 version = '{0}.{1}'.format(*sys.version_info[:2])
-if version < '2.7': # pragma: no cover
-    raise Exception("Requires Python-2.7.* or higher")
+if not version in ('2.6', '2.7',): # pragma: no cover
+    raise Exception("Requires Python-2.6.* or higher")
 
 from epyunit.SystemCalls import SystemCalls
 
@@ -1040,7 +1040,7 @@ class SubprocessUnit(SystemCalls):
         """
         ret = super(SubprocessUnit,self).__str__()
         ret += "\n"
-        ret += "\nSubprocessUnit.rules      = "+str(self.rules.__name__)
+        ret += "\nSubprocessUnit.rules      = "+str(self.rules.__class__.__name__)
         return ret
 
     def __repr__(self):

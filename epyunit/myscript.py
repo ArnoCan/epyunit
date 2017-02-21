@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf -*-
 """Testee data simulator.
 
 Simulates hard-coded test results for the test of the tool chain itself,
@@ -50,7 +51,10 @@ _par = {'label':_APPNAME,}
 #_par['debug'] = True
 #_par['verbose'] = True
 import epyunit.debug.checkRDbg
+
+# print "4TEST:myscript"
 _rdbgthis,_rdbg,_rdbgfwd,_rdbgroot,_rdbgsub = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(**_par)
+# rint "4TEST:_rdbgthis"+str(_rdbgthis)
 if _rdbgthis:
     # activate remote debug stub call
     import epyunit.debug.pydevrdc
@@ -470,6 +474,9 @@ for ax in sys.argv[1:]:
         if not _doc_mode:
             sys.exit(0)
 
+    elif ax in ("--",):
+        continue
+    
     else:
         call_DEFAULT()
         if not _doc_mode:

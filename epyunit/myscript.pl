@@ -750,6 +750,9 @@ foreach $argnum (0 .. $#ARGV) {
         call_I_STDERRONLY();
         exit(0);
     }
+    elsif ($ax =~ '^--$'){
+        my $x=1;
+    }
     else{
         call_DEFAULT();
         exit(123);

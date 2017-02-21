@@ -20,24 +20,34 @@ or::
 For test environments in R&D this - hopefully - is perfectly OK,
 else eventual security issues has to be considered.
 
+The SystemCalls class optionally uses subprocess32 when present, this is recommended.
+See https://pypi.python.org/pypi/subprocess32/.
+
 """
 from __future__ import absolute_import
 
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.2.0'
+__version__ = '0.2.2'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
 
-import os,sys,datetime
+import os,sys,datetime,time
 version = '{0}.{1}'.format(*sys.version_info[:2])
-if version < '2.7': # pragma: no cover
-    raise Exception("Requires Python-2.7.* or higher")
+if not version in ('2.6', '2.7',): # pragma: no cover
+    raise Exception("Requires Python-2.6.* or higher")
 
-import subprocess,platform
+if os.name == 'posix' and sys.version_info[0] < 3 and sys.version_info[1] < 7:
+    import subprocess32 as subprocess
+else:
+    import subprocess
+
+#import subprocess,platform
+import platform
 import shlex,re
+import fcntl
 
 # output enums
 _O_STD = 1 #: output to STDOUT
@@ -45,6 +55,20 @@ _O_ERR = 2 #: output to STDERR
 _O_STR = 3 #: output to STRING
 _outdefault = _O_STR
 
+# input enums
+_I_SCOM = 0 #: reads Subproces.communicate
+_I_READC = 1 #: reads characters - does not sync between threads/procs
+_I_READL = 2 #: reads characters - writes units of lines for multiple thread/procs
+_indefault = _I_SCOM
+
+# cache enums
+_C_QUIET   = 0 #: not display
+_C_PIPE    = 1 #: STDOUT and STDERR written in realtime by unit of lines
+_C_FOUT    = 2 #: STDOUT buffered by seperate file
+_C_FERR    = 4 #: STDERR buffered by seperate file
+_C_FOUTERR = 8 #: STDERR and STDOUT buffered by common file
+_cachedefault = _C_QUIET
+"""Management of read buffer for further caching of data."""
 
 _CSPLTL = re.compile(ur'\r*\n')
 """Split lines on Windows too including with contained multiple(???) '\r' """
@@ -52,17 +76,24 @@ _CSPLTL = re.compile(ur'\r*\n')
 def output(s,_o=None):
     """Directs the output stream
     Args:
+
         s: String for output
+
         _o: Output channel:
             _O_STD, _O_ERR, _O_STR
 
     Returns:
+
         _o == _O_STD: string
+
         _o == _O_ERR: prints to STDERR, returns True
+
         _o == _O_STR: prints to STDOUT, returns True
+
         else:         returns False
 
     Raises:
+
         pass/through
     """
     global _outdefault
@@ -95,6 +126,7 @@ class SystemCallsExceptionSubprocessError(SystemExit):
         """Calls the 'exceptions.SystemExit' with pass through of parameters.
 
         Args:
+
             **kargs: Additional parameters specific for ePyUnit
                 where the interface is not actually clear.
                 These are removed before the pass-through call.
@@ -140,12 +172,14 @@ class SystemCalls(object):
         cache for the response data from stdout and stderr.
 
         Args:
+
             **kargs:
                 Parameters specific for the operations,
                 passed through to **SystemCalls.setkargs**
                 `[see setkargs] <#setkargs>`_.
 
         Returns:
+
             When successful returns 'True', else returns either 'False', or
             raises an exception.
             Success is the complete addition only, thus one failure returns
@@ -159,6 +193,7 @@ class SystemCalls(object):
                 unbuffered console display.
 
         Raises:
+
             passed through exceptions:
 
         """
@@ -182,6 +217,10 @@ class SystemCalls(object):
         self.out = 'pass' #: output format/stream
         self.outtarget = 'stdout' #: output format/stream
         self.passerr = False
+
+        self.inp = _indefault #: input call
+        self.cache = _cachedefault
+        
         self.proceed = 'doit' #: what to do...
         self.raw = False
         self.useexit = True
@@ -199,6 +238,11 @@ class SystemCalls(object):
         self._testid = None
         self._timestamp = None
         self._environment = None
+        self.env = None
+
+        self.rules = None
+        self.useexit = True
+        self.usestderr = False
 
         self.setkargs(**kargs)
         pass
@@ -209,13 +253,16 @@ class SystemCalls(object):
         `[see create] <#create>`_.
 
         Args:
+
             cmdcall:
+
                 A prepared call, either shell-style call-string,
                 or a list in accordance to the call convention of
                 'subprocess' package. The 'shell' parameter is
                 by default set in accordance to the provided type.
 
             **kargs:
+
                 Parameters specific for the operations,
                 passed through to **SystemCalls.setkargs**
                 `[see setkargs] <#setkargs>`_.
@@ -224,14 +271,17 @@ class SystemCalls(object):
                 the call prologue:
 
                 proceed:
+
                     Changes predefined value and dispatches to the subcall.
 
                 raw:
+
                     Suppress the split of lines for
                     stdout and stderr.
 
 
         Returns:
+
             Result of call, the format is:
 
                 ret[0]::= exit value
@@ -249,7 +299,9 @@ class SystemCalls(object):
                 - hopefully - the complete output.
 
         Raises:
+
             SystemCallsTimeout:
+
                 Rised in case of timeout by tmax/tsig.
                 Terminates also the outstanding subprocess.
 
@@ -310,6 +362,7 @@ class SystemCalls(object):
         """Streams result list 'ret' in selected format to selected outtarget.
 
         Args:
+
             ret: Data to be displayed.
 
             **kargs:
@@ -337,6 +390,7 @@ class SystemCalls(object):
                 default:=self.out
 
         Returns:
+
             When successful returns
 
                 outtarget=='str': returns a printable formatted string
@@ -348,6 +402,7 @@ class SystemCalls(object):
                     'False': for failure
 
         Raises:
+
             passed through exceptions:
 
         """
@@ -534,11 +589,111 @@ class SystemCalls(object):
         return True
 
     def get_proceed(self,s):
-        """Verifies valid proceed type."""
+        """Verifies valid proceed type.
+        """
         if s in ('print','trace', 'doit'):
             return s
         else:
             raise Exception('STATE:ERROR:proceed not supported:'+str(s))
+
+    def sub_get_lines(self,fds,fde,**kargs):
+        """Reads non-blocking from stdout and stderr into
+        a buffer and displays each line immediately.
+        
+        Args:
+
+            fds:
+
+                File descriptor for the STDOUT of the called subprocess.
+
+            fde:
+
+                File descriptor for the STDERR of the called subprocess.
+
+            **kargs:
+
+                rtd:
+
+        Returns:
+        
+        Raises:
+         
+        """
+        fls = fcntl.fcntl(fds, fcntl.F_GETFL)
+        fle = fcntl.fcntl(fde, fcntl.F_GETFL)
+        fcntl.fcntl(fds, fcntl.F_SETFL, fls | os.O_NONBLOCK)
+        fcntl.fcntl(fde, fcntl.F_SETFL, fle | os.O_NONBLOCK)
+
+        chs = ''
+        che = ''
+        bufs = ""
+        bufe = ""
+
+        res = [[], [],]
+        
+        while True:
+            try:
+
+                #
+                # collect data form subproc
+                #
+                while chs != '\n':
+                    chs = os.read(fds.fileno(), 1)
+                    if not chs :
+                        break
+                    bufs += chs
+
+                while che != '\n':
+                    che = os.read(fde.fileno(), 1)
+                    if not che:
+                        break
+                    bufe += che
+
+                if not chs and not che:
+                    # finished
+                    break
+
+                #
+                # caching
+                #
+                if bufs: # stdout
+                    if bufs[-1] == '\n':
+                        res[0].append(bufs[:-1])
+                    else:
+                        res[0].append(bufs)
+                if bufe: # stderr
+                    if bufe[-1] == '\n':
+                        res[1].append(bufe[:-1])
+                    else:
+                        res[1].append(bufe)
+
+                if self.cache & _C_FOUTERR: # write stdout and stderr into one log-file
+                    pass
+
+                if self.cache & _C_FOUT: # write stdout into a seperate log-file
+                    pass
+                
+                if self.cache & _C_FERR: # write stderr into a seperate log-file
+                    pass
+
+                if self.cache & _C_PIPE: # write to stdout and stderr
+                    if bufs: # stdout
+                        sys.stdout.write(bufs)
+                        sys.stdout.flush()
+                    if bufe: # stderr
+                        sys.stderr.write(bufe)
+                        sys.stderr.flush()
+
+                bufs =''
+                chs = ''
+                bufe =''
+                che = ''
+
+            except OSError:
+                # waiting for data be available on fd
+                pass
+
+        return res
 
     def _mode_batch_postproc(self,cmdcall,**kargs):
         """Postprocess
@@ -559,6 +714,7 @@ class SystemCalls(object):
 
                 mode:
                     Execution mode for the created process instance.
+
                     * batch:
                         Proceeds headless, collects reponses from STDOUT
                         and STDERR.
@@ -567,7 +723,7 @@ class SystemCalls(object):
                         Proeceeds interactive.
 
                 env:
-                    Current environment.
+                    Inherited environment, by default the current.
 
                 tmax:
                     Timeout in seconds.
@@ -590,10 +746,10 @@ class SystemCalls(object):
             return [2,'', 'ERROR:MissingCallstr']
 
         ret=[1,]
-        _env = kargs.get('env',None)
+        _env = kargs.get('env',os.environ)
         _mode = kargs.get('mode','batch')
 
-        if type(cmdcall) is str:
+        if type(cmdcall) in (str,unicode,):
             _shell = True
         elif type(cmdcall) is list:
             _shell = False
@@ -602,7 +758,6 @@ class SystemCalls(object):
         self.stdioIN = subprocess.PIPE
         self.stdioOUT = subprocess.PIPE
         self.stdioERR = subprocess.PIPE
-
 
         self.p=subprocess.Popen(
                 cmdcall,
@@ -615,12 +770,75 @@ class SystemCalls(object):
                 env=_env
                 )
 
+        # prep cache
+        if self.cache == _C_PIPE:
+            self.res = ['','',]
+        
+        #FIXME:
+        elif self.cache == _C_FOUT:
+            self.res = ['','',]
+        elif self.cache == _C_FERR:
+            self.res = ['','',]
+
+        else:
+            self.res = ['','',]
+
         # fetch the results from subprocess
         self.stdin=self.p.stdin
         self.stdout=self.p.stdout
         self.stderr=self.p.stderr
-        self.res=self.p.communicate()
-        self.p.poll()
+
+        if self.inp == _I_SCOM: # uses communicate, blocks until subprocess is finished
+            #
+            # collect data form subproc
+            #
+            self.res=self.p.communicate()
+            self.p.poll()
+
+            if self.cache & _C_FOUTERR: # write stdout and stderr into one log-file
+                pass
+
+            if self.cache & _C_FOUT: # write stdout into a seperate log-file
+                pass
+            
+            if self.cache & _C_FERR: # write stderr into a seperate log-file
+                pass
+
+            if self.cache & _C_PIPE: # write to stdout and stderr
+                if self.res[0]: # stdout
+                    sys.stdout.write(self.res[0])
+                    sys.stdout.flush()
+                if self.res[1]: # stderr
+                    sys.stderr.write(self.res[1])
+                    sys.stderr.flush()
+
+        elif self.inp == _I_READC: # uses read-char
+            while True:
+                out = self.p.stderr.read(1)
+                if out == '' and self.p.poll() != None:
+                    break
+                if out != '':
+                    if self.cache & _C_PIPE:
+                        pass
+                    elif self.cache & _C_FOUT:
+                        self.res[0] += out
+                        pass
+                    elif self.cache & _C_FERR:
+                        self.res[1] += out
+                        pass
+                     
+                    sys.stdout.write(out)
+                    sys.stdout.flush()
+        
+        elif self.inp == _I_READL: # uses read-line
+            while True:
+
+                sout,serr = self.sub_get_lines(self.p.stdout, self.p.stderr)
+                if not sout and not serr and self.p.poll() != None:
+                    break
+
+                self.res[0] += '\n'.join(sout)
+                self.res[1] += '\n'.join(serr)
 
         _errcond = False
         if self.useexit and self.usestderr:
@@ -788,18 +1006,6 @@ class SystemCalls(object):
         self.p.stderr.close()
         self.p.stdout.close()
 
-#         _buf = "\n"
-#         _buf += "4TEST:_env="+str(_env)+"\n"
-#         _buf += "4TEST:si="+str(repr(si))+"\n"
-#         _buf += "4TEST:res="+str(self.res)+"\n"
-#         _buf += "4TEST:PATH="+str(os.environ["PATH"])+"\n"
-#         _buf += "4TEST:PYTHONPATH="+str(os.environ["PYTHONPATH"])+"\n"
-#         print "4TEST:-------------------------------------\n"
-#         print _buf
-#         print "4TEST:-------------------------------------\n"
-#         print ret
-#         print "4TEST:-------------------------------------\n"
-
         return ret
 
     def _mode_dialogue(self,cmdcall,**kargs):
@@ -845,33 +1051,66 @@ class SystemCalls(object):
 
 
                 bufsize:
-                    The size of the output buffer for the
-                    called subprocess, refer to **subprocess.Popen**.
+
+                    The size of the output buffer for the called
+                    subprocess, refer to **subprocess.Popen**.
                     Default value is -1.
 
+                cache:=<cache-param=list>
+
+                    Defines the type and thus target caching 
+                    of the output of the raw data.
+                    The output streams could be combined by
+                    defining multiple types:
+                    ::
+
+                      cache-param-list:=cache-param[,cache-param-list]
+                      cache-param:=(
+                          {type:pipe}
+                        | {type:fout,fpname:''}
+                        | {type:ferr,fpname:''}
+                        | {type:fouterr,fpname:''}
+                      )
+
+                      pipe:None
+
+                        the Subprocess.PIPE for stdout and stderr
+
+                      fout:<fpathname>:
+
+                        reads stdout into a file
+
+                      ferr:<fpathname>:
+
+                        reads stderr into a file
+                    
+                    default := pipe
+
                 console ('cli','dialogue')
+
                     ffs ('batch','ui','gtk', 'qt')
 
-                    cli:
+                      cli:
+
                         Works in batch mode, particularly the
                         stdin, stdout, and stderr streams are
                         caught into a string buffer by the
                         calling process via a pipe. The content
-                        is passed after termination of the called
-                        sub-process.
+                        is passed after termination of the
+                        called sub-process.
 
-                    dialogue:
+                      dialogue:
+
                         Works without buffered io streams.
                         Thus allows for interaction, but not
                         post-processing.
 
-                    verbose:
-                        Verbose.
-
                 debug:
+
                     Sets debug for rule data flow.
 
                 emptyiserr:
+
                     Treats passed empty call strings as error.
                     The applied 'subprocess.Popen()' treats them as
                     success, which may cover errors in generated
@@ -880,51 +1119,97 @@ class SystemCalls(object):
                     default := False
 
                 env:
-                    Passed through.
+
+                    Environment to be passed through to the subprocess.
+                    
+                    Default := current
 
                 errasexcept:
+
                     Passes errors as exceptions, transforms the resuls from
                     subprocesses into Exceptions data. Exits the process.
 
                     default := False
 
                 exectype:
+
                     Type of execution.
-                    * inproc:
+
+                      inproc:
+
                         Calls 'Popen' directly from within the process.
 
-                    * bythread:
+                      bythread:
+
                         Starts an intermediate thread within current
                         process and executes 'Popen'.
 
-                    * byfork
+                      byfork
+
                         Starts an intermediate process by fork and
                         executes 'Popen'.
 
                 forcecmdcall:
+
                     Forces type of the command call option passed to 'Popen'.
+
                     * shell
                     * list
 
-                out: Output for display. Supported types are:
+                inp:
+
+                    Defines the read-in of the output of called subprocess.
+
+                      communicate: 
+
+                        Calls Subproces.communicate, blocks until 
+                        completion of subprocess.
+
+                      readc:
+
+                        Reads characters from subprocess, does not 
+                        accurately synchronize for multiple threads
+                        onto one output stream.
+                        
+                        Displays each character in real-time.
+
+                      readl:
+
+                        Reads characters from subprocess, does 
+                        accurately synchronize for multiple threads
+                        onto one output stream in units of lines.
+                        
+                        Displays each line in real-time.
+
+                    default := communicate
+                    
+                out: 
+
+                    Output for display. Supported types are:
 
                     csv:
+
                         CSV seperated by ';', with sparse records
 
                     pass:
+
                         Pass through STDOUT and STDERR from
                         subprocess
 
                     repr:
+
                         Python 'repr()'
 
                     str:
+
                         Python 'str()'
 
                     xml:
+
                         XML
 
                 passerr:
+
                     Passes errors from subprocesses transparently
                     through by stdout, stderr, and exit code. Exits
                     the process.
@@ -932,6 +1217,7 @@ class SystemCalls(object):
                     default := False
 
                 proceed ('print','trace', 'doit')
+
                     print - trace only
 
                     trace - execute and trace
@@ -939,32 +1225,44 @@ class SystemCalls(object):
                     doit  - execute
 
                 raw:
-                    Pass through STDOUT and STDERR.
+
+                    Pass through strings from STDOUT and STDERR unprocessed.
+                    Default is to split the lines into a list for post 
+                    processing line scope.
 
                 rules:
+
                     Sets the rules object.
 
                 synctype:
+
                     Type of call synchronization.
-                    * async:
+
+                      async:
+
                         Executes the subprocess asynchronously, this e.g. enables
                         in current implementation for platform independent timeouts.
 
-                    * sync:
+                      sync:
+
                         Executes synchronously, thus blocks any other execution.
 
                 tsig:
+
                     Termination signal, default is KILL.
 
                 tmax:
+
                     Timeout in seconds.
 
                 useexit:
+
                     Use exit code for error detection of subprocess.
 
                     default := True
 
                 usestderr:
+
                     Use 'sys.stderr' output for error detection of subprocess.
                     When set to 'True', the presence of a string is treated as error
                     condition.
@@ -972,21 +1270,38 @@ class SystemCalls(object):
                     default := False
 
                 verbose:
+
                     Sets verbose for rule data flow.
 
         Returns:
+
             When successful returns 'True', else returns either 'False', or
             raises an exception.
             Success is the complete addition only, thus one failure returns
             False.
 
         Raises:
+
             passed through exceptions:
 
         """
         for k,v in kargs.iteritems():
             if k=='bufsize':
                 self.bufsize=int(v)
+            elif k=='cache':
+                for vx in v:
+                    if vx.get('type').lower() == 'pipe':
+                        self.cache|=_C_PIPE
+                    elif vx.get('type').lower() == 'fout':
+                        self.cache|=_C_FOUT
+                        self.cacheo = vx.get('fpname')
+                    elif vx.get('type').lower() == 'ferr':
+                        self.cache|=_C_FERR
+                        self.cachee = vx.get('fpname')
+                    elif vx.get('type').lower() == 'fouterr':
+                        self.cache|=_C_FERR
+                        self.cacheoe = vx.get('fpname')
+
             elif k=='console':
                 self.console=v
                 if v == 'cli':
@@ -1004,13 +1319,14 @@ class SystemCalls(object):
             elif k=='emptyiserr':
                 self.emptyiserr=v
             elif k=='env': # to be evaluated by the caller case by case only
+                self.env = v
                 pass
             elif k=='errasexcept':
                 self.errasexcept=v
             elif k=='out':
                 self.out = v
                 if v in ('csv', 'pass', 'repr', 'str', 'xml', ):
-                    self.out = v
+                    pass
                 else:
                     raise SystemCallsException("Unknown output type:"+str(self.out))
             elif k=='passerr':
@@ -1027,18 +1343,24 @@ class SystemCalls(object):
                 self.usestderr=v
             elif k=='verbose':
                 self.verbose=v
-
-#             else:
-#                 raise Exception('STATE:ERROR:parameter not supported:'+str(k))
+            elif k=='inp':
+                if v.lower() == 'communicate':
+                    self.inp=_I_SCOM
+                elif v.lower() == 'readc':
+                    self.inp=_I_READC
+                elif v.lower() == 'readl':
+                    self.inp=_I_READL
         return True
 
     def splitLines(self,oldres):
         """Converts the raw string fields including '\n' of a return value into line arrays.
 
         Args:
+
             oldres: The raw result of a previous call.
 
         Returns:
+
             Result of call, the format is:
 
                 ret[0]::=exit value
@@ -1050,13 +1372,13 @@ class SystemCalls(object):
                     a partial non-processed string.
 
         Raises:
+
             passed through exceptions:
 
         """
         res = [oldres[0],[],[]]
 
         if len(oldres) > 1:
-#            res[1] = oldres[1].splitlines()
             res[1] = _CSPLTL.split(oldres[1])
         if res[1] and res[1][-1] == '':
             res[1].pop()
@@ -1064,7 +1386,6 @@ class SystemCalls(object):
             res[1].pop(0)
 
         if len(oldres) > 2:
-#            res[2] = oldres[2].splitlines()
             res[2] = _CSPLTL.split(oldres[2])
         if res[2] and res[2][-1] == '':
             res[2].pop()
@@ -1078,14 +1399,25 @@ class SystemCalls(object):
         ret = ""
         ret += "\nbufsize      = "+str(self.bufsize)
         ret += "\nconsole      = "+str(self.console)
+
+        if getattr(self, 'debug', None):
+            ret += "\ndebug        = "+str(self.debug)
+
         ret += "\nemptyiserr   = "+str(self.emptyiserr)
+        ret += "\nenv          = "+str(self.env)
         ret += "\nerrasexcept  = "+str(self.errasexcept)
         ret += "\nmyexe        = "+str(self.myexe)
+        ret += "\nout          = "+str(self.out)
         ret += "\npasserr      = "+str(self.passerr)
         ret += "\nproceed      = "+str(self.proceed)
         ret += "\nraw          = "+str(self.raw)
+        ret += "\nrules        = "+str(self.rules)
         ret += "\nuseexit      = "+str(self.useexit)
         ret += "\nusestderr    = "+str(self.usestderr)
+
+        if getattr(self, 'verbose', None):
+            ret += "\nverbose      = "+str(self.get('verbose'))
+
         return ret
 
     def __repr__(self):
@@ -1094,13 +1426,23 @@ class SystemCalls(object):
         ret = "{"
         ret += "'bufsize': "+str(self.bufsize)
         ret += ", 'console': "+str(self.console)
+        
+        if getattr(self, 'debug', None):
+            ret += ", 'debug': "+str(self.get('debug'))
+        
         ret += ", 'emptyiserr': "+str(self.emptyiserr)
+        ret += ", 'env': "+str(self.env)
         ret += ", 'errasexcept': "+str(self.errasexcept)
         ret += ", 'myexe': "+str(self.myexe.__name__)
+        ret += ", 'out': "+str(self.out)
         ret += ", 'passerr': "+str(self.passerr)
         ret += ", 'proceed': "+str(self.proceed)
         ret += ", 'raw': "+str(self.raw)
+        ret += ", 'rules': "+str(self.rules)
         ret += ", 'useexit': "+str(self.useexit)
         ret += ", 'usestderr': "+str(self.usestderr)
+        
+        if getattr(self, 'verbose', None):
+            ret += ", 'verbose': "+str(self.get('verbose'))
         ret += "}"
         return ret

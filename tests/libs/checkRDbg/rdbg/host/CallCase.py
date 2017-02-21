@@ -24,7 +24,7 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
@@ -33,17 +33,15 @@ class CallUnits(unittest.TestCase):
         self.assertEqual(ret, retX)
         pass
 
-    def testCall_host_surrounded(self):
+    def testCall_host_equal(self):
         _call  = epyu
-        _call += ' --abc '
-        _call += ' --rdbg host01'
-        _call += ' --def '
+        _call += ' --rdbg=host01'
         _call += ' ' + call_scripy
 
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
@@ -61,7 +59,7 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
@@ -79,24 +77,7 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
-            'host01:5678',
-            0,
-            epyunit.debug.checkRDbg._rdbgroot_default,
-            epyunit.debug.checkRDbg._rdbgsub_default,
-        )
-        self.assertEqual(ret, retX)
-        pass
-
-    def testCall_host_equal(self):
-        _call  = epyu
-        _call += ' --rdbg=host01'
-        _call += ' ' + call_scripy
-
-        _cl = _call.split()
-        ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
-        retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
@@ -115,12 +96,13 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
             epyunit.debug.checkRDbg._rdbgsub_default,
         )
+
         self.assertEqual(ret, retX)
         pass
 
@@ -133,7 +115,7 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,
@@ -151,7 +133,7 @@ class CallUnits(unittest.TestCase):
         _cl = _call.split()
         ret = epyunit.debug.checkRDbg.checkAndRemoveRDbgOptions(_cl)
         retX = (
-            False,
+            True,
             'host01:5678',
             0,
             epyunit.debug.checkRDbg._rdbgroot_default,

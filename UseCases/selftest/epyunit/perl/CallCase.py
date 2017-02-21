@@ -22,6 +22,9 @@ class CallUnits(unittest.TestCase):
         call  += " --selftest "
         call  += " --slang=perl "
 
+#4TEST:
+        call  += " --rdbg "
+
         # buffers for evaluation after intercepted exit.
         stdoutbuf=StringIO()
         stderrbuf=StringIO()

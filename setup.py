@@ -31,6 +31,9 @@
 
             python -m unittest discover -p CallCase.py -s UseCases
 
+      --sdk:
+          Requires sphinx, epydoc, and dot-graphics.
+
       --no-install-required: Suppresses installation dependency checks,
           requires appropriate PYTHONPATH.
       --offline: Sets online dependencies to offline, or ignores online
@@ -58,7 +61,7 @@ __author__ = 'Arno-Can Uestuensoez'
 __author_email__ = 'acue_sf2@sourceforge.net'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2015-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.2.0'
+__version__ = '0.2.5'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 _NAME = 'epyunit'
@@ -79,8 +82,8 @@ import re, shutil, tempfile
 
 
 version = '{0}.{1}'.format(*sys.version_info[:2])
-if version < '2.7': # pragma: no cover
-    raise Exception("Requires Python-2.7.* or higher")
+if not version in ('2.6','2.7',): # pragma: no cover
+    raise Exception("Requires Python-2.6.* or higher")
 
 #
 # required for a lot for now, thus just do it
@@ -373,22 +376,42 @@ if 'tests' in sys.argv or 'test' in sys.argv:
     print "#"
     print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
     print "#"
-    print "# Test LIBRARIES - call in: tests.libs"
-    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.libs') # traverse tree
-    print "#"
-    print "# Tests BINARIES - call in: tests.bins"
-    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.bins') # traverse tree
-    print "#"
-    print "# Test REMOTEDEBUG - call in: tests.remotedebug"
-    print "#"
-    print "# ***"
-    print "# *** ATTENTION: The following tests.remotedebug - **NOW MANDATORY** - require a running PyDev/Eclipse RemoteDebugServer"
-    print "# ***"
-    print "#"
-    exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.remotedebug') # traverse tree
-#     print "#"
-#     print "# Check 'inspect' paths - call in: tests"
-#     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+    
+    if version in ('2.6',): # pragma: no cover
+        print "# Test LIBRARIES - call in: tests.libs"
+        exit_code += os.system('python -m discover -s tests.libs -p CallCase.py ') # traverse tree
+        print "#"
+        print "# Tests BINARIES - call in: tests.bins"
+        exit_code += os.system('python -m discover -s tests.bins -p CallCase.py ') # traverse tree
+        print "#"
+        print "# Test REMOTEDEBUG - call in: tests.remotedebug"
+        print "#"
+        print "# ***"
+        print "# *** ATTENTION: The following tests.remotedebug - **NOW MANDATORY** - require a running PyDev/Eclipse RemoteDebugServer"
+        print "# ***"
+        print "#"
+        exit_code += os.system('python -m discover -s tests.remotedebug -p CallCase.py ') # traverse tree
+    #     print "#"
+    #     print "# Check 'inspect' paths - call in: tests"
+    #     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+    elif version in ('2.7',): # pragma: no cover
+        print "# Test LIBRARIES - call in: tests.libs"
+        exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.libs') # traverse tree
+        print "#"
+        print "# Tests BINARIES - call in: tests.bins"
+        exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.bins') # traverse tree
+        print "#"
+        print "# Test REMOTEDEBUG - call in: tests.remotedebug"
+        print "#"
+        print "# ***"
+        print "# *** ATTENTION: The following tests.remotedebug - **NOW MANDATORY** - require a running PyDev/Eclipse RemoteDebugServer"
+        print "# ***"
+        print "#"
+        exit_code += os.system('python -m unittest discover -p CallCase.py -s tests.remotedebug') # traverse tree
+    #     print "#"
+    #     print "# Check 'inspect' paths - call in: tests"
+    #     exit_code  = os.system('python -m unittest discover -s tests -p CallCase.py') # traverse tree
+
     print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
@@ -412,9 +435,14 @@ if 'usecases' in sys.argv or 'usecase' in sys.argv or 'UseCases' in sys.argv:
     print "# REMINDER: Do not forget to start the PyDev/Eclipse RemoteDebugServer"
     print "#"
     print "#"
-    print "# Check 'inspect' paths - call in: UseCases"
-    exit_code = os.system('python -m unittest discover -p CallCase.py -s UseCases') # traverse tree
-    print "#"
+    if version in ('2.6',): # pragma: no cover
+        print "# Check 'inspect' paths - call in: UseCases"
+        exit_code = os.system('python -m discover -p CallCase.py -s UseCases') # traverse tree
+        print "#"
+    elif version in ('2.7',): # pragma: no cover
+        print "# Check 'inspect' paths - call in: UseCases"
+        exit_code = os.system('python -m unittest discover -p CallCase.py -s UseCases') # traverse tree
+        print "#"
     print "Called/Finished PyUnit tests => exit="+str(exit_code)
     print "exit setup.py now: exit="+str(exit_code)
     try:
@@ -442,6 +470,11 @@ if '--offline' in sys.argv:
     __offline = True
     __no_install_requires = True
     sys.argv.remove('--offline')
+
+__sdk = False
+if '--sdk' in sys.argv:
+    __sdk = True
+    sys.argv.remove('--sdk')
 
 # Execution failed - Error.
 if exit_code != 0:
@@ -478,7 +511,7 @@ _description=("The 'epyunit' package provides a wrapper for unit tests of comman
 
 # def read(fname):
 #     return open(os.path.join(os.path.dirname(__file__), fname)).read()
-_README = os.path.join(os.path.dirname(__file__), 'README')
+_README = os.path.join(os.path.dirname(__file__), 'README.md')
 _long_description = open(_README).read() + 'nn'
 
 _platforms='any'
@@ -497,6 +530,7 @@ _classifiers = [
     "Operating System :: MacOS :: MacOS X",
     "Programming Language :: Python",
     "Programming Language :: Python :: 2",
+    "Programming Language :: Python :: 2.6",
     "Programming Language :: Python :: 2.7",
     "Programming Language :: Unix Shell",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -511,7 +545,7 @@ _packages = ["epyunit","epyunit/debug","epyunit/unittest",]
 _scripts = ["bin/epyu.py", "bin/epyu", ]
 
 _package_data = {
-    'epyunit': ['README','README.md','ArtisticLicense20.html', 'licenses-amendments.txt',
+    'epyunit': ['README.md','ArtisticLicense20.html', 'licenses-amendments.txt',
                 'myscript.sh','myscript.py','myscript.pl', 
                 'testdata',
             ],
@@ -523,14 +557,23 @@ _download_url="https://sourceforge.net/projects/epyunit/files/"
 _url='https://sourceforge.net/projects/epyunit/'
 
 _install_requires=[
-    'inspect',
-    're',
-    'glob',
-    'subprocess',
+#    'inspect',
+#    're',
+#    'glob',
+#    'subprocess',
     'pyfilesysobjects >0.1.10',
     'pysourceinfo >0.1.9',
 #    'termcolor'
 ]
+
+if __sdk: # pragma: no cover
+    _install_requires.extend(
+        [
+            'sphinx >= 1.4',
+            'epydoc >= 3.0',
+        ]
+    )
+
 
 _test_suite="tests.CallCase"
 

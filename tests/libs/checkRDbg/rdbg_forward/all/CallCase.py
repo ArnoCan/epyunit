@@ -76,7 +76,8 @@ class CallUnits(unittest.TestCase):
         self.assertEqual(ret, retX)
 
     def testCall_host_at_end(self):
-        self.call += ' --rdbg-forward=all'
+        #self.call += ' --pderd_debug_self '
+        self.call += ' --rdbg-forward=all '
         self.call += ' --abc '
         self.call += ' --rdbg host01'
         self.call += ' ' + self.scall

@@ -124,6 +124,10 @@ EOF
 	exit 0
 fi
 
+if test "X$1" == "X--";then
+	shift
+fi
+
 # A: succeed
 if test "X$1" == "XOK";then
     echo fromA
@@ -197,6 +201,9 @@ elif test "X$1" == "XSTDERRONLY";then
     echo NOK >&2
     echo NOK >&2
     exit 0
+
+elif test "X$1" == "X--";then
+    echo ' '
 
 # DEFAULT: define: here succeed '--default-ok'
 else

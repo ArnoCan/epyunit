@@ -5,12 +5,6 @@
    :maxdepth: 4
 
 
-* **epyunit.unittest.subprocess**: 
-  `unittest.subprocess <#class-spunitest>`_
-
-  .. automodule:: epyunit.unittest.subprocess
-
-
 * **epyunit.SubprocUnit**: 
   `SubprocessUnit <#class-subprocessunit>`_
   , and

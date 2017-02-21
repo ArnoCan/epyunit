@@ -107,6 +107,8 @@ and nested multilevel scripts and executables as subprocesses::
 
 Where each level of subprocesses could start an arbitrary number of local and remote
 subprocesses itself, and either correlate or pass-through the results.
+Due to some bugfixes the backport from Python3.x *subprocess32* is optionally
+supported when present.
 
 The provided package comprises functional atoms for various UseCases, as well
 as extension classes for the 'unittest' package to be used in combination
@@ -227,11 +229,20 @@ Versions and Releases
 
 * RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.02.001 - Alpha:**
+**Current Release: 00.02.005 - Alpha:**
 
+This is a nightly-build, next following soon.
 Major Changes:
 
-* Minor document fixes.
+* Document fixes.
+
+* Fixed option processing of selftest.
+
+* Additions to *epyunit.Systemcalls* for *Subprocess* class, fixes 'virtualenv' in subprocess.
+
+* Added optional support for *subprocess32*.
+
+* Added non-blocking read of STDOUT and STDERR of subprocess.
 
 Current test status:
 

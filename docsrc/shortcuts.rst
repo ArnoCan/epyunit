@@ -19,6 +19,8 @@ but with different 'shebang lines'.
 
   * `epyu.py <epyunit_cli.html#>`_ - Prefered call on MS-Windows for use in conjunction with PATHEXT.
 
+  * `epyd.py <epyd_cli.html#>`_ - Support utility for remote debug by 'pydevd.py'.
+
   .
 
   +---------------------------------+----------------------------------------------------+
@@ -28,12 +30,17 @@ but with different 'shebang lines'.
   +---------------------------------+----------------------------------------------------+
   | `epyu.py`_                      | `epyu.py - CLI call`_                              |
   +---------------------------------+----------------------------------------------------+
+  | `epyd.py`_                      | `epyd.py - CLI call`_                              |
+  +---------------------------------+----------------------------------------------------+
 
-.. _epyu - CLI call: _modules/bin/epyunit.html#
+.. _epyu - CLI call: epyu_src.html#
 .. _epyu: epyunit_cli.html#
 
-.. _epyu.py - CLI call: _modules/bin/epyunit.html#
+.. _epyu.py - CLI call: epyu_src.html#
 .. _epyu.py: epyunit_cli.html#
+
+.. _epyd.py - CLI call: epyd_src.html#
+.. _epyd.py: epyd_cli.html#
 
 epyunit.unittest.subprocess
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -215,11 +222,15 @@ Wrapper library for subprocesses and caching of the results.
   +---------------------------------+----------------------------------------------------+
   | `get_proceed`_                  | `SystemCalls.get_proceed`_                         |
   +---------------------------------+----------------------------------------------------+
-  | `_mode_batch`_                  | `SystemCalls._mode_batch`_                         |
+  | `_mode_batch_posix`_            | `SystemCalls._mode_batch_posix`_                   |
+  +---------------------------------+----------------------------------------------------+
+  | `_mode_batch_win`_              | `SystemCalls._mode_batch_win`_                     |
   +---------------------------------+----------------------------------------------------+
   | `_mode_dialogue`_               | `SystemCalls._mode_dialogue`_                      |
   +---------------------------------+----------------------------------------------------+
   | `setkargs (3)`_                 | `SystemCalls.setkargs`_                            |
+  +---------------------------------+----------------------------------------------------+
+  | `sub_get_lines`_                | `SystemCalls.sub_get_lines`_                       |
   +---------------------------------+----------------------------------------------------+
 
 .. _SystemCalls.__init__: _modules/epyunit/SystemCalls.html#SystemCalls.__init__
@@ -234,8 +245,11 @@ Wrapper library for subprocesses and caching of the results.
 .. _SystemCalls.get_proceed: _modules/epyunit/SystemCalls.html#SystemCalls.get_proceed
 .. _get_proceed: systemcalls.html#get-proceed
 
-.. _SystemCalls._mode_batch: _modules/epyunit/SystemCalls.html#SystemCalls._mode_batch
-.. _\_mode_batch: systemcalls.html#mode-batch
+.. _SystemCalls._mode_batch_posix: _modules/epyunit/SystemCalls.html#SystemCalls._mode_batch_posix
+.. _\_mode_batch_posix: systemcalls.html#mode-batch-posix
+
+.. _SystemCalls._mode_batch_win: _modules/epyunit/SystemCalls.html#SystemCalls._mode_batch_win
+.. _\_mode_batch_win: systemcalls.html#mode-batch-win
 
 .. _SystemCalls._mode_dialogue: _modules/epyunit/SystemCalls.html#SystemCalls._mode_dialogue
 .. _\_mode_dialogue: systemcalls.html#mode-dialogue
@@ -243,7 +257,8 @@ Wrapper library for subprocesses and caching of the results.
 .. _SystemCalls.setkargs: _modules/epyunit/SystemCalls.html#SystemCalls.setkargs
 .. _setkargs (3): systemcalls.html#setkargs
 
-
+.. _SystemCalls.sub_get_lines: _modules/epyunit/SystemCalls.html#SystemCalls.sub_get_lines
+.. _sub_get_lines: systemcalls.html#sub_get_lines
 
 
 epyunit.debug

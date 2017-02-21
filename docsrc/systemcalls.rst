@@ -43,6 +43,10 @@ setkargs
 """""""""
 .. automethod:: SystemCalls.setkargs
 
+sub_get_lines
+"""""""""""""
+.. automethod:: SystemCalls.sub_get_lines
+
 splitLines
 """"""""""
 .. automethod:: SystemCalls.splitLines
