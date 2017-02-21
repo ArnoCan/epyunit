@@ -133,7 +133,7 @@ class CallUnits(unittest.TestCase):
         )
         self.assertEqual(ret, retX)
 
-        sx = PYDEVD.scanEclipseForPydevd(**{'altpat':self.rdbgsub,})
+        sx = epyunit.debug.checkRDbg.scanEclipseForPydevd(**{'altpat':self.rdbgsub,})
         assert os.path.basename(sx) == 'pydevd.py'
         pass
 

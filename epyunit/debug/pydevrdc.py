@@ -49,7 +49,7 @@ except:
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.2.1'
+__version__ = '0.2.7'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -139,11 +139,6 @@ class PyDevRDC(object):
     eclipse_glob = _rdbgroot
     """
     Subpath glob pattern for any eclipse based PyDev installation.
-    """
-
-    _clrargs = {'abs':True, 'non-existent':True,'split':True,'redundant':True,'shrink':True,'normpath':True}
-    """
-    Args for 'filesysobjects.clearPath'
     """
 
     def __init__(self,**kargs):
@@ -329,7 +324,8 @@ class PyDevRDC(object):
             if self._dbg_self or self._verbose:
                 print "RDBG:"+__name__+":load pydevd.py"
 
-            self.pydevdpath = self.scanEclipseForPydevd(kargs.get('rootforscan'),**kargs)
+#            self.pydevdpath = self.scanEclipseForPydevd(kargs.get('rootforscan'),**kargs)
+            self.pydevdpath = epyunit.debug.checkRDbg.scanEclipseForPydevd(kargs.get('rootforscan'),**kargs)
 
             if self.pydevdpath:
                 addPathToSearchPath(os.path.dirname(self.pydevdpath),**{'exist':True,'prepend':True,})
@@ -453,280 +449,6 @@ class PyDevRDC(object):
             elif k=='patch_multiprocessing':
                 self.dbgargs['patch_multiprocessing'] = v
 
-    def scanEclipseForPydevd(self,rootforscan=None, **kargs):
-        """Scans filesystem directory tree of Eclipse for PyDev plugin containing 'pydevd'.
-
-        Scans for 'pydevd' required for subprocess debugging
-        by the Debug-Server of PyDev. See PyDev manual for
-        path reference, the default pattern for 'marketplace' installation is:
-            ::
-
-                eclipse/plugins/org.python.pydev_x.x.x/pysrc/pydevd.py
-
-        in case of drop-in installation
-            ::
-
-                eclipse/dropins/<pydev-dropin-name>/plugins/org.python.pydev_x.x.x/pysrc/pydevd.py
-
-        The matching versions could be varied by glob-expressions.
-
-        The provided parameters match as follows:
-            ::
-
-                rdbgroot := /path/to/eclipse
-                rdbgsub  := org.python.pydev_x.x.x/pysrc/pydevd.py
-
-        The glue-hook depends on the type of installation and is determined
-        dynamically:
-            ::
-
-                dropin-install       := dropins/<pydev-dropin-name>/plugins
-                market-place-install :=  plugins
-
-        Basically any path could be used, in particular a rdbgsub directory
-        containing a subset for 'pydevd.py' on a remote machine as stated
-        by the PyDev project for remote debugging of server processes. The
-        filesystem resolution is performed on a local filesystem only, but
-        could be performed by command line start of the headless process
-        on the remote machine too.
-
-        The path is the containment path of the file *pydevd.py* and has to be
-        included in the *sys.path* variable for activation.
-
-        The *scanEclipseForPydevd* method performs a search and returns the
-        absolute path in case of a match.
-
-        The search for the root directory into the Eclipse package installation
-        is performed in the following order and priority:
-
-            1. **parameters**
-
-               Consume call/command line parameters, ENV, and hard/coded.
-
-               Parameter mix by environment variables as present:
-               For the actual main control of environment variables
-               refer to epyunit.checkRDbg.checkAndRemoveRDbgOptions.
-                ::
-
-                   (rdbgroot or RDBGROOT) + ( rdbgsub or RDBGSUB )
-
-                Contains the value for the option '--rdbg-root',
-                either literal or as a 'glob' pattern.
-                The following priorities are applied:
-
-                    1. CLI call option
-                    2. API call option
-                    3. RDBGROOT/RDBGSUB + missing from
-                    4. Code defaults
-
-            2. **sys.path**
-
-                Each separate path is tried with the sub-path pattern,
-                first match wins.
-
-            3. **PATH - which eclipse**
-
-                Each separate path is tried with the sub-path pattern,
-                first match wins.
-
-            4. **<HOME>/eclipse/eclipse**
-
-                A convention of the author, where the the path is
-                a symbolic link to the executable.
-                When present, the realpath is evaluated from the link.
-
-            5. **search install directory - dropins**
-
-                When 'ePyUnit' itself is installed as a drop-in within eclipse,
-                the search is performed within the current Eclipse release
-                only::
-
-                   os.path.dirname(__file__) + rdbgsub
-
-                For example::
-
-                   eclipse/dropins/epyunit
-
-        The first match of containing directory for 'pydevd.py'
-        is returned, thus ambiguity in case of multiple occurrences
-        has to be avoided.
-
-        The pattern resolution into the PyDev dir is performed by the steps:
-            ::
-
-                0. <eclipse-root>/plugins/<rdbgsub>
-
-                1. <eclipse-root>/dropins/<rdbgsub>
-
-                2. <eclipse-root>/dropins/*/plugins/<rdbgsub>
-
-        Args:
-            rootforscan: Start directory for tree-scan, either a
-                single, multiple in PATH notation. Each path points
-                to an Eclipse installation directory.
-
-        **kargs:
-            altpat=(<literal>|<glob>): Alternative pattern, varies 'eclipse_glob',
-                and 'pydevd_glob'.
-
-            strict: Provided parameter has to match, else error.
-
-                Default is to try all, when supplied params do not
-                match default values are checked.
-
-            version=(a,b,c): Provide version to be requested. It is recommended
-                to combine this with 'strict'.
-
-                The parameters 'altpat' and 'version' are EXOR.
-
-                version=(a,b,c)
-                a := [0-9]+
-                b := [0-9]+
-                b := [0-9]+
-
-        Returns:
-            The location of pydevd.py
-
-        Raises:
-            AttributeError:
-
-        """
-        _mlist = [] # list of matches
-
-        _apat = kargs.get('altpat')
-        _vers = kargs.get('version')
-        _pg = self.pydevd_glob
-
-        def _matchsub(_apat,_rfs):
-            # almost literal
-            p = findRelPathInSearchPath(_apat,_rfs)
-            if p: # a match trial
-                return p
-
-            # plugins
-            p = findRelPathInSearchPath("plugins"+os.path.sep+_apat,_rfs)
-            if p: # a match trial
-                return p
-
-            # dropins
-            p = findRelPathInSearchPath("dropins"+os.path.sep+"*"+os.path.sep+"plugins"+os.path.sep+_apat,_rfs)
-            if p: # a match trial
-                return p
-
-        # 0. fetch call parameters which also reflect the resulting command line parameters
-        if _apat and _vers:
-            raise PyDevRDCLoadException("One only supported (version, altpat)=('"+str(_vers)+"', '"+str(_apat)+"')")
-        elif _vers:
-            _apat  = "org.python.pydev_"+_vers[0]+"."+_vers[1]+"."+_vers[2]+"*/pysrc/pydevd.py"
-        elif not _apat:
-            if self.pydevd_glob:
-                _apat = self.pydevd_glob
-            else:
-                _apat = _rdbgsub_default
-
-        if not _apat:
-            raise PyDevRDCLoadException("Cannot evaluate rdbgsub-pattern")
-
-        _st = kargs.get('strict',False)
-
-        if type(rootforscan) == NoneType:
-            _rfs = [epyunit.debug.checkRDbg._rdbgroot]
-        elif type(rootforscan) != list:
-            _rfs = [rootforscan]
-            clearPath(_rfs,**self._clrargs)
-        else:
-            _rfs = rootforscan[:]
-            clearPath(_rfs,**self._clrargs)
-
-        if not _rfs:
-            _rfs = [ _rdbgroot_default ]
-        if not _rfs:
-            raise PyDevRDCLoadException("Cannot evaluate rdbgroot for scan")
-
-        p = None
-
-        # 1. call parameter
-        if not self._itfcp:
-            p = _matchsub(_apat,_rfs)
-            if p:
-                return p
-            if _rfs and _st: # has to match immediately when STRICT is choosen
-                return
-
-        # 2. environment RDBGROOT and/or RDBGSUB
-        if not p:
-            try:
-                if _rdbgenv:
-                    _r = os.environ['RDBGROOT']
-                    if not _r:
-                        _r = _rfs
-                    else:
-                        _r = [_r,]
-
-                    _s = os.environ['RDBGSUB']
-                    if not _s:
-                        _s = _apat
-
-                    clearPath(_r,**self._clrargs)
-                    p = _matchsub(_s,_r)
-                    if p:
-                        return p
-                    elif _r and _s: # has to match immediately when STRICT is choosen
-                        return
-                else:
-                    _r = _rfs
-                    _s = _apat
-
-            except:
-                pass
-
-        #
-        # following are the preset and hard-coded defaults
-        #
-
-        # 3. search 'pydevd.p' by sys.path
-        if not self._itfs and not rootforscan:
-            p = _matchsub('pydevd.py',sys.path)
-            if p:
-                return p
-
-        # 4. search pattern by sys.path
-        if not self._itfs and not rootforscan:
-            p = _matchsub(_apat,sys.path)
-            if p:
-                return p
-
-        # 5. search pattern by PATH
-        if not self._itfs and not rootforscan:
-            p = _matchsub(_apat,os.environ.get('PATH',None))
-            if p:
-                return p
-
-        # 6. <HOME>/eclipse/eclipse
-        if not p:
-            _r = getHome()
-            _r += os.sep+'eclipse'+os.sep+'eclipse'
-            if os.path.exists(_r):
-                if kargs.get('altpat'):
-                    _apat = kargs.get('altpat')
-                    if _apat.startswith('eclipse/plugins/'):
-                        _apat = _apat[7:]
-                else:
-                    _apat = self.pydevd_glob
-                _r = os.path.normpath(os.path.dirname(os.path.realpath(_r))+"/plugins/")
-
-            p = _matchsub(_apat,[_r])
-            if p:
-                return p
-
-        # 7. search install directory when installed within the 'dropins' directory::
-        if not p:
-            if os.path.exists(os.path.normpath("../plugins")) and os.path.exists(os.path.normpath("../eclipse")):
-                _r = glob.glob(os.path.normpath("../plugins/"+_pg))
-            p = _matchsub(_apat,_r)
-            if p:
-                return p
-
     def startDebug(self,**kargs):
         """Starts remote debugging for PyDev.
         """
@@ -813,7 +535,8 @@ if not _pderd_inTestMode_suppress_init:
         if _dbg_self or _verbose:
             print >>sys.stderr, "RDBG:create:epyunit.pydevrdc.PYDEVD"
         PYDEVD=PyDevRDC()
-        _pydevd = PYDEVD.scanEclipseForPydevd()
+        _pydevd = epyunit.debug.checkRDbg.scanEclipseForPydevd()
+        
         if not _pydevd:
             if _dbg_self or _dbg_unit:
                 print >>sys.stderr,"RDBG:Missing, pydevd.py not found"
@@ -826,5 +549,3 @@ if not _pderd_inTestMode_suppress_init:
                 print >>sys.stderr,"RDBG:found pydevd.py"
             addPathToSearchPath(os.path.dirname(_pydevd),**{'exist':True,'prepend':True,})
             import pydevd #@UnresolvedImport
-        pass
-pass
