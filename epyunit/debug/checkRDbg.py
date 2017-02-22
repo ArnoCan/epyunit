@@ -514,9 +514,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                 #print '%r %r %r' % (namespace, _rdbg_default, option_string)
                 setattr(namespace, self.dest, _rdbg_default)
                 return
-            if not _eq:
-                _ix = namespace._argv.index(values)
-                _ai = namespace._argv.pop(_ix)
 
     class FWDaction(argparse.Action):
         """Enabling nested subprocesses by forwarding - --rdbg-forward
@@ -552,10 +549,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                 #print '%r %r %r' % (namespace, values, option_string)
                 setattr(namespace, self.dest, values)
 
-            if not _eq:
-                _ix = namespace._argv.index(values)
-                _ai = namespace._argv.pop(_ix)
-
     class ROOTaction(argparse.Action):
         """Set the root for scan - --rdbg-root
         """
@@ -582,10 +575,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                 #print '%r %r %r' % (namespace, values, option_string)
                 setattr(namespace, self.dest, values)
 
-            if not _eq:
-                _ix = namespace._argv.index(values)
-                _ai = namespace._argv.pop(_ix)
-
     class SUBaction(argparse.Action):
         """Set the subdirectory in 'plugins' for scan - --rdbg-sub
         """
@@ -609,10 +598,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
             else:
                 #print '%r %r %r' % (namespace, values, option_string)
                 setattr(namespace, self.dest, values)
-
-            if not _eq:
-                _ix = namespace._argv.index(values)
-                _ai = namespace._argv.pop(_ix)
 
     class ENVaction(argparse.Action):
         """Enable/Disable the environment variables RDBGROOT and RDBGSUB - --rdbg-env
@@ -642,9 +627,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                     setattr(namespace, self.dest, False)
                 else:
                     raise checkAndRemoveRDbgOptionsException("Unknown value:"+str(values))
-            if not _eq and values:
-                _ix = namespace._argv.index(values)
-                _ai = namespace._argv.pop(_ix)
 
     class DBGaction(argparse.Action):
         """Set the debugging of RDBG itself for scan - --rdbg-self
@@ -669,11 +651,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
             else:
                 #print '%r %r %r' % (namespace, values, option_string)
                 setattr(namespace, self.dest, values)
-
-            if not _eq:
-                if values:
-                    _ix = namespace._argv.index(values)
-                    _ai = namespace._argv.pop(_ix)
 
     class TFLAGaction(argparse.Action):
         """Set for the debugging of RDBG itself some testflags --pderd_testflags
@@ -707,11 +684,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                         raise checkAndRemoveRDbgOptionsException("Unknown value "+str(option_string)+"="+str(values))
                 _testflags = _tfv
                 setattr(namespace, self.dest, _testflags)
-
-            if not _eq:
-                if values:
-                    _ix = namespace._argv.index(values)
-                    _ai = namespace._argv.pop(_ix)
 
     class Sx(object):
         def __init__(self):
@@ -823,6 +795,52 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
             _rdbgroot = os.environ['RDBGROOT']
         if os.environ.get('RDBGSUB'):
             _rdbgsub = os.environ['RDBGSUB']
+
+    try:
+        while True:
+            _ix = sys.argv.index('--rdbg')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+
+    try:
+        while True:
+            _ix = sys.argv.index('--rdbg')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+
+    try:
+        while True:
+            _ix = sys.argv.index('--rdbg-forward')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+
+    try:
+        while True:
+            _ix = sys.argv.index('--rdbg-root')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+    try:
+        while True:
+            _ix = sys.argv.index('--rdbg-sub')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+    try:
+        while True:
+            _ix = sys.argv.index('--env')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
+    try:
+        while True:
+            _ix = sys.argv.index('--self')
+            _ai = sys.argv.pop(_ix)
+    except:
+        pass
 
     _rdbgoptions = (_rdbgthis,_rdbgsrv,_rdbgfwd,_rdbgroot,_rdbgsub,)
 
@@ -1076,9 +1094,8 @@ def scanEclipseForPydevd(rootforscan=None, **kargs):
             elif tf == 'ignorePydevdSysPath':
                 _itfs = True
             elif tf == 'ignorePydevdCallParam':
-                _itfcp = True
-    _clrargs = ''
-   
+                _itfcp = True   
+ 
     _mlist = [] # list of matches
 
     _apat = kargs.get('altpat')
@@ -1207,7 +1224,7 @@ def scanEclipseForPydevd(rootforscan=None, **kargs):
         if p:
             return p
 
-    # 7. search install directory when installed within the 'dropins' directory::
+    # 7. search install directory when installed within the 'dropins' directory
     if not p:
         if os.path.exists(os.path.normpath("../plugins")) and os.path.exists(os.path.normpath("../eclipse")):
             _r = glob.glob(os.path.normpath("../plugins/"+_pg))
