@@ -1,4 +1,4 @@
-#!/home/extaue/venv27/bin/python2.7
+
 # -*- coding: utf-8 -*-
 """'epyd' - Command line interface for management of pydevd.py
 
