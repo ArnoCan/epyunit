@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """'epyd' - Command line interface for management of pydevd.py
 

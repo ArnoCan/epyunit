@@ -229,7 +229,7 @@ Versions and Releases
 
 * RELEASE: >         - Production: Stable and compatible continued development.
 
-**Current Release: 00.02.009 - Alpha:**
+**Current Release: 00.02.011 - Alpha:**
 
 This is a nightly-build, next following soon.
 Major Changes:
