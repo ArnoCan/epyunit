@@ -1,7 +1,7 @@
 from __future__ import absolute_import
 
 import unittest
-import os,sys
+import os
 
 import epyunit.debug.checkRDbg
 
@@ -10,17 +10,14 @@ import epyunit.debug.checkRDbg
 #
 class CallUnits(unittest.TestCase):
 
+    def setUp(self):
+        self.tstcall = os.path.normpath(os.path.dirname(__file__)+os.sep+'../subprocdir/bin/epyunit4RDbg.py')
+        self.tstcall = os.path.abspath(self.tstcall)
 
-    @classmethod
-    def setUpClass(self):
-        self.tstcall = os.path.abspath(os.path.dirname(__file__)+os.sep+'../subprocdir/bin/epyunit4RDbg.py')
-        self.tstcall = os.path.normpath(self.tstcall)
-
-        self.scall = os.path.dirname(self.tstcall)+'/../../scriptdir/libexec/myscript.sh'       # add a script
-        self.scall = os.path.normpath(self.scall)
+        self.scall = os.path.normpath(self.tstcall)+'/../../scriptdir/libexec/myscript.sh'       # add a script
+        self.scall = os.path.dirname(self.scall)
         self.scall += ' OK'
 
-    def setUp(self):
         self.call  = self.tstcall  # emulate original Python sys.argv behaviour
 
     def testCall_defaults(self):

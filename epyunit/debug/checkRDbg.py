@@ -8,7 +8,7 @@ from __future__ import absolute_import
 __author__ = 'Arno-Can Uestuensoez'
 __license__ = "Artistic-License-2.0 + Forced-Fairplay-Constraints"
 __copyright__ = "Copyright (C) 2010-2016 Arno-Can Uestuensoez @Ingenieurbuero Arno-Can Uestuensoez"
-__version__ = '0.2.7'
+__version__ = '0.2.12'
 __uuid__='9de52399-7752-4633-9fdc-66c87a9200b8'
 
 __docformat__ = "restructuredtext en"
@@ -108,7 +108,9 @@ if "win32" in sys.platform:
 else:
     _reHostOnly  = re.compile(ur"""^[^:"""+os.sep+"""]+$""")
 _rePortOnly  = re.compile(ur"""^:[0-9]+$""")
+_reServiceOnly  = re.compile(ur"""^:[^0-9].*$""")
 _reHostPort  = re.compile(ur"""^([^:]+):([0-9]+)$""")
+_reHostService  = re.compile(ur"""^([^:]+):([^0-9].*)$""")
 
 _rdbgenv = False
 """Force or prohibit the read of environment variables, by default used in priority order when present."""
@@ -159,7 +161,12 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
 
             Defines forwarding of debugging state, either by passing
             the current instance, or by additionally debugging the next level(s)
-            of nested subprocesses. The value of <depth> is one of:
+            of nested subprocesses. 
+            
+            The value is hereby counted from 0, where the current instance is the
+            first decrement.
+            
+            The value of <depth> is one of:
 
                 #hopcnt:  Number of levels for nested subprocesses.
 
@@ -167,31 +174,31 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
 
                 label: The subprocesses with matching label only.
 
-            The design of passing options into nested calls is considered as
-            insertion of the forwarded options before the first option of the next
-            level caller:
+            The passing options into nested calls is considered as insertion of 
+            the forwarded options before the first option of the next level call 
+            'nextlevelcall':
               ::
 
-                epyu --rdbg --rdbg-froward=2 nextlevel -a --bxy ....
+                epyu --rdbg --rdbg-forward=2 nextlevelcall -a --bxy ....
 
             This results in:
               ::
 
-                nextlevel --rdbg --rdbg-froward=2 -a --bxy ....
+                nextlevelcall --rdbg --rdbg-froward=2 -a --bxy ....
 
             In case of optional sub-parameters the temination option '--'
             could be applied:
               ::
 
-                epyu --rdbg --rdbg-froward=2 nextlevel -- arguments
+                epyu --rdbg --rdbg-froward=2 nextlevelcall -- arguments
 
             results in:
               ::
 
-                nextlevel --rdbg --rdbg-froward=2  -- arguments
+                nextlevelcall --rdbg --rdbg-froward=2  -- arguments
 
-            The current version requiresthis to be proceeded by the application,
-            refer to 'epyu..py'.
+            The current version requires this to be proceeded by the application,
+            refer to 'epyu.py'.
 
         --rdbg-root (<rootforscan>|<FQDN>|<path-glob>):
 
@@ -410,7 +417,7 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
         elif k == 'rdbgforward':
             _rdbg = True
             _rdbgfwd = v
-            _rdbgthis = True
+            #_rdbgthis = True
 
         elif k == 'rdbgroot':
             _rdbgroot = v
@@ -486,7 +493,9 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
 
         def __call__(self, parser, namespace, values, option_string=None):
             _ix=-1
+            _iv=-1
             _eq = False
+
             try:
                 _ix = namespace._argv.index(option_string)
             except:
@@ -495,8 +504,18 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                     _eq = True
                 except:
                     pass
+
+            if _ix>0 and not _eq and values:
+                try: # may not occur now, anyhow...
+                    _iv = namespace._argv.index(values)
+                except:
+                    pass
+
+            if _iv>0:
+                _ai = namespace._argv.pop(_iv)
             if _ix>0:
                 _ai = namespace._argv.pop(_ix)
+
             if not values:
                 #print '%r %r %r' % (namespace, _rdbg_default, option_string)
                 setattr(namespace, self.dest, _rdbg_default)
@@ -507,7 +526,13 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
             elif _rePortOnly.match(values):
                 #print '%r %r %r' % (namespace, "localhost"+values, option_string)
                 setattr(namespace, self.dest, "localhost"+values)
+            elif _reServiceOnly.match(values):
+                #print '%r %r %r' % (namespace, "localhost"+values, option_string)
+                setattr(namespace, self.dest, "localhost"+values)
             elif _reHostPort.match(values):
+                #print '%r %r %r' % (namespace, values, option_string)
+                setattr(namespace, self.dest, values)
+            elif _reHostService.match(values):
                 #print '%r %r %r' % (namespace, values, option_string)
                 setattr(namespace, self.dest, values)
             else: # no valid argument
@@ -520,15 +545,19 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
         """
         def __call__(self, parser, namespace, values, option_string=None):
             _ix=-1
+            _iv=-1
             _eq = False
             try:
                 _ix = namespace._argv.index(option_string)
+                _iv = namespace._argv.index(values)
             except:
                 try:
                     _ix = namespace._argv.index(option_string+"="+values)
                     _eq = True
                 except:
                     pass
+            if _iv>0:
+                _ai = namespace._argv.pop(_iv)
             if _ix>0:
                 _ai = namespace._argv.pop(_ix)
 
@@ -550,19 +579,23 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                 setattr(namespace, self.dest, values)
 
     class ROOTaction(argparse.Action):
-        """Set the root for scan - --rdbg-root
+        """Set the root for scan - --rdbg-root <root-dir>
         """
         def __call__(self, parser, namespace, values, option_string=None):
             _ix=-1
+            _iv=-1
             _eq = False
             try:
                 _ix = namespace._argv.index(option_string)
+                _iv = namespace._argv.index(values)
             except:
                 try:
                     _ix = namespace._argv.index(option_string+"="+values)
                     _eq = True
                 except:
                     pass
+            if _iv>0:
+                _ai = namespace._argv.pop(_iv)
             if _ix>0:
                 _ai = namespace._argv.pop(_ix)
 
@@ -576,19 +609,23 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
                 setattr(namespace, self.dest, values)
 
     class SUBaction(argparse.Action):
-        """Set the subdirectory in 'plugins' for scan - --rdbg-sub
+        """Set the subdirectory in 'plugins' for scan - --rdbg-sub  <sub-dir>
         """
         def __call__(self, parser, namespace, values, option_string=None):
             _ix=-1
+            _iv=-1
             _eq = False
             try:
                 _ix = namespace._argv.index(option_string)
+                _iv = namespace._argv.index(values)
             except:
                 try:
                     _ix = namespace._argv.index(option_string+"="+values)
                     _eq = True
                 except:
                     pass
+            if _iv>0:
+                _ai = namespace._argv.pop(_iv)
             if _ix>0:
                 _ai = namespace._argv.pop(_ix)
 
@@ -756,7 +793,7 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
 
     # forwards debugging state to nested subprocesses
     if _rdbgfwd and not _rdbgthis:
-        if _rdbgfwd.lower() == 'all': # all
+        if type(_rdbgfwd) is str and _rdbgfwd.lower() == 'all': # all
             _rdbgthis = True
 
         elif type(_rdbgfwd) == int and _rdbgfwd: # hopcount
@@ -796,52 +833,6 @@ def checkAndRemoveRDbgOptions(argv=None,**kargs):
         if os.environ.get('RDBGSUB'):
             _rdbgsub = os.environ['RDBGSUB']
 
-    try:
-        while True:
-            _ix = sys.argv.index('--rdbg')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-
-    try:
-        while True:
-            _ix = sys.argv.index('--rdbg')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-
-    try:
-        while True:
-            _ix = sys.argv.index('--rdbg-forward')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-
-    try:
-        while True:
-            _ix = sys.argv.index('--rdbg-root')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-    try:
-        while True:
-            _ix = sys.argv.index('--rdbg-sub')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-    try:
-        while True:
-            _ix = sys.argv.index('--env')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-    try:
-        while True:
-            _ix = sys.argv.index('--self')
-            _ai = sys.argv.pop(_ix)
-    except:
-        pass
-
     _rdbgoptions = (_rdbgthis,_rdbgsrv,_rdbgfwd,_rdbgroot,_rdbgsub,)
 
     if _verbose or _dbg_self:
@@ -864,9 +855,11 @@ def checkRDbg(argv=None):
     Raises:
 
     """
-    if argv == NoneType:
+    if argv == NoneType: # not set at all
         return '--rdbg' in sys.argv
-    return '--rdbg' in argv
+    elif '--rdbg' in argv: # simple '--rdbg', or without '='
+        return True
+    return True in map(lambda x:x.startswith('--rdbg='),argv)  # '--rdbg' with '='
 
 def getDefaults(res=None):
     """Returns the current defaults.
